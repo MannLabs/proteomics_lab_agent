@@ -1,1 +1,3 @@
 # protemics_specialist
+
+This project aims to develop ...
