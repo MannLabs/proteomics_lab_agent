@@ -1,0 +1,3 @@
+# Dependencies required for running the "loose" version.
+# All dependencies that are included in `requirements.txt` must be added here (TODO: enforced by a test).
+numba
