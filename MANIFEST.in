@@ -1,0 +1,7 @@
+recursive-include proteomics_specialist *
+include LICENSE.txt
+include README.md
+recursive-exclude logs *
+recursive-exclude tests *
+
+global-exclude */__pycache__/*

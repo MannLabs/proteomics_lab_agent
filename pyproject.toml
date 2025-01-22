@@ -1,0 +1,67 @@
+[tool.ruff.lint]
+select =  [ "ALL" ]
+
+ignore = [
+    "E501",  # Line too long  (ruff wraps code, but not docstrings)
+    "B028",  #  No explicit `stacklevel` keyword argument found (for warnings)
+    "COM812", #may cause conflicts when used with the formatter
+    "ISC001", #may cause conflicts when used with the formatter
+    "D211", # no-blank-line-before-class
+    "D213", # multi-line-summary-second-line
+    "S101", # Use of `assert` detected
+    "INP001", # implicit namespace package.
+    "ERA001", # Found commented-out code
+    "D203", # 1 blank line required before class docstring
+    "TD002", "TD003", "FIX002",  # things around TO-DO
+    "PT011", #pytest.raises(ValueError) is too broad
+    "G004", "EM102", # Logging statement uses f-string
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "ANN101", # Missing type annotation for `self` in method
+    "ANN102", # Missing type annotation for `cls` in classmethod
+    "ANN002", # Missing type annotation for `*args`
+    "ANN003", # Missing type annotation for `**kwargs
+    "FA102", # Missing `from __future__ import annotations
+    "EM101", # Exception must not use a string literal, assign to variable first
+    "D104", # Missing docstring in public package
+    "ANN204", # Missing return type annotation for special method `__init__`
+    "D401", # First line of docstring should be in imperative mood
+    "B023", # Function definition does not bind loop variable
+    "PD901", # Avoid using the generic variable name `df` for DataFrames"
+    "TCH003" # Move standard library import into a type-checking block
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = [
+    "T201" # use of 'print' detected
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+# cf. README.md:A note on importing
+    "./webapp"
+]
+
+# NOTE: All relative paths are relative to the location of this file.
+
+[tool.pytype]
+
+# Space-separated list of files or directories to process.
+inputs = [
+    'shared'
+]
+
+# Python version (major.minor) of the target code.
+python_version = '3.11'
+
+# Paths to source code directories, separated by ':'.
+pythonpath = ".:./webapp"
+
+# Space-separated list of error names to ignore.
+disable = [
+    "import-error" # TODO figure out why we have those
+]
+
+exclude = [
+    '**/tests/**',
+    '**/_db_migrations/*.py'
+    ]

@@ -1,0 +1,37 @@
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+    - id: check-yaml # checks yaml files for parseable syntax.
+    - id: end-of-file-fixer #ensures that a file is either empty, or ends with one newline.
+    - id: trailing-whitespace  #trims trailing whitespace.
+    - id: check-ast # simply checks whether the files parse as valid python.
+    - id: check-json # checks json files for parseable syntax.
+    - id: check-merge-conflict # checks for files that contain merge conflict strings.
+    - id: check-toml # checks toml files for parseable syntax.
+    - id: detect-private-key # detects the presence of private keys.
+    - id: no-commit-to-branch
+      args: [ '--branch', 'main' ]
+- repo: https://github.com/pre-commit/pygrep-hooks
+  rev: v1.10.0
+  hooks:
+    - id: python-no-eval # A quick check for the `eval()` built-in function
+    - id: python-no-log-warn # A quick check for the deprecated `.warn()` method of python loggers
+    - id: python-use-type-annotations # Enforce that python3.6+ type annotations are used instead of type comments
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.7.3
+  hooks:
+    - id: ruff-format
+    - id: ruff
+      args: [ '--fix' ]
+repos:
+-   repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+    -   id: detect-secrets
+        # exclude-lines are to avoid false positives in notebooks
+        args: ['--baseline', '.secrets.baseline', '--exclude-lines', '"(hash|id|image/\w+)":.*' ]
+        exclude: testfiles
