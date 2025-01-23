@@ -49,7 +49,7 @@ git clone https://github.com/MannLabs/proteomics_specialist.git
 For any Python package, it is highly recommended to use a separate [conda virtual environment](https://docs.conda.io/en/latest/), as otherwise *dependency conflicts can occur with already existing packages*.
 
 ```bash
-conda create --name proteomics_specialist python=3.8 -y
+conda create --name proteomics_specialist python=3.13 -y
 conda activate proteomics_specialist
 ```
 
