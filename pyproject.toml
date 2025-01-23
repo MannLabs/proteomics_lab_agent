@@ -1,0 +1,95 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proteomics_specialist"
+requires-python = ">3.8"
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+authors = [
+    {name = "Mann Labs", email = "opensource@alphapept.com"}
+]
+description = "An open-source Python package of the AlphaX ecosystem"
+readme = "README.md"
+keywords = [
+    "mass spectrometry",
+    "proteomics",
+    "bioinformatics",
+    "mass spectrometry",
+    "GenAI",
+    "agents",
+    "AlphaX ecosystem",
+]
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    # "Development Status :: 4 - Beta",
+    # "Development Status :: 5 - Production/Stable",
+    # "Development Status :: 6 - Mature",
+    # "Development Status :: 7 - Inactive"
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.urls]
+
+#"Paper preprint" = "https://www.biochem.mpg.de/mann"
+Repository = "https://github.com/MannLabs/proteomics_specialist"
+#Documentation = "https://proteomics_specialist.readthedocs.io/en/latest/"
+#Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+Issues = "https://github.com/MannLabs/proteomics_specialist/issues"
+"Mann Labs Homepage" = "https://www.biochem.mpg.de/mann"
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.dynamic]
+# https://stackoverflow.com/a/73600610
+dependencies = {file = ["requirements/requirements.txt"]}
+optional-dependencies.stable = { file = ["requirements/requirements_development.txt" ]}
+
+version = {attr = "proteomics_specialist.__version__"}
+
+[project.scripts]
+proteomics_specialist = "proteomics_specialist.cli:run"
+
+[tool.ruff.lint]
+select =  [ "ALL" ]
+
+ignore = [
+    "E501",  # Line too long  (ruff wraps code, but not docstrings)
+    "B028",  #  No explicit `stacklevel` keyword argument found (for warnings)
+    "COM812", #may cause conflicts when used with the formatter
+    "ISC001", #may cause conflicts when used with the formatter
+    "D211", # no-blank-line-before-class
+    "D213", # multi-line-summary-second-line
+    "S101", # Use of `assert` detected
+    "INP001", # implicit namespace package.
+    "ERA001", # Found commented-out code
+    "D203", # 1 blank line required before class docstring
+    "TD002", "TD003", "FIX002",  # things around TO-DO
+    "PT011", #pytest.raises(ValueError) is too broad
+    "G004", "EM102", # Logging statement uses f-string
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "ANN101", # Missing type annotation for `self` in method
+    "ANN102", # Missing type annotation for `cls` in classmethod
+    "ANN002", # Missing type annotation for `*args`
+    "ANN003", # Missing type annotation for `**kwargs
+    "FA102", # Missing `from __future__ import annotations
+    "EM101", # Exception must not use a string literal, assign to variable first
+    "D104", # Missing docstring in public package
+    "ANN204", # Missing return type annotation for special method `__init__`
+    "D401", # First line of docstring should be in imperative mood
+    "B023", # Function definition does not bind loop variable
+    "PD901", # Avoid using the generic variable name `df` for DataFrames"
+    "TCH003" # Move standard library import into a type-checking block
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = [
+    "T201" # use of 'print' detected
+]
