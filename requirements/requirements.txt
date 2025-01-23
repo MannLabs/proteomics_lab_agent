@@ -1,4 +1,2 @@
-# Dependencies required for running the "stable" version.
-# Only usage of fixed versions is allowed, and all dependencies listed here must also be
-# included in `requirements_loose.txt` (TODO: enforced by a test).
-pre-commit
+google-generativeai==0.8.3
+gradio==4.44.1
