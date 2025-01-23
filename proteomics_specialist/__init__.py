@@ -1,10 +1,10 @@
-__project__ = "protemics_specialist"
+__project__ = "proteomics_specialist"
 __version__ = "0.0.1"
 __license__ = "Apache"
 __description__ = "An open-source Python package of the AlphaPept ecosystem"
 __author__ = "Mann Labs"
 __author_email__ = "opensource@alphapept.com"
-__github__ = "https://github.com/MannLabs/protemics_specialist"
+__github__ = "https://github.com/MannLabs/proteomics_specialist"
 __keywords__ = [
     "bioinformatics",
     "software",
