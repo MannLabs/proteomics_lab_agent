@@ -1,3 +1,62 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proteomics_specialist"
+requires-python = ">3.8"
+dynamic = ["version", "dependencies", "optional-dependencies"]
+
+authors = [
+    {name = "Mann Labs", email = "opensource@alphapept.com"}
+]
+description = "An open-source Python package of the AlphaX ecosystem"
+readme = "README.md"
+keywords = [
+    "mass spectrometry",
+    "proteomics",
+    "bioinformatics",
+    "mass spectrometry",
+    "GenAI",
+    "agents",
+    "AlphaX ecosystem",
+]
+license = {file = "LICENSE.txt"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    # "Development Status :: 4 - Beta",
+    # "Development Status :: 5 - Production/Stable",
+    # "Development Status :: 6 - Mature",
+    # "Development Status :: 7 - Inactive"
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.urls]
+
+#"Paper preprint" = "https://www.biochem.mpg.de/mann"
+Repository = "https://github.com/MannLabs/proteomics_specialist"
+#Documentation = "https://proteomics_specialist.readthedocs.io/en/latest/"
+#Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
+Issues = "https://github.com/MannLabs/proteomics_specialist/issues"
+"Mann Labs Homepage" = "https://www.biochem.mpg.de/mann"
+
+[tool.setuptools.packages]
+find = {}
+
+[tool.setuptools.dynamic]
+# https://stackoverflow.com/a/73600610
+dependencies = {file = ["requirements/requirements.txt"]}
+optional-dependencies.stable = { file = ["requirements/requirements.txt" ]}
+
+version = {attr = "proteomics_specialist.__version__"}
+
+[project.scripts]
+proteomics_specialist = "proteomics_specialist.cli:run"
+
 [tool.ruff.lint]
 select =  [ "ALL" ]
 
@@ -34,34 +93,3 @@ ignore = [
 "*.ipynb" = [
     "T201" # use of 'print' detected
 ]
-
-[tool.pytest.ini_options]
-pythonpath = [
-# cf. README.md:A note on importing
-    "./webapp"
-]
-
-# NOTE: All relative paths are relative to the location of this file.
-
-[tool.pytype]
-
-# Space-separated list of files or directories to process.
-inputs = [
-    'shared'
-]
-
-# Python version (major.minor) of the target code.
-python_version = '3.11'
-
-# Paths to source code directories, separated by ':'.
-pythonpath = ".:./webapp"
-
-# Space-separated list of error names to ignore.
-disable = [
-    "import-error" # TODO figure out why we have those
-]
-
-exclude = [
-    '**/tests/**',
-    '**/_db_migrations/*.py'
-    ]
