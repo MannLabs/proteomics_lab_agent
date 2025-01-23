@@ -59,8 +59,6 @@ Finally, proteomics_specialist and all its [dependencies](requirements) need to 
 pip install -e "./proteomics_specialist"
 ```
 
-By default this installs loose dependancies (no explicit versioning), although it is also possible to use stable dependencies (e.g. `pip install -e "./proteomics_specialist[stable]"`).
-
 ***By using the editable flag `-e`, all modifications to the [proteomics_specialist source code folder](proteomics_specialist) are directly reflected when running proteomics_specialist. Note that the proteomics_specialist folder cannot be moved and/or renamed if an editable version is installed.***
 
 ---
