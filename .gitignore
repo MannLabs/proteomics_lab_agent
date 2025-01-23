@@ -18,7 +18,7 @@ secrets.ini
 
 **/*secrets.toml
 
-# Github defaults are below 
+# Github defaults are below
 # TODO: sort through them
 
 # Byte-compiled / optimized / DLL files

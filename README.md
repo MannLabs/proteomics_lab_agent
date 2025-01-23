@@ -72,7 +72,7 @@ By default this installs loose dependancies (no explicit versioning), although i
 
 protemics_specialist can be imported as a Python package into any Python script or notebook with the command `import protemics_specialist`.
 
-An ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks as tutorials on using protemics_specialist as a Python package.  
+An ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks as tutorials on using protemics_specialist as a Python package.
 
 ---
 ## Troubleshooting
