@@ -340,7 +340,6 @@ def _generate_response(
     response = model.generate_content(inputs, request_options=request_options)
     logger.info("Model usage metadata: %s", response.usage_metadata)
 
-    # Extract filename from the video path if provided
     original_filename = Path(video_file).stem if video_file else "protocol"
 
     return response.text, original_filename
@@ -472,22 +471,17 @@ def generate_markdown_for_download(
 
     """
     try:
-        # Input validation
         _validate_input(text, original_filename)
 
-        # Clean filename and ensure .md extension
         clean_filename = Path(original_filename).stem
         markdown_filename = f"{clean_filename}.md"
 
-        # Get temporary directory
         temp_path = Path(temp_dir) if temp_dir else Path(tempfile.gettempdir())
         if not temp_path.exists():
             temp_path.mkdir(parents=True, exist_ok=True)
 
-        # Create full file path
         file_path = temp_path / markdown_filename
 
-        # Write content with proper encoding
         file_path.write_text(text, encoding="utf-8")
 
     except OSError:
