@@ -147,10 +147,8 @@ def read_and_encode_document(doc_path: str) -> str:
         with Path.open(file_path, "rb") as doc_file:
             content = doc_file.read()
             return base64.b64encode(content).decode("utf-8")
-    except PermissionError as e:
-        raise PermissionError(f"Permission denied accessing file: {file_path}") from e
-    except OSError as e:
-        raise OSError(f"Error reading file {file_path}: {e!s}") from e
+    except (PermissionError, OSError) as e:
+        raise
 
 
 class ProcessingConfig(NamedTuple):
