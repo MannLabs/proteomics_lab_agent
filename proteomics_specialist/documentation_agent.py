@@ -132,10 +132,6 @@ def read_and_encode_document(doc_path: str) -> str:
     ------
     FileNotFoundError
         If the specified document path does not exist.
-    PermissionError
-        If the program lacks permission to read the file.
-    IOError
-        If there's an error reading the file.
 
     """
     file_path = Path(doc_path)
@@ -143,12 +139,9 @@ def read_and_encode_document(doc_path: str) -> str:
     if not file_path.exists():
         raise FileNotFoundError(f"Document not found: {file_path}")
 
-    try:
-        with Path.open(file_path, "rb") as doc_file:
-            content = doc_file.read()
-            return base64.b64encode(content).decode("utf-8")
-    except (PermissionError, OSError) as e:
-        raise
+    with Path.open(file_path, "rb") as doc_file:
+        content = doc_file.read()
+        return base64.b64encode(content).decode("utf-8")
 
 
 class ProcessingConfig(NamedTuple):
@@ -219,7 +212,7 @@ def process_video(
             return _process_with_cache(processed_video, config, video_file)
         return _process_without_cache(processed_video, config, video_file)
     except (OSError, ValueError) as e:
-        return f"**Error:** An error occurred during processing: {str(e)}"
+        return f"**Error:** An error occurred during processing: {e!s}"
 
 
 def _create_cache(config: ProcessingConfig) -> tuple:
