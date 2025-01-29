@@ -42,39 +42,13 @@ logging.basicConfig(
 
 
 def _check_timeout(start_time: float, timeout: float | None) -> None:
-    """Check if the operation has timed out.
-
-    Parameters
-    ----------
-    start_time : float
-        Start time of the operation (from time.monotonic())
-    timeout : float or None
-        Maximum time to wait in seconds
-
-    Raises
-    ------
-    TimeoutError
-        If the operation has exceeded the timeout
-
-    """
+    """Raises TimeoutError if time exceeds timeout (in seconds)."""
     if timeout and (time.monotonic() - start_time > timeout):
         raise TimeoutError(f"Video processing timed out after {timeout} seconds")
 
 
 def _check_processing_failed(state_name: str) -> None:
-    """Check if video processing has failed.
-
-    Parameters
-    ----------
-    state_name : str
-        Current state name of the video processing
-
-    Raises
-    ------
-    ValueError
-        If the video processing has failed
-
-    """
+    """Raises ValueError if video processing state is 'FAILED'."""
     if state_name == "FAILED":
         raise ValueError(f"Video processing failed: {state_name}")
 
@@ -247,23 +221,11 @@ def process_video(
             return _process_with_cache(processed_video, config, video_file)
         return _process_without_cache(processed_video, config, video_file)
     except (OSError, ValueError) as e:
-        return _handle_processing_error(e, video_file)
+        return f"**Error:** An error occurred during processing: {str(e)}"
 
 
 def _create_cache(config: ProcessingConfig) -> tuple:
-    """Create cache with model contents.
-
-    Parameters
-    ----------
-    config : ProcessingConfig
-        Processing configuration
-
-    Returns
-    -------
-    Any
-        CachedContent object
-
-    """
+    """Create cache with model contents."""
     return caching.CachedContent.create(
         model=config.model_name,
         display_name=config.cache_display_name,
@@ -282,21 +244,7 @@ def _create_cache(config: ProcessingConfig) -> tuple:
 
 
 def _get_model_inputs(processed_video: File, config: ProcessingConfig) -> list:
-    """Get inputs for model processing.
-
-    Parameters
-    ----------
-    processed_video : Any
-        Processed video file
-    config : ProcessingConfig
-        Processing configuration
-
-    Returns
-    -------
-    List[Any]
-        List of model inputs
-
-    """
+    """Get inputs for model processing."""
     return [
         config.prompts[0],
         config.video_example,
@@ -321,7 +269,7 @@ def _generate_response(
 
     Parameters
     ----------
-    model : Any
+    model : genai.GenerativeModel
         Generative model instance
     inputs : List[Any]
         Model inputs
@@ -332,7 +280,7 @@ def _generate_response(
 
     Returns
     -------
-    Tuple[str, str]
+    tuple[str, str]
         (markdown_output, original_filename)
 
     """
@@ -352,16 +300,16 @@ def _process_with_cache(
 
     Parameters
     ----------
-    processed_video : Any
+    processed_video : File
         Processed video file
     config : ProcessingConfig
         Processing configuration
-    video_file : str, optional
+    video_file : str
         Path to the video file being processed. Used to extract the original filename.
 
     Returns
     -------
-    Tuple[str, str]
+    tuple[str, str]
         (markdown_output, original_filename)
 
     """
@@ -379,7 +327,7 @@ def _process_without_cache(
 
     Parameters
     ----------
-    processed_video : Any
+    processed_video : File
         Processed video file
     config : ProcessingConfig
         Processing configuration
@@ -399,43 +347,8 @@ def _process_without_cache(
     )
 
 
-def _handle_processing_error(error: Exception, video_file: str) -> tuple[str, str]:
-    """Handle processing errors.
-
-    Parameters
-    ----------
-    error : Exception
-        The caught exception
-    video_file : str
-        Original video file path
-
-    Returns
-    -------
-    Tuple[str, str]
-        Error message and original filename
-
-    """
-    markdown_output = f"**Error:** An error occurred during processing: {error!s}"
-    original_filename = Path(video_file).stem
-    return markdown_output, original_filename
-
-
 def _validate_input(text: str, original_filename: str) -> None:
-    """Validate the input parameters for markdown generation.
-
-    Parameters
-    ----------
-    text : str
-        The markdown content to validate
-    original_filename : str
-        The original filename to validate
-
-    Raises
-    ------
-    ValueError
-        If the input parameters are invalid
-
-    """
+    """Validate the input parameters for markdown generation. Raise ValueError if input parameters are empty."""
     if not text or not original_filename:
         raise ValueError("Text and original_filename cannot be empty")
 
