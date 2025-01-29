@@ -2,7 +2,7 @@
 - A scan mode where a mass spectrometer acquires first a survey scan (MS1) to find the precursors for selection
 - Selects the most abundant precursor ions for fragmentation and MS/MS analysis
 - The selection of precursors is based on their intensity in the initial full scan
-- Examples of DDDA methods include dda-PASEF
+- Examples of DDA methods include dda-PASEF
 
 # Data-Independent Acquisition (DIA)
 - A scan mode that acquires fragment ion spectra (MS2) for all precursor ions within a defined m/z range
@@ -49,7 +49,7 @@
 # Spectral Library
 - A collection of previously acquired and identified MS/MS spectra which are assigned to peptide sequences
 - Contains information about peptide sequences, retention times, and other relevant parameters
-- Used in targeted data analysis and DIA
+- Used in targeted analysis and DIA
 
 # Retention Time (RT)
 - The time at which a particular analyte elutes from a chromatographic column
@@ -69,7 +69,6 @@
 # Orbitrap
 - A high-resolution mass analyzer
 - Measures the m/z of ions based on their oscillation frequency in an electrostatic field
-
 
 # TIMS Scan
 - A data structure generated during a TIMS-MS cycle
