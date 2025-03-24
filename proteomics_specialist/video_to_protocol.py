@@ -2,15 +2,13 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-import os
-from collections import defaultdict
 import datetime
+import logging
+from collections import defaultdict
+from pathlib import Path
 
-import vertexai
 from vertexai.generative_models import Part
 from vertexai.preview import caching
-
 
 MIME_TYPES = {
     ".pdf": "application/pdf",
@@ -18,6 +16,11 @@ MIME_TYPES = {
     ".jpeg": "image/jpeg",
     ".png": "image/png",
 }
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 def upload_video_to_gcs(
@@ -30,14 +33,21 @@ def upload_video_to_gcs(
 
     Uses the original filename as the blob name by default.
 
-    Args:
-        path (str): Local path to the file
-        bucket: GCS bucket object to upload to
-        subfolder_in_bucket (str, optional): Optional subfolder path in the bucket (e.g., "knowledge")
-        custom_blob_name (str, optional): Override the default blob name
+    Parameters
+    ----------
+    path : str
+        Local path to the file
+    bucket : str
+        GCS bucket object to upload to
+    subfolder_in_bucket : str, optional
+        Optional subfolder path in the bucket (e.g., "knowledge")
+    custom_blob_name : str, optional
+        Override the default blob name
 
-    Returns:
-        str: Cloud Storage URI for the uploaded video
+    Returns
+    -------
+    str
+        Cloud Storage URI for the uploaded video
 
     """
     path_obj = Path(path)
@@ -57,17 +67,19 @@ def create_cached_content(
 ) -> list[Part]:
     """Create cached content from knowledge URIs.
 
-    Args:
-        knowledge_uris: list of URIs pointing to knowledge files
-        bucket_name: Name of the GCS bucket
-        subfolder_in_bucket: Subfolder path in the bucket
-        model_id: ID of the model to use
+    Parameters
+    ----------
+    knowledge_uris : list[str]
+        List of URIs pointing to knowledge files
+    model_id : str
+        ID of the model to use
 
-    Returns:
-        list of Part objects created from the knowledge URIs
+    Returns
+    -------
+    list[Part]
+        List of Part objects created from the knowledge URIs
 
     """
-    
     contents = []
     file_counts = defaultdict(int)
 
@@ -77,18 +89,17 @@ def create_cached_content(
 
         if file_ext in MIME_TYPES:
             mime_type = MIME_TYPES[file_ext]
-
             try:
                 contents.append(Part.from_uri(file_path, mime_type=mime_type))
                 file_counts[file_ext] += 1
-            except (OSError, ValueError) as e:
-                print(f"Error creating Part from {file_path}: {e}")
+            except (OSError, ValueError):
+                logger.exception(f"Error creating Part from {file_path}")
         else:
-            print(f"Unsupported file extension: {file_ext}")
+            logger.warning(f"Unsupported file extension: {file_ext}")
 
-    print(f"Total files processed: {len(contents)}")
+    logger.info(f"Total files processed: {len(contents)}")
     for ext, count in file_counts.items():
-        print(f"  {ext[1:].upper()}: {count}")
+        logger.info(f"  {ext[1:].upper()}: {count}")
 
     if contents:
         cached_content = caching.CachedContent.create(
@@ -96,7 +107,8 @@ def create_cached_content(
             contents=contents,
             ttl=datetime.timedelta(minutes=60),
         )
-        print("Cached content created successfully!")
+        logger.info("Cached content created successfully!")
         return cached_content
-    print("No matching files found. Cached content not created.")
+
+    logger.warning("No matching files found. Cached content not created.")
     return None
