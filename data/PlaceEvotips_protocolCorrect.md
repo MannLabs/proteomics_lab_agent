@@ -15,7 +15,7 @@ This protocol describes the proper procedure for inspecting Evotips and placing 
   - Rack layout: Two columns (left and right)
   - Left column (top to bottom): S1, S2, S3
   - Right column (top to bottom): S4, S5, S6
-  - Within each box: Standard 96-well format with A1 (top left), A12 (top right), H12 (bottom right) 
+  - Within each box: Standard 96-well format with A1 (top left), A12 (top right), H12 (bottom right)
 - **Evotip Boxes**
   - 96-well format (A1-H12) (Figure 1)
 - **Evosep One System**

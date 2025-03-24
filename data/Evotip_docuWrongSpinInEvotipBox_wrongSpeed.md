@@ -19,7 +19,7 @@ Spinning Evotips.
 
 *Estimated timing: 1 minute*
 
-1. Equaly distributed Evotips onto two Evotip holders by using a multichannel pipette. 12 Evotips each. 
+1. Equaly distributed Evotips onto two Evotip holders by using a multichannel pipette. 12 Evotips each.
 **Error**: Used Evotip boxes instead of Evotip holders.
 
 2. **Omitted** Switching on the centrifuge.

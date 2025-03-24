@@ -30,7 +30,7 @@ Prerequisite 2. Calibrate the TIMS device in TimsControl. The TIMS device should
 
 4. Adjust the sample ID so that it follows this pattern: currentDate_massSpec_user_sampleType_projectID_ sampleName. Typical examples for sampleType: "SA_blank", "MA_HeLa", "DIAMA_HeLa".
 
-5. For performance evaluation of the LC-MS system, we recommend to queue one blank, three dda-PASEF runs, three dia-PASEF runs and ending with another blank. 
+5. For performance evaluation of the LC-MS system, we recommend to queue one blank, three dda-PASEF runs, three dia-PASEF runs and ending with another blank.
     Critical step: Always start the queue with a sacrificial Evotip such as a blank tip as the first run might have altered chromatographic conditions that could introduce technical errors to your measurements.
 
 6. Verify the column autocompletion settings with right-click on a field in the column 'vial' such as S1-A1 in Figure 1 and select 'Configure'. The arrows allow one to define the direction in which the vial positions on the 96-well are autocompleted when dragging values similar to Excel in the sample table. Decide whether the values should increase from A1-A12 indicated by arrows pointing to right. Ensure that the tray type is set to 'Evosep' and slots 1-6 are designated as '96Evotip'. Press 'OK'.
@@ -47,7 +47,7 @@ Prerequisite 2. Calibrate the TIMS device in TimsControl. The TIMS device should
 
 12. Stop the idle flow on the Evosep by right-clicking on the Evosep logo and selecting 'Cancel maintenance procedure'.
 
-13. Save the sample table. 
+13. Save the sample table.
 
 14. Right-click somewhere on the top row of the freshly defined sample table entries and select 'upload sample conditions' to pre-check if all LC and MS method can be loaded correctly. The status should be change to loaded.
 

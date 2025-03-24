@@ -23,31 +23,31 @@ Critical step: If the instrument has been operated with another source than the 
 
 1. Use timsControl to load a performance evaluation method - for instance a dda-PASEF or dia-PASEF method. The method should have an ion mobility range that matches the ion mobility range of the method intended to be use in the study. For proteomics experiments, we typically use an ion mobility range from 0.7 to 1.3 1/K₀, hence the 1/K₀ start and end values can be set to 0.7 and 1.3, respectively (Figure 1: 6, 7). This consistency in ion mobility range allows for the integration of quality control (QC) runs into the sample table as reference points without necessitating recalibration of the TIMS tunnel.
 
-2. To specifically calibrate a narrow ion mobility range, activate the locked sign at 1/K₀ end (Figure 1: 7). 
+2. To specifically calibrate a narrow ion mobility range, activate the locked sign at 1/K₀ end (Figure 1: 7).
 
 3. Adjust the 1/K₀ start from 0.7 to 0.85. This alters the ion mobility range from 0.7-1.3 1/K₀ to 0.85-1.45 1/K₀. The aim here is to shift the ion mobility range without modifying the interval, enabling all three calibrants to be used for linear calibration while maintaining a constant TIMS potential.
 
-4. Wait until the TIC in Chromatogram View is stable. This can take up to 15 minutes. 
+4. Wait until the TIC in Chromatogram View is stable. This can take up to 15 minutes.
 
 5. Switch the scan mode to 'MS', set MS averaging to 30 and deactivate the polygon heatmap (Figure 1: 4, 9, 14).
 
-6. In timsControl, navigate to 'calibration', then 'mobility'. 
+6. In timsControl, navigate to 'calibration', then 'mobility'.
 
 7. **Not included** From reference lists, select the list '[ESI] Tuning Mix ES-TOF (ESI)' that contains the calibrant masses 622, 922, 1221.
 
 8. Specify the linear mode and 5% as detection range and ±0.1 Da as width (Figure 2).
 
-9. Proceed by selecting 'calibrate' (Figure 2). 
+9. Proceed by selecting 'calibrate' (Figure 2).
 
 19. **Not inlcuded** Deselect all calibrants except 622, 922, and 1222 by right-clicking.
 
-11. To verify that the calibrants have been picked correctly at the center, click on them in the reference list. 
+11. To verify that the calibrants have been picked correctly at the center, click on them in the reference list.
 
-12. If they are not picked in the center, make adjustments by clicking on the peak in the TIMS view window. 
+12. If they are not picked in the center, make adjustments by clicking on the peak in the TIMS view window.
 
 13. If the score is at 100%, press accept.
 
-14. Try to save the method and say "Discard all changes". 
+14. Try to save the method and say "Discard all changes".
 
 15. Set MS averaging to 1.
 

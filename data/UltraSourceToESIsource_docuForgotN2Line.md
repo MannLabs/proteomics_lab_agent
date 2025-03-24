@@ -8,7 +8,7 @@ Switching from the UltraSource to the ESI source.
 ## Materials
 
 ### Equipment
-- timsTOF Ultra Mass Spectrometer: 
+- timsTOF Ultra Mass Spectrometer:
   - Equipped with an UltraSource ion source
   - ESI source on the side to attach
 

@@ -31,7 +31,7 @@ Prerequisite 2. Calibrated the TIMS device in TimsControl.
 
 7. Matched the Evotip position with the sample's location in the Evotip box. To do this, pressed the arrow next to the value in the 'vial' column. Selected the position where the first sample Evotip was placed (S1 A1). Then automatically specified all remaining positions by dragging the values (similar to Excel's auto-fill function).
 
-11. At 'MS method', set dda-PASEF maintenance method for all samples. 
+11. At 'MS method', set dda-PASEF maintenance method for all samples.
 **Error** Last three samples would have to be linked to a dia-PASEF maintenance method.
 
 4. Adjusted the sample ID so that it followed this pattern: currentDate_massSpec_user_sampleType_projectID_sampleName.

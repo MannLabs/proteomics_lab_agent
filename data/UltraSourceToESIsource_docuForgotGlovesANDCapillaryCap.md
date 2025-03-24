@@ -8,7 +8,7 @@ Switching from the UltraSource to the ESI source.
 ## Materials
 
 ### Equipment
-- timsTOF Ultra Mass Spectrometer: 
+- timsTOF Ultra Mass Spectrometer:
   - Equipped with an UltraSource ion source
   - ESI source on the side to attach
 
@@ -32,7 +32,7 @@ Switching from the UltraSource to the ESI source.
 
 ### Mount Apollo ESI source
 11. **Omitted** Put on gloves.
-12. - **Omitted** Attached the capillary cap securely to the glass capillary. 
+12. - **Omitted** Attached the capillary cap securely to the glass capillary.
     - Attached the spray shield to the desolvation stage housing.
 13. Hinged the ESI source into position as if it were a door and closed it.
 14. Connected the sample inlet of the ESI source and the peak tubing lines, which originated from the syringe, by turning it clockwise.

@@ -1,7 +1,7 @@
 # Disconnecting a IonOpticks column from an Evosep System
 
 ## Aim
-Disconnecting an IonOpticks column from an Evosep liquid chromatography system while the column is installed in the UltraSource of a timsTOF mass spectrometer. 
+Disconnecting an IonOpticks column from an Evosep liquid chromatography system while the column is installed in the UltraSource of a timsTOF mass spectrometer.
 
 
 ## Materials

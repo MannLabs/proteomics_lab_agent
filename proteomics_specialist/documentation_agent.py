@@ -20,8 +20,8 @@ from typing import TYPE_CHECKING, NamedTuple
 
 # Third-party imports
 import google.generativeai as genai
-from google.generativeai import caching
 from google.genai import types
+from google.generativeai import caching
 
 if TYPE_CHECKING:
     from google.generativeai.types.file_types import File
@@ -220,59 +220,67 @@ def process_video(
 def _create_cache(config: ProcessingConfig) -> tuple:
     """Create cache with model contents."""
     contents = []
-    
+
     for video_ex, file_ex in zip(config.video_examples, config.file_examples):
-        contents.extend([
-            config.prompts[0],
-            video_ex,
-            config.prompts[1],
-            {"mime_type": "text/md", "data": file_ex}
-        ])
-    
-    contents.extend([
-        config.prompts[2],
-        {"mime_type": "text/md", "data": config.glossary},
-        config.prompts[3],
-        config.prompts[4]
-    ])
-    
+        contents.extend(
+            [
+                config.prompts[0],
+                video_ex,
+                config.prompts[1],
+                {"mime_type": "text/md", "data": file_ex},
+            ]
+        )
+
+    contents.extend(
+        [
+            config.prompts[2],
+            {"mime_type": "text/md", "data": config.glossary},
+            config.prompts[3],
+            config.prompts[4],
+        ]
+    )
+
     return caching.CachedContent.create(
         model=config.model_name,
         display_name=config.cache_display_name,
         contents=contents,
-        ttl=config.cache_ttl
+        ttl=config.cache_ttl,
     )
 
 
 def _get_model_inputs(processed_video: File, config: ProcessingConfig) -> list:
     """Get inputs for model processing."""
     contents = []
-    
+
     # Add each example set with its associated prompts
     for video_ex, file_ex in zip(config.video_examples, config.file_examples):
-        contents.extend([
-            config.prompts[0],
-            video_ex,
-            config.prompts[1],
-            types.Part.from_bytes(
-                data=file_ex,
-                mime_type="text/md",
-            )
-        ])
-    
+        contents.extend(
+            [
+                config.prompts[0],
+                video_ex,
+                config.prompts[1],
+                types.Part.from_bytes(
+                    data=file_ex,
+                    mime_type="text/md",
+                ),
+            ]
+        )
+
     # Add glossary, remaining prompts, and processed video
-    contents.extend([
-        config.prompts[2],
-        types.Part.from_bytes(
-            data=config.glossary,
-            mime_type="text/md",
-        ),
-        config.prompts[3],
-        config.prompts[4],
-        processed_video,
-        config.prompts[5]
-    ])
-    
+    contents.extend(
+        [
+            config.prompts[2],
+            types.Part.from_bytes(
+                data=config.glossary,
+                mime_type="text/md",
+            ),
+            config.prompts[3],
+            config.prompts[4],
+            processed_video,
+            config.prompts[5],
+        ]
+    )
+
     return contents
 
 
@@ -338,9 +346,7 @@ def _process_with_cache(
 
 
 def _process_without_cache(
-    processed_video: File, 
-    config: ProcessingConfig, 
-    video_file: str
+    processed_video: File, config: ProcessingConfig, video_file: str
 ) -> tuple[str, str]:
     """Handle non-cached processing.
 
@@ -361,7 +367,7 @@ def _process_without_cache(
     """
     model = genai.GenerativeModel(
         model_name=config.model_name,
-        generation_config=genai.GenerationConfig(temperature=DEFAULT_TEMPERATURE)
+        generation_config=genai.GenerationConfig(temperature=DEFAULT_TEMPERATURE),
     )
     inputs = _get_model_inputs(processed_video, config)
 

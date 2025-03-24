@@ -6,7 +6,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 ## Materials
 
 ### Equipment
-- timsTOF Ultra Mass Spectrometer: 
+- timsTOF Ultra Mass Spectrometer:
   - Equipped with an ESI ion source
   - UltraSource ion source ready to attach
 - IonOpticks Column
@@ -24,20 +24,20 @@ Estimated timing: less than 10 minute
 
 ### Remove ESI source
 4. Disconnect the peak connector of the sample tubing (Figure 2).
-5. Disconnect the nebulizer N₂ line. 
+5. Disconnect the nebulizer N₂ line.
 6. Remove the source door. Hinge it out like a regular door.
 7. Put on laboratory gloves.
-8. Remove the spray shield, and capillary cap.  
+8. Remove the spray shield, and capillary cap.
    ! CAUTION: The spray shield and capillary cap are hot.
 9. Inspect the capillary position. If it appears to be partially pulled out, gently push it back into proper position without blocking the gas flow.
 
 ### Mount UltraSource
-10. Hinge the UltraSource door in and close it (Figure 3). 
-11. Slide the UltraSource housing onto the source door and secure it by flipping the handles located at the top right and bottom left by 180°. 
+10. Hinge the UltraSource door in and close it (Figure 3).
+11. Slide the UltraSource housing onto the source door and secure it by flipping the handles located at the top right and bottom left by 180°.
 12. Connect the filter tubing to the source.
 
 ### Connect column and sample line
-13. This protocol assumes that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra. 
+13. This protocol assumes that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
 14. Verify if the LC sample line has a black NanoViper adapter attached. If not, locate an adapter and securely attach it to the sample line.
 15. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
 16. Hold the column fititng of the IonOpticks column with a pliers.
@@ -71,5 +71,5 @@ Estimated timing: less than 10 minute
 **Figure 3: UltraSource.**
 
 ## References
-1. Skowronek, P., Wallmann, G., Wahle, M. et al. An accessible workflow for high-sensitivity proteomics using parallel accumulation–serial fragmentation (PASEF). Nat Protoc (2025). https://doi.org/10.1038/s41596-024-01104-w 
+1. Skowronek, P., Wallmann, G., Wahle, M. et al. An accessible workflow for high-sensitivity proteomics using parallel accumulation–serial fragmentation (PASEF). Nat Protoc (2025). https://doi.org/10.1038/s41596-024-01104-w
 2. timsTOF user manual

@@ -23,10 +23,10 @@ This protocol describes how to pipette first 400 uL buffer A and then 100 uL buf
 ### Reagent setup
 
 - **Buffer A**
-  - Consists of 0.1% (vol/vol) FA. 
+  - Consists of 0.1% (vol/vol) FA.
 
 - **Buffer B**
-  - Consists of 0.1% (vol/vol) FA/99.9% (vol/vol) acetonitrile. 
+  - Consists of 0.1% (vol/vol) FA/99.9% (vol/vol) acetonitrile.
 
 
 ## Procedure
