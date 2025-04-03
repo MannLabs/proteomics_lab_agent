@@ -49,7 +49,7 @@ git clone https://github.com/MannLabs/proteomics_specialist.git
 For any Python package, it is highly recommended to use a separate [conda virtual environment](https://docs.conda.io/en/latest/), as otherwise *dependency conflicts can occur with already existing packages*.
 
 ```bash
-conda create --name proteomics_specialist python=3.13 -y
+conda create --name proteomics_specialist python=3.11 -y
 conda activate proteomics_specialist
 ```
 
@@ -93,6 +93,33 @@ TBD.
 ## How to contribute
 
 If you like this software, you can give us a [star](https://github.com/MannLabs/proteomics_specialist/stargazers) to boost our visibility! All direct contributions are also welcome. Feel free to post a new [issue](https://github.com/MannLabs/proteomics_specialist/issues) or clone the repository and create a [pull request](https://github.com/MannLabs/proteomics_specialist/pulls) with a new branch. For even more interactive participation, check out the [the Contributors License Agreement](misc/CLA.md).
+
+### Notes for developers
+
+#### pre-commit hooks
+It is highly recommended to use the provided pre-commit hooks, as the CI pipeline enforces all checks therein to
+pass in order to merge a branch.
+
+The hooks need to be installed once by
+```bash
+pip install -r requirements_development.txt
+pre-commit install
+```
+You can run the checks yourself using:
+```bash
+pre-commit run --all-files
+```
+
+##### The `detect-secrets` hook fails
+To set up a secret in your repository:
+```bash
+pip install detect-secrets
+```
+1. Generate a secrets.ini file with the secret and add secrets.ini to .gitignore
+2. Run `detect-secrets scan --exclude-files testfiles --exclude-lines '"(hash|id|image/\w+)":.*' > .secrets.baseline` to scan your repository and create a .secrets.baseline file
+(check `.pre-commit-config.yaml` for the exact parameters)
+3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
+4. Commit the latest version of `.secrets.baseline`
 
 
 ---
