@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime
 import logging
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -112,3 +113,38 @@ def create_cached_content(
 
     logger.warning("No matching files found. Cached content not created.")
     return None
+
+
+def collect_knowledge_uris(
+    folder_path: str, bucket: any, subfolder_in_bucket: str
+) -> list[str]:
+    """Create a list of GCS URIs from files in a folder.
+
+    Parameters
+    ----------
+    folder_path : str
+        Path to the folder containing knowledge files
+    bucket : object
+        GCS bucket object for uploading the files
+    subfolder_in_bucket : str
+        Subfolder in the bucket where files should be uploaded
+
+    Returns
+    -------
+    list[str]
+        List of URIs pointing to uploaded knowledge files
+
+    """
+    knowledge_uris = []
+    supported_extensions = (".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif", ".pdf")
+
+    for filename in os.listdir(folder_path):
+        if filename.lower().endswith(supported_extensions):
+            path = Path(folder_path) / filename
+            try:
+                file_uri = upload_video_to_gcs(path, bucket, subfolder_in_bucket)
+                knowledge_uris.append(file_uri)
+            except OSError:
+                logging.exception(f"Error processing {filename}")
+
+    return knowledge_uris
