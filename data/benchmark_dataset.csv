@@ -1,4 +1,4 @@
-;recording type;Video content;Error;Error type;Number;protocol video;protocol;documentation video;documentation;error_dict;Comment
+;recording type;Video content;Error;Error type;Number;protocol video;protocol;lab notes video;lab notes;error_dict;Comment
 1;camara;Place Evotips in Evotip Box;non;CORRECT;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuCorrect.MP4;PlaceEvotips_docuCorrect.md;"[
 {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
