@@ -23,7 +23,7 @@ Placing Evotips in Evotip boxes: Evotips with HeLa at S1 from A1 to A6 and blank
 4. ❌ **Omitted:** Inspected only half of the Evotip before placement to verify its condition. This half was properly prepared as they display a pale-colored SPE material disc with visible solvent above it. 
 5. Placed the verified Evotips into the prepared Evotip boxes at S1 from A1 to A6.
 6. Placed empty Evotips, called Blanks, at S3 from A1 to A6.
-7. Documented the precise position of each placed Evotip.
+7. ❌ Omitted: Did not document the precise position of each placed Evotip during the recorded procedure.
 
 
 ## Results

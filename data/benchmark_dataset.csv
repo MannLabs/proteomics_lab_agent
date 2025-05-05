@@ -6,7 +6,7 @@
 {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+{""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
 ]";
 2;camara;Place Evotips in Evotip Box;Step 4: Evotip placed at wrong position;WRONG PROCEDURE;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuWrongPosition.MP4;PlaceEvotips_docuWrongPosition.md;"[
 {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
@@ -15,7 +15,7 @@
 {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
 {""Step"": 5, ""Benchmark"": ""Error"", ""Class"": ""Error""},
 {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+{""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
 ]";
 3;camara;Place Evotips in Evotip Box;"Step 1: Liquid not checked,
 Step 3: Evotip not checked";OMISSION;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuLiquidNotChecked.MP4;PlaceEvotips_docuLiquidNotChecked.md;"[
@@ -25,7 +25,7 @@ Step 3: Evotip not checked";OMISSION;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvo
   {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
   {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+  {""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
 ]";
 4;camara;Place Evotips in Evotip Box;Step 2: Box is not properly seated in rack.;"WRONG PROCEDURE
 OMISSION
@@ -37,7 +37,7 @@ OMISSION
   {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+  {""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
 ]";
 5;camera;Connect column;"Did not verify if in standby, Added connecting oven,
 not on video: Switched timsTOF to operate and idle flow";OMISSION;6;ConnectingColumnSampleLine_protocolCorrect.MP4;ConnectingColumnSampleLine_protocolCorrect.md;ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4;ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.md;"[
