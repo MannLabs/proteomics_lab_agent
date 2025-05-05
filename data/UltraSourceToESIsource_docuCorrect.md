@@ -14,7 +14,7 @@ Switching from the UltraSource to the ESI source.
 
 
 ## Procedure
-**Estimated timing: less than 10 minute**
+*Timing: less than 10 minute*
 
 ### Switch TimsControl to 'Standby' mode
 1. Verified that the IonOpticks column from an Evosep System was disconnected.
@@ -32,23 +32,24 @@ Switching from the UltraSource to the ESI source.
 
 ### Mount Apollo ESI source
 11. Put on gloves.
-12. Attached the capillary cap securely to the glass capillary and the spray shield to the desolvation stage housing.
-13. Hinged the ESI source into position as if it were a door and closed it.
-14. Connected the sample inlet of the ESI source and the peak tubing lines, which originated from the syringe, by turning it clockwise.
-15. Connected the nebulizer gas inlet to the N₂ line.
+12. Attached the capillary cap securely to the glass capillary.
+13. Attached the spray shield to the desolvation stage housing.
+14. Hinged the ESI source housing into position as if it were a door and closed it.
+15. Connected the sample inlet of the ESI source and the peak tubing lines, which originated from the syringe, by turning it clockwise.
+16. Connected the nebulizer gas inlet to the N₂ line.
 
 ### Prepare the setup by loading the syringe with Tuning Mix
-16. Removed old solvent.
-17. Withdrew new Tuning Mix liquid.
-18. Ensured it was devoid of air bubbles.
-19. Connected the syringe to the peak tubing of the sample line.
-20. Mounted this syringe within the external syringe pump setup. The golden button allowed movement of the syringe holder to arrange the syringe as in Figure 3.
-21. Pressed some solvent out of the syringe to fill the sample line.
+17. Removed old solvent.
+18. Withdrew new Tuning Mix liquid.
+19. Ensured it was devoid of air bubbles.
+20. Connected the syringe to the peak tubing of the sample line.
+21. Mounted this syringe within the external syringe pump setup. The golden button allowed movement of the syringe holder to arrange the syringe as in Figure 3.
+22. Pressed some solvent out of the syringe to fill the sample line.
 
 ### Switch TimsControl to 'Operate' mode
-22. Activated the ESI source within the TimsControl software.
-23. Transitioned the instrument into 'operate' mode by clicking on the on/off symbol.
-24. Began flow at the syringe, ensuring that the following settings were in place in the tab 'Source': Syringe: Hamilton 500 µL; Flow Rate: 3 µL/min. Pressed start. Kept the button next to start/stop pressed until a signal was observed in the 'Chromatogram View' and 'TIMS View' windows, which happened within 30 seconds.
+23. Activated the ESI source within the TimsControl software.
+24. Transitioned the instrument into 'operate' mode by clicking on the on/off symbol.
+25. Began flow at the syringe, ensuring that the following settings were in place in the tab 'Source': Syringe: Hamilton 500 µL; Flow Rate: 3 µL/min. Pressed start. Kept the button next to start/stop pressed until a signal was observed in the 'Chromatogram View' and 'TIMS View' windows, which happened within 30 seconds.
 
 
 ## Results

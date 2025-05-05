@@ -1,41 +1,30 @@
 # Placing Evotips in Evotip Boxes on the Evosep One System
 
 ## Aim
-
 Placing Evotips in Evotip boxes: Evotips with HeLa at S1 from A1 to A6 and blanks placed at S3 from A1 to A6.
 
 
 ## Materials
 
 ### Equipment
-
-- **Evotips**
-- **Evotip Boxes**
-- **Evosep One System**
+- Evotips
+- Evotip Boxes
+- Evosep One System
 
 ### Reagent setup
-
-- **Buffer A**
-  - 0.1% (vol/vol) FA
+- Buffer A:0.1% (vol/vol) FA
 
 
 ## Procedure
-
-*Estimated timing: less than 1 minute*
+*Timing: less than 1 minute*
 
 1. Verified that Evotip box is filled to a minimum depth of 1 cm with Buffer A solution.
-
 2. Placed Evotip Box at S1 within the rack system of the Evosep instrument. Ensured box is firmly seated in its designated position.
-
 3. Placed an empty Evotip Box for Blank tips at S3. Ensured box is firmly seated in its designated position.
-
-3. Inspected each Evotip before placement to verify its condition. Properly prepared Evotips should display a pale-colored SPE material disc with visible solvent above it. All Evotips were fine.
-
-4. Placed the verified Evotips into the prepared Evotip boxes at S1 from A1 to A12.
-
-5. Placed empty Evotips, called Blanks, at S3 from A1 to A12.
-
-5. Documented the precise position of each placed Evotip.
+4. Inspected each Evotip before placement to verify its condition. All Evotips were properly prepared as they display a pale-colored SPE material disc with visible solvent above it. 
+5. Placed the verified Evotips into the prepared Evotip boxes at S1 from A1 to A12.
+6. Placed empty Evotips, called Blanks, at S3 from A1 to A12.
+7. Documented the precise position of each placed Evotip.
 
 
 ## Results

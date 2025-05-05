@@ -14,7 +14,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 
 
 ## Procedure
-**Estimated timing: less than 10 minute**
+*Estimated timing: less than 10 minute*
 
 ### Switch TimsControl to 'Standby' mode
 1. Verify that the IonOpticks column from an Evosep System is disconnected. If not disconnect them.
@@ -34,24 +34,25 @@ This protocol describes the procedure for switching from the UltraSource to the 
 
 ### Mount Apollo ESI source
 11. Put on gloves.
-12. Attach the capillary cap securely to the glass capillary (G in Figure 3) and the spray shield (E) to the desolvation stage housing.
-    Critical step: Try not to block the vacuum flow to avoid contamination of the timsTOF for instance by blocking the whole of the capillary cap.
-13. Hinging the ESI source (F) into position as it would be a door and close it.
-14. Connect the sample inlet (B) of the ESI source and the peak tubing lines, which originate from the syringe, by turning it clock-wise.
-15. Connect the nebulizer gas inlet (C) to the N₂ line.
+12. Attach the capillary cap securely to the glass capillary (G in Figure 3) 
+   Critical step: Try not to block the vacuum flow to avoid contamination of the timsTOF for instance by blocking the whole of the capillary cap.
+13. Attach the spray shield (E) to the desolvation stage housing.
+14. Hinging the ESI source housing (F) into position as it would be a door and close it.
+15. Connect the sample inlet (B) of the ESI source and the peak tubing lines, which originate from the syringe, by turning it clock-wise.
+16. Connect the nebulizer gas inlet (C) to the N₂ line.
 
 ### Prepare the setup by loading the syringe with Tuning Mix
-16. Remove old solvent.
-17. Withdraw new Tuning Mix liquid.
-18. Ensure it is devoid of air bubbles.
-19. Connect the syringe to the peak tubing of the sample line.
-20. Mount this syringe within the external syringe pump setup. The golden button allows to move the syringe holder to arrange the syringe as in Figure 3.
-21. Press some solved out of the syringe to fill the sample line.
+17. Remove old solvent.
+18. Withdraw new Tuning Mix liquid.
+19. Ensure it is devoid of air bubbles.
+20. Connect the syringe to the peak tubing of the sample line.
+21. Mount this syringe within the external syringe pump setup. The golden button allows to move the syringe holder to arrange the syringe as in Figure 3.
+22. Press some solved out of the syringe to fill the sample line.
 
 ### Switch TimsControl to 'Operate' mode
-22. Activate the ESI source within the TimsControl software (Figure 1).
-23. Transition the instrument into 'operate' mode by clicking on the on/off symbol.
-24. Begin flow at the syringe, ensuring that the following settings are in place in the tab 'Source' (Figure 1): Syringe: Hamilton 500 µL; Flow Rate: 3 µL/min. Press start. Keep the button next to start/stop pressed until a signal is observed in the 'Chromatogram View' and 'TIMS View' windows, which usually happens within 30 seconds.
+23. Activate the ESI source within the TimsControl software (Figure 1).
+24. Transition the instrument into 'operate' mode by clicking on the on/off symbol.
+25. Begin flow at the syringe, ensuring that the following settings are in place in the tab 'Source' (Figure 1): Syringe: Hamilton 500 µL; Flow Rate: 3 µL/min. Press start. Keep the button next to start/stop pressed until a signal is observed in the 'Chromatogram View' and 'TIMS View' windows, which usually happens within 30 seconds.
 
 ## Expected Results
 - Signal intensity should reach approximately 1.5x10^7

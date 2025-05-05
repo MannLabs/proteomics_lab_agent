@@ -3,6 +3,7 @@
 ## Abstract
 This protocol explains how to connect an IonOpticks column inserted into a timsTOF Ultra with an sample line of an Evosep.
 
+
 ## Materials
 
 ### Equipment
@@ -15,13 +16,14 @@ This protocol explains how to connect an IonOpticks column inserted into a timsT
 - NanoViper Adapter (black)
 - Pliers
 
+
 ## Procedure
-Estimated timing: 3 minutes
+*Estimated timing: 3 minutes*
 
 1. Verfy that the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standing by mode.
 
 ### Connect column and sample line
-2. This protocol assumes that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
+2. Verify that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra. 
 3. Attach a black NanoViper adapter to the LC sample line.
 4. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
 5. Hold the column fititng of the IonOpticks column with a pliers.
@@ -36,12 +38,13 @@ Estimated timing: 3 minutes
 ### Switch timsTOF to operate and idle flow
 12. In timsControl, transition the instrument to the operation mode by using the on/off button.
 13. Navigate to Hystar and ensure that the idle flow is active. If not right-click on the Evosep logo, choosing 'preparation', and then selecting 'idle flow' and 'Run'.
-14. Return to timsControl.
-15. Check the MS signal. It should be around 2.5x10^7.
+14. Return to timsControl. Check the MS signal. It should be around 2.5x10^7.
+
 
 ## Expected Results
 - In timsControl, signal intensity should be above 10^7
 - Stable signal in in timsControl (in the windows for Mobilogram (timsView) and mass spectrum)
+
 
 ## Figures
 **Figure 1: Connection of a sample line of a LC system with a separation column and emitter.**

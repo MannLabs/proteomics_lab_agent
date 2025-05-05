@@ -1,48 +1,500 @@
-;recording type;Video content;Error;Error type;Number;protocol video;protocol;documentation video;documentation;Comment
-1;camara;Place Evotips in Evotip Box;non;CORRECT;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuCorrect.MP4;PlaceEvotips_docuCorrect.md;
-2;camara;Place Evotips in Evotip Box;Step 4: Evotip placed at wrong position;WRONG PROCEDURE;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuWrongPosition.MP4;PlaceEvotips_docuWrongPosition.md;
+;recording type;Video content;Error;Error type;Number;protocol video;protocol;documentation video;documentation;error_dict;Comment
+1;camara;Place Evotips in Evotip Box;non;CORRECT;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuCorrect.MP4;PlaceEvotips_docuCorrect.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+2;camara;Place Evotips in Evotip Box;Step 4: Evotip placed at wrong position;WRONG PROCEDURE;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuWrongPosition.MP4;PlaceEvotips_docuWrongPosition.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 5, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
 3;camara;Place Evotips in Evotip Box;"Step 1: Liquid not checked,
-Step 3: Evotip not checked";OMISSION;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuLiquidNotChecked.MP4;PlaceEvotips_docuLiquidNotChecked.md;
+Step 3: Evotip not checked";OMISSION;2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuLiquidNotChecked.MP4;PlaceEvotips_docuLiquidNotChecked.md;"[
+  {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
 4;camara;Place Evotips in Evotip Box;Step 2: Box is not properly seated in rack.;"WRONG PROCEDURE
 OMISSION
 
-?";2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuBoxAngeled.MP4;PlaceEvotips_docuBoxAngeled.md;
+?";2;PlaceEvotips_protocolCorrect.MP4;PlaceEvotips_protocolCorrect.md;PlaceEvotips_docuBoxAngeled.MP4;PlaceEvotips_docuBoxAngeled.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
 5;camera;Connect column;"Did not verify if in standby, Added connecting oven,
-not on video: Switched timsTOF to operate and idle flow";OMISSION;6;ConnectingColumnSampleLine_protocolCorrect.MP4;ConnectingColumnSampleLine_protocolCorrect.md;ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4;ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.md;Protocol video: unnecessary info after step 1: ‘no flow while in standby’ → voice over?
+not on video: Switched timsTOF to operate and idle flow";OMISSION;6;ConnectingColumnSampleLine_protocolCorrect.MP4;ConnectingColumnSampleLine_protocolCorrect.md;ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4;ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.md;"[
+  {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 14, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
+]";Protocol video: unnecessary info after step 1: ‘no flow while in standby’ → voice over?
 6;camera;Change source: ESI to UltraSource;non;"OMISSION
 
-WRONG ORDER";9;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.MP4;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.md;ESIsourceToUltraSource_docuCorrect.MP4;ESIsourceToUltraSource_docuCorrect.md;Protocol video: missing speech description at step 8, and step 10 misses ‘close it’ → voice over?
+WRONG ORDER";9;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.MP4;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.md;ESIsourceToUltraSource_docuCorrect.MP4;ESIsourceToUltraSource_docuCorrect.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 18, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 19, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 20, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 21, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 22, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 23, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 24, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 25, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 26, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 27, ""Benchmark"": ""Error"", ""Class"": ""Omitte""},
+  {""Step"": 28, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 29, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";Protocol video: missing speech description at step 8, and step 10 misses ‘close it’ → voice over?
 7;camera;Change source: ESI to UltraSource;"forgot to connect the oven,
 some steps omitted or order of steps changed";"WRONG PROCEDURE
 OMISSION
 
-?";9;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.MP4;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.md;ESIsourceToUltraSource_docuFogotOvenPowerSupply.MP4;ESIsourceToUltraSource_docuFogotOvenPowerSupply.md;
-8;camera;Change source: UltraSource to ESI;non;CORRECT;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuCorrect.MP4;UltraSourceToESIsource_docuCorrect.md;Protocol video: said column connected instead of disconnected and solvation stage instead of dissolvation stage → voice over?
-9;camera;Change source: UltraSource to ESI;Forgot N2 line;OMISSION;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuForgotN2Line.MP4;UltraSourceToESIsource_docuForgotN2Line.md;
-10;camera;Change source: UltraSource to ESI;Forgot gloves and capillary cap;OMISSION;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuForgotGlovesANDCapillaryCap.MP4;UltraSourceToESIsource_docuForgotGlovesANDCapillaryCap.md;
-11;camera;Change source: UltraSource to ESI;Forgot capillary cap;OMISSION;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuForgotCapillaryCap.MP4;UltraSourceToESIsource_docuForgotCapillaryCap.md;
-12;camera;Disconnect column;non;CORRECT;3;DisconnectColumn_protocolCorrect.MP4;DisconnectColumn_protocolCorrect.md;DisconnectingColumn_docuCorrect.MP4;DisconnectingColumn_docuCorrect.md;
-13;camera;Disconnect column;Did not verify if in standby;OMISSION;3;DisconnectColumn_protocolCorrect.MP4;DisconnectColumn_protocolCorrect.md;DisconnectingColumn_docuWithoutStandby_1.MP4;DisconnectingColumn_docuWithoutStandby.md;
-14;screen;Calibrate TIMS;non;CORRECT;5;TimsCalibration_protocolCorrect.QT;TimsCalibration_protocolCorrect.md;TimsCalibration_docuCorrect.mov;TimsCalibration_docuCorrect.md;
-15;protocol: screen/ documentation: camera;Calibrate TIMS;non;CORRECT;5;TimsCalibration_protocolCorrect.QT;TimsCalibration_protocolCorrect.md;TimsCalibration_docuCorrect_camera.MP4;TimsCalibration_docuCorrect_camera.md;
-16;protocol: screen/ documentation: camera;Calibrate TIMS;Procedure is correct but clicks regarding step 12 “Tried to save the method” are visible on video.;CORRECT;5;TimsCalibration_protocolCorrect.QT;TimsCalibration_protocolCorrect.md;TimsCalibration_docuNotAllClicksVisibleOnVideo.MP4;TimsCalibration_docuNotAllClicksVisibleOnVideo.md;
+?";9;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.MP4;ESIsourceToUltraSource_protocolCorrect_CapillaryPushedIn.md;ESIsourceToUltraSource_docuFogotOvenPowerSupply.MP4;ESIsourceToUltraSource_docuFogotOvenPowerSupply.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 18, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 19, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 20, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+{""Step"": 21, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 22, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 23, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 24, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 25, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 26, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 27, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 28, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 29, ""Benchmark"": ""Error"", ""Class"": ""Deviation""}
+]";
+8;camera;Change source: UltraSource to ESI;non;CORRECT;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuCorrect.MP4;UltraSourceToESIsource_docuCorrect.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 18, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 19, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 20, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 21, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 22, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 23, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 24, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 25, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";Protocol video: said column connected instead of disconnected and solvation stage instead of dissolvation stage → voice over?
+9;camera;Change source: UltraSource to ESI;Forgot N2 line;OMISSION;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuForgotN2Line.MP4;UltraSourceToESIsource_docuForgotN2Line.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 16, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 18, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 19, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 20, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 21, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 22, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 23, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 24, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 25, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+10;camera;Change source: UltraSource to ESI;Forgot gloves and capillary cap;OMISSION;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuForgotGlovesANDCapillaryCap.MP4;UltraSourceToESIsource_docuForgotGlovesANDCapillaryCap.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 11, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 12, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 18, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 19, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 20, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 21, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 22, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 23, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 24, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 25, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+11;camera;Change source: UltraSource to ESI;Forgot capillary cap;OMISSION;7;UltraSourceToESIsource_protocolCorrect.MP4;UltraSourceToESIsource_protocolCorrect.md;UltraSourceToESIsource_docuForgotCapillaryCap.MP4;UltraSourceToESIsource_docuForgotCapillaryCap.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 12, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 18, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 19, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 20, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 21, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 22, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 23, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 24, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 25, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+12;camera;Disconnect column;non;CORRECT;3;DisconnectColumn_protocolCorrect.MP4;DisconnectColumn_protocolCorrect.md;DisconnectingColumn_docuCorrect.MP4;DisconnectingColumn_docuCorrect.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+13;camera;Disconnect column;Did not verify if in standby;OMISSION;3;DisconnectColumn_protocolCorrect.MP4;DisconnectColumn_protocolCorrect.md;DisconnectingColumn_docuWithoutStandby_1.MP4;DisconnectingColumn_docuWithoutStandby.md;"[
+{""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+14;screen;Calibrate TIMS;non;CORRECT;5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuCorrect.mov;TimsCalibration_docuCorrect.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+15;protocol: screen/ documentation: camera;Calibrate TIMS;non;CORRECT;5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuCorrect_camera.MP4;TimsCalibration_docuCorrect_camera.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+16;protocol: screen/ documentation: camera;Calibrate TIMS;Procedure is correct but clicks regarding step 12 “Tried to save the method” are visible on video.;CORRECT;5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuNotAllClicksVisibleOnVideo.MP4;TimsCalibration_docuNotAllClicksVisibleOnVideo.md;"[
+  {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 8, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";Hard to label with errors, parts of step 13 not visible on video
 17;screen;Calibrate TIMS;method saved instead of discarded, did not set back to MS averaging 1;"WRONG PROCEDURE
-OMISSION";5;TimsCalibration_protocolCorrect.QT;TimsCalibration_protocolCorrect.md;TimsCalibration_docuSavedMethod.mov;TimsCalibration_docuSavedMethod.md;
-18;screen;Calibrate TIMS;Wrong order of steps → led to adding a step and repeating a step;;5;TimsCalibration_protocolCorrect.QT;TimsCalibration_protocolCorrect.md;TimsCalibration_docuWrongOrderSteps.mov;TimsCalibration_docuWrongOrderSteps.md;
-19;screen;Queue samples in Hystar;non;CORRECT;1;"QueueSamples_protocolCorrect.QT
-";QueueSamples_protocolCorrect.md;QueueSamples_docuCorrect_1.mov;QueueSamples_docuCorrect.md;"Protocol video: Queue composition explained at step 9.; protocol: Queue composition written at step 7 → more logical position."
+OMISSION";5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuSavedMethod.mov;TimsCalibration_docuSavedMethod.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+  {""Step"": 12.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
+  {""Step"": 12.2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 14, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
+]";Step twice!! Hard to label!!
+18;screen;Calibrate TIMS;Wrong order of steps → led to adding a step and repeating a step;;5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuWrongOrderSteps.mov;TimsCalibration_docuWrongOrderSteps.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+{""Step"": 5, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
+{""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+19;screen;Queue samples in Hystar;non;CORRECT;1;QueueSamples_protocolCorrect.mov;QueueSamples_protocolCorrect.md;QueueSamples_docuCorrect_1.mov;QueueSamples_docuCorrect.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";"Protocol video: Queue composition explained at step 9.; protocol: Queue composition written at step 7 → more logical position."
 20;screen;Queue samples in Hystar;S3 A1 twice in sample table, S1 from B1 to B6 queued for samples. However Evotips with samples are at S1 from A1 to A6, Omitted step 12;"WRONG PROCEDURE
-OMISSION";1;QueueSamples_protocolCorrect.QT;QueueSamples_protocolCorrect.md;QueueSamples_docuWrongRow_S3A1Twice.mov;QueueSamples_docuWrongRow_S3A1Twice.md;
+OMISSION";1;QueueSamples_protocolCorrect.mov;QueueSamples_protocolCorrect.md;QueueSamples_docuWrongRow_S3A1Twice.mov;QueueSamples_docuWrongRow_S3A1Twice.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 14, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
 21;screen;Queue samples in Hystar;No blanks queued, SampleID not included at sample name, Wrong MS method for last three samples, changed order, omitted ‘upload sample conditions’;"WRONG PROCEDURE
-OMISSION";1;QueueSamples_protocolCorrect.QT;QueueSamples_protocolCorrect.md;QueueSamples_docuNoBlankNoSampleIDWrongMSmethod.mov;QueueSamples_docuNoBlankNoSampleIDWrongMSmethod.md;
+OMISSION";1;QueueSamples_protocolCorrect.mov;QueueSamples_protocolCorrect.md;QueueSamples_docuNoBlankNoSampleIDWrongMSmethod.mov;QueueSamples_docuNoBlankNoSampleIDWrongMSmethod.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""Error"", ""Class"": ""Deviation & Error""},
+{""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+{""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Deviation & Error""},
+{""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 15, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+{""Step"": 16, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
 22;screen;Queue samples in Hystar;Missed to include projectID, Queued samples for S1 A7. There is no Evotip at this position, omitted step 12;"WRONG PROCEDURE
-OMISSION";1;QueueSamples_protocolCorrect.QT;QueueSamples_protocolCorrect.md;QueueSamples_docuEvotipNotAtPositionNoSampleID.mov;QueueSamples_docuEvotipNotAtPositionNoSampleID.md;
+OMISSION";1;QueueSamples_protocolCorrect.mov;QueueSamples_protocolCorrect.md;QueueSamples_docuEvotipNotAtPositionNoSampleID.mov;QueueSamples_docuEvotipNotAtPositionNoSampleID.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 14, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
 23;screen;Queue samples in Hystar;study samples and not performance evotips, no blank queued for the end of the queue, Queued sample for S1 H2. There is no Evotip at this position, Omitted step 6 and 12;"WRONG PROCEDURE
-OMISSION";1;QueueSamples_protocolCorrect.QT;QueueSamples_protocolCorrect.md;QueueSamples_docuDiffSampleNameAndEvotipNotAtPosition.mov;QueueSamples_docuDiffSampleNameAndEvotipNotAtPosition.md;
-24;camera;Dispensing;Pipetted into row B instead of row A, Pipetted twice into B10, left out B11;WRONG PROCEDURE;8;Pipette_protocolCorrect.MP4;Pipette_protocolCorrect.md;Pipette_docu_WrongRowB_B10Twice_B11LeftOut.MP4;Pipette_docu_WrongRowB_B10Twice_B11LeftOut.md;
-25;camera;Dispensing;Pipetted A1 and A2 with wrong volume, Pipetted twice into A2;WRONG PROCEDURE;8;Pipette_protocolCorrect.MP4;Pipette_protocolCorrect.md;Pipette_docuFirstTwoWrongVolumneANDA2Twice.MP4;Pipette_docuFirstTwoWrongVolumneANDA2Twice.md;
-26;camera;Dispensing;wrong solvents (EvoA ↔︎ EvoB), Left out to pipetted A2;WRONG PROCEDURE;8;Pipette_protocolCorrect.MP4;Pipette_protocolCorrect.md;Pipette_ducoBufferBInsteadBufferA.MP4;Pipette_ducoBufferBInsteadBufferA.md;
-27;camera;Dilution;Should have been exactly 400 uL, omitted step 6 & 7: Discarding the used pipette tip, Attaching a new pipette tip, Added: Closing the bottles of Buffer A and Buffer B, Tieing up the bench;WRONG PROCEDURE;4;Diluting_protocolCorrect.MP4;Diluting_protocolCorrect.md;Dilute_docuWrongVolume_PipettTipNotChanged.MP4;Dilute_docuWrongVolume_PipettTipNotChanged.md;
-28;camera;Dilution;Should have used first buffer A and then buffer B, Omitted step 10 & 11: mixing and lebeling;WRONG PROCEDURE;4;Diluting_protocolCorrect.MP4;Diluting_protocolCorrect.md;Dilute_docuWrongSolvent.MP4;Dilute_docuWrongSolvent.md;
+OMISSION";1;QueueSamples_protocolCorrect.mov;QueueSamples_protocolCorrect.md;QueueSamples_docuDiffSampleNameAndEvotipNotAtPosition.mov;QueueSamples_docuDiffSampleNameAndEvotipNotAtPosition.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 8, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 9, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 14, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 15, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 16, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 17, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+24;camera;Dispensing;Pipetted into row B instead of row A, Pipetted twice into B10, left out B11;WRONG PROCEDURE;8;Pipette_protocolCorrect.MP4;Pipette_protocolCorrect.md;Pipette_docu_WrongRowB_B10Twice_B11LeftOut.MP4;Pipette_docu_WrongRowB_B10Twice_B11LeftOut.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 5, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
+]";
+25;camera;Dispensing;Pipetted A1 and A2 with wrong volume, Pipetted twice into A2;WRONG PROCEDURE;8;Pipette_protocolCorrect.MP4;Pipette_protocolCorrect.md;Pipette_docuFirstTwoWrongVolumneANDA2Twice.MP4;Pipette_docuFirstTwoWrongVolumneANDA2Twice.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
+  {""Step"": 5, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""}
+]";
+26;camera;Dispensing;wrong solvents (EvoA ↔︎ EvoB), Left out to pipetted A2;WRONG PROCEDURE;8;Pipette_protocolCorrect.MP4;Pipette_protocolCorrect.md;Pipette_ducoBufferBInsteadBufferA.MP4;Pipette_ducoBufferBInsteadBufferA.md;"[
+  {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""}
+]";
+27;camera;Dilution;Should have been exactly 400 uL, omitted step 6 & 7: Discarding the used pipette tip, Attaching a new pipette tip, Added: Closing the bottles of Buffer A and Buffer B, Tieing up the bench;WRONG PROCEDURE;4;Diluting_protocolCorrect.MP4;Diluting_protocolCorrect.md;Dilute_docuWrongVolume_PipettTipNotChanged.MP4;Dilute_docuWrongVolume_PipettTipNotChanged.md;"[
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Deviation & Error""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 6, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 11.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
+  {""Step"": 11.2, ""Benchmark"": ""Error"", ""Class"": ""Addition""}
+]";
+28;camera;Dilution;Should have used first buffer A and then buffer B, Omitted step 10 & 11: mixing and lebeling;WRONG PROCEDURE;4;Diluting_protocolCorrect.MP4;Diluting_protocolCorrect.md;Dilute_docuWrongSolvent.MP4;Dilute_docuWrongSolvent.md;"[
+{""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+{""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 8, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+{""Step"": 10, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+{""Step"": 11, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
+]";
 29;camera;Part of Load Evotips;Used Evotip boxes instead of Evotip holders to spin, Should have been spun Evotips at 800g instead of 700g;"WRONG PROCEDURE
-OMISSION";10;Evotip_protocolCorrect.MP4;Evotip_protocolCorrect.md;Evotip_docuWrongSpinInEvotipBox_wrongSpeed.MP4;Evotip_docuWrongSpinInEvotipBox_wrongSpeed.md;
+OMISSION";10;Evotip_protocolCorrect.MP4;Evotip_protocolCorrect.md;Evotip_docuWrongSpinInEvotipBox_wrongSpeed.MP4;Evotip_docuWrongSpinInEvotipBox_wrongSpeed.md;"[
+  {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Error""}
+]";
