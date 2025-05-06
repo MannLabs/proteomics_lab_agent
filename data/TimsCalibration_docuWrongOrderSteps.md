@@ -21,8 +21,7 @@ timsControl 6.0
 7. Verified that the reference list '[ESI] Tuning Mix ES-TOF (ESI)' is selected that contains the calibrant masses 622, 922, 1221.
 8. Verified the linear mode and 5% as detection range and ±0.1 Da as width.
 4. ⚠️ **Deviation: Altered step order** Waited until the TIC in Chromatogram View was stable. This took approximately 1 minute.
-9. Proceeded by selecting 'calibrate'.
-9.1 ➕ **Added:** Canceled 'calibrate'.
+9. ❌ **Error:** Proceeded by selecting 'calibrate' and canceled 'calibrate'.
 5. ⚠️ **Deviation: Altered step order** Switched the scan mode to 'MS', set MS averaging to 30 and kept the polygon heatmap deactivated .
 9.2 Proceeded by selecting 'calibrate'.
 10. To verify that the calibrants had been picked correctly at the center, clicked on them in the reference list.

@@ -18,7 +18,7 @@ Placing Evotips in Evotip boxes: Evotips with HeLa at S1 from A1 to A6 and blank
 ## Procedure
 *Timing: less than 1 minute*
 
-1. Verified that Evotip box is filled to a minimum depth of 1 cm with Buffer A solution.
+1. The Evotip box intended for S1 was verified to be filled with Buffer A solution by visual inspection. Verification was omitted for the box placed at S3 since it will only contain blanks.
 2. Placed Evotip Box at S1 within the rack system of the Evosep instrument. Ensured box is firmly seated in its designated position.
 3. Placed an empty Evotip Box for Blank tips at S3. Ensured box is firmly seated in its designated position.
 4. Inspected each Evotip before placement to verify its condition. All Evotips were properly prepared as they display a pale-colored SPE material disc with visible solvent above it. 

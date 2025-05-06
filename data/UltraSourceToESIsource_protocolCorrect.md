@@ -28,18 +28,18 @@ This protocol describes the procedure for switching from the UltraSource to the 
 6. Rotate the top right and bottom left handles of the UltraSource housing by 180 degrees.
 7. Slide off the UltraSource housing from both the source door and the glass capillary.
 8. Set the UltraSource housing on the bench.
-   Critical step: Never attempt to open the source door while the UltraSource is connected with the glass capillary (Figure 2 H). Such an action will cause breakage of the glass capillary.
+   Critical step: Never attempt to open the source door while the UltraSource is connected with the glass capillary (Figure 2). Such an action will cause breakage of the glass capillary.
 9. Remove the source door by opening it and unhinging it, similar to the motion of a normal door.
-10. Set it aside (Figure 2 H).
+10. Set it aside (Figure 2).
 
 ### Mount Apollo ESI source
 11. Put on gloves.
-12. Attach the capillary cap securely to the glass capillary (G in Figure 3) 
+12. Attach the capillary cap securely to the glass capillary (Figure 3) 
    Critical step: Try not to block the vacuum flow to avoid contamination of the timsTOF for instance by blocking the whole of the capillary cap.
-13. Attach the spray shield (E) to the desolvation stage housing.
-14. Hinging the ESI source housing (F) into position as it would be a door and close it.
-15. Connect the sample inlet (B) of the ESI source and the peak tubing lines, which originate from the syringe, by turning it clock-wise.
-16. Connect the nebulizer gas inlet (C) to the N₂ line.
+13. Attach the spray shield to the desolvation stage housing.
+14. Hinging the ESI source housing into position as it would be a door and close it.
+15. Connect the sample inlet of the ESI source and the peak tubing lines, which originate from the syringe, by turning it clock-wise.
+16. Connect the nebulizer gas inlet to the N₂ line.
 
 ### Prepare the setup by loading the syringe with Tuning Mix
 17. Remove old solvent.

@@ -30,7 +30,7 @@ This protocol describes the proper procedure for inspecting Evotips and placing 
 ## Procedure
 *Estimated timing: less than 1 minute*
 
-1. Verify that Evotip box is filled to a minimum depth of 1 cm with Buffer A solution.
+1. Visually inspect the Evotip box intended for S1 to verify it's filled with Buffer A solution to a minimum depth of 1 cm. Verification of the Evotip box placed at S3 is not necessary as it will only contain blanks.
 2. Place Evotip Box at S1 within the rack system of the Evosep instrument. Ensure each box is firmly seated in its designated position.
 3. Place an empty Evotip Box for Blank tips at S3. Ensure each box is firmly seated in its designated position.
 4. Inspect each Evotip before placement to verify its condition. Properly prepared Evotips should display a pale-colored SPE material disc with visible solvent above it (Figure 2).

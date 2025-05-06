@@ -266,7 +266,7 @@ OMISSION
   {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
 ]";
 15;protocol: screen/ documentation: camera;Calibrate TIMS;non;CORRECT;5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuCorrect_camera.MP4;TimsCalibration_docuCorrect_camera.md;"[
@@ -282,23 +282,23 @@ OMISSION
   {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
 ]";
 16;protocol: screen/ documentation: camera;Calibrate TIMS;Procedure is correct but clicks regarding step 12 “Tried to save the method” are visible on video.;CORRECT;5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.md;TimsCalibration_docuNotAllClicksVisibleOnVideo.MP4;TimsCalibration_docuNotAllClicksVisibleOnVideo.md;"[
-  {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 7, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
-  {""Step"": 8, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
+  {""Step"": 13, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 14, ""Benchmark"": ""No Error"", ""Class"": ""N/A""}
 ]";Hard to label with errors, parts of step 13 not visible on video
 17;screen;Calibrate TIMS;method saved instead of discarded, did not set back to MS averaging 1;"WRONG PROCEDURE
@@ -306,7 +306,7 @@ OMISSION";5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.
   {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 3, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-  {""Step"": 4, ""Benchmark"": ""Error"", ""Class"": ""Omitted""},
+  {""Step"": 4, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 5, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
@@ -316,7 +316,7 @@ OMISSION";5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.
   {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
   {""Step"": 12, ""Benchmark"": ""Error"", ""Class"": ""Deviation""},
   {""Step"": 12.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
-  {""Step"": 12.2, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
+  {""Step"": 12.2, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
   {""Step"": 13, ""Benchmark"": ""Error"", ""Class"": ""Error""},
   {""Step"": 14, ""Benchmark"": ""Error"", ""Class"": ""Omitted""}
 ]";Step twice!! Hard to label!!
@@ -329,8 +329,7 @@ OMISSION";5;TimsCalibration_protocolCorrect.mov;TimsCalibration_protocolCorrect.
 {""Step"": 6, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 7, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 8, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-{""Step"": 9, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
-{""Step"": 9.1, ""Benchmark"": ""Error"", ""Class"": ""Addition""},
+{""Step"": 9, ""Benchmark"": ""Error"", ""Class"": ""Error""},
 {""Step"": 10, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 11, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
 {""Step"": 12, ""Benchmark"": ""No Error"", ""Class"": ""N/A""},
