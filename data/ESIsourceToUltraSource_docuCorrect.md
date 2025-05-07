@@ -30,7 +30,7 @@ Switching from the ESI source to UltraSource.
 5. Disconnected the nebulizer N₂ line.
 6. Removed the ESI source housing by hinging it out like a regular door.
 7. Person wore already gloves from step 1.
-8. Removed the spray shield, and 
+8. Removed the spray shield, and
 9. Removed the capillary cap.
 10. Inspected the capillary position. If it appeared to be partially pulled out, gently pushed it back into proper position without blocking the gas flow.
 

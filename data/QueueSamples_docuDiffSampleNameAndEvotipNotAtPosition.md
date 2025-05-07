@@ -21,8 +21,8 @@ HyStar 6.0
 5. Copied already existing sample table entries to modify them.
 . Adjusted the sample ID so that it followed this pattern: currentDate_massSpec_user_sampleType_projectID_sampleName.
 7. ❌ **Error:** For measuring a study, queued one blank, two dia-PASEF runs, but missed to queue blank at the end of the queue.
-8. ❌ **Omitted:** Missed to verify the column autocompletion settings. 
-9. ❌ **Error:** Did not match the Evotip position with the sample's location in the Evotip box. 
+8. ❌ **Omitted:** Missed to verify the column autocompletion settings.
+9. ❌ **Error:** Did not match the Evotip position with the sample's location in the Evotip box.
 10. Verified 'path' folder for storing the raw files.
 11. Verified separation method.
 12. Verified that injection method is set to 'standard'.

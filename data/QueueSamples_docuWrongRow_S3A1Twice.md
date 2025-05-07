@@ -21,8 +21,8 @@ HyStar 6.0
 6. Adjusted the sample ID so that it followed this pattern: currentDate_massSpec_user_sampleType_projectID_sampleName.
 7. For performance evaluation of the LC-MS system, queued one blank, three dda-PASEF runs, three dia-PASEF runs and ended with another blank.
 8. Verified the column autocompletion settings by right-clicking on a field in the column 'vial' and selected 'Configure'. Values were set to autocomplete from A1-A12 indicated by arrows pointing to right. Ensured that the tray type was set to 'Evosep' and slots 1-6 were designated as '96Evotip'. Pressed 'OK'.
-9. ❌ **Error:** Tried to matched the Evotip position with the sample's location in the Evotip box. 
-However, the researcher chose the wrong row to queue the HeLa samples. They selected S1 from B1 to B6 but the samples are at S1 from A1 to A6. Additionally S3 A1 is twice in sample table but every position can only be defined once within a queue. 
+9. ❌ **Error:** Tried to matched the Evotip position with the sample's location in the Evotip box.
+However, the researcher chose the wrong row to queue the HeLa samples. They selected S1 from B1 to B6 but the samples are at S1 from A1 to A6. Additionally S3 A1 is twice in sample table but every position can only be defined once within a queue.
 10. Verified 'path' folder for storing the raw files.
 11. Verified separation method.
 12. Verified that injection method is set to 'standard'.

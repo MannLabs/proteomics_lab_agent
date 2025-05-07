@@ -38,4 +38,4 @@ Pipetting first 400 uL buffer A and then 100 uL buffer B in a Eppendorf tube.
 
 
 ## Results
-500 uL liquid in the tube but with reversed solvent composition than intented 
+500 uL liquid in the tube but with reversed solvent composition than intented

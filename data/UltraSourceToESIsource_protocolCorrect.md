@@ -34,7 +34,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 
 ### Mount Apollo ESI source
 11. Put on gloves.
-12. Attach the capillary cap securely to the glass capillary (Figure 3) 
+12. Attach the capillary cap securely to the glass capillary (Figure 3)
    Critical step: Try not to block the vacuum flow to avoid contamination of the timsTOF for instance by blocking the whole of the capillary cap.
 13. Attach the spray shield to the desolvation stage housing.
 14. Hinging the ESI source housing into position as it would be a door and close it.

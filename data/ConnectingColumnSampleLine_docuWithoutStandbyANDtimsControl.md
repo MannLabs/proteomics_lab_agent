@@ -37,8 +37,8 @@ Connecting an IonOpticks column inserted into a timsTOF Ultra with an sample lin
 
 ### Switched timsTOF to operate and idle flow
 12. ❌ **Omitted:** Skipped to transition the instrument to the operation mode by using the on/off button in timsControl.
-13. ❌ **Omitted:** Did not navigate to Hystar and ensure that the idle flow was active. 
-14. ❌ **Omitted:** Did not return to timsControl to check the MS signal. 
+13. ❌ **Omitted:** Did not navigate to Hystar and ensure that the idle flow was active.
+14. ❌ **Omitted:** Did not return to timsControl to check the MS signal.
 
 
 ## Results

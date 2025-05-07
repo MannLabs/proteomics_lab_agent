@@ -35,4 +35,3 @@ Disconnecting an IonOpticks column from an Evosep liquid chromatography system w
 ## Results
 - The timsTOF remained in standby mode
 - The column was completely detached from the Evosep
-
