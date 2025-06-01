@@ -47,9 +47,9 @@ This protocol explains how to connect an IonOpticks column inserted into a timsT
 
 
 ## Figures
-**Figure 1: Connection of a sample line of a LC system with a separation column and emitter.**
+### Figure 1: Connection of a sample line of a LC system with a separation column and emitter.**
 
-**Figure 2: UltraSource.**
+### Figure 2: UltraSource.**
 
 
 ## References

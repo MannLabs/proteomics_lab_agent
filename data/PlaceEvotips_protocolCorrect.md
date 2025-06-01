@@ -51,7 +51,7 @@ When the procedure is performed correctly, you should observe:
 ## Figures
 
 ### Figure 1: Evosep positions
-- Close-up of single Evotip box showing well positions (A1-H12)
+[Placeholder for close-up of single Evotip box showing well positions (A1-H12)]
 
 ### Figure 2: Evotip Quality Assessment
 - Most Evotips: Properly hydrated Evotip with pale-colored disc and visible solvent

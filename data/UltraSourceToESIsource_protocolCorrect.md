@@ -59,11 +59,11 @@ This protocol describes the procedure for switching from the UltraSource to the 
 - Stable signal in in timsControl (in the windows for Mobilogram (timsView) and mass spectrum)
 
 ## Figures
-Figure 1: TimsControl settings before changing source
+### Figure 1: TimsControl settings before changing source
 
-Figure 2: UltraSource.
+### Figure 2: UltraSource.
 
-Figure 3: Apollo ESI source and gas flow pressure control wheels.
+### Figure 3: Apollo ESI source and gas flow pressure control wheels.
 
 ## References
 1. Skowronek, P., Wallmann, G., Wahle, M. et al. An accessible workflow for high-sensitivity proteomics using parallel accumulation–serial fragmentation (PASEF). Nat Protoc (2025). https://doi.org/10.1038/s41596-024-01104-w

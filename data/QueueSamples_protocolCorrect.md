@@ -43,7 +43,7 @@ Typical chromatogram shape with MS TIC (green line) increasing drastically aroun
 
 ## Figures
 ### Figure 1: Hystar
-- Screenshot of reaauired Hystar settings
+[Placeholder for Screenshot of reaauired Hystar settings]
 
 
 ## References

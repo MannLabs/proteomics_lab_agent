@@ -39,9 +39,9 @@ Critical step: If the instrument has been operated with another source than the 
 
 
 ## Figures
-Figure 1: TimsControl settings
+### Figure 1: TimsControl settings
 
-Figure 2: Ion mobility calibration
+### Figure 2: Ion mobility calibration
 
 ## Tables
 Table 1: Gas Flow Parameters for UltraSource

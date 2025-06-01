@@ -38,9 +38,9 @@ This protocol describes how to disconnect an IonOpticks column from an Evosep li
 
 
 ## Figures
-Figure 1: TimsControl
+### Figure 1: TimsControl
 
-Figure 2: IonOpticks column connected with UltraSource of timsTOF and Evosep
+### Figure 2: IonOpticks column connected with UltraSource of timsTOF and Evosep
 
 ## References
 1. Bruker Daltonics. (2023). timsTOF User Manual. [Link to user manual]
