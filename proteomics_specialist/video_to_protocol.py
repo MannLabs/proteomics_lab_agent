@@ -24,7 +24,7 @@ logging.basicConfig(
 )
 
 
-def upload_video_to_gcs(
+def upload_file_to_gcs(
     path: str,
     bucket: str,
     subfolder_in_bucket: str | None = None,
@@ -142,7 +142,7 @@ def collect_knowledge_uris(
         if filename.lower().endswith(supported_extensions):
             path = Path(folder_path) / filename
             try:
-                file_uri = upload_video_to_gcs(path, bucket, subfolder_in_bucket)
+                file_uri = upload_file_to_gcs(path, bucket, subfolder_in_bucket)
                 knowledge_uris.append(file_uri)
             except OSError:
                 logging.exception(f"Error processing {filename}")
