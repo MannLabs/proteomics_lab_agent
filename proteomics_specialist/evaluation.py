@@ -1,3 +1,5 @@
+"""Functions for LLM evaluation."""
+
 from __future__ import annotations
 
 # Standard library imports
@@ -30,12 +32,17 @@ logging.basicConfig(
 def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
     """Generates a prompt to extract a specific table from text into JSON.
 
-    Args:
-        text_with_tables: The full text containing the table(s).
-        table_identifier: A string to help the model identify the target table
-                          (e.g., the table title, or a unique phrase near it).
+    Parameters
+    ----------
+    text_with_tables : str
+        The full text containing the table(s).
+    table_identifier : str
+        A string to help the model identify the target table
+        (e.g., the table title, or a unique phrase near it).
 
-    Returns:
+    Returns
+    -------
+    str
         A formatted prompt string.
 
     """
@@ -60,7 +67,7 @@ def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
 
 def extract_json_from_model_output(
     model_output_string: str,
-) -> Union[pd.DataFrame, None]:
+) -> pd.DataFrame | None:
     """Extract and parse JSON data from a model output string that contains JSON within code block markers.
 
     Parameters
@@ -116,25 +123,6 @@ def extract_table_to_dataframe(
     model_name: str = "gemini-2.5-pro-preview-03-25",
     temperature: float = 0.9,
 ) -> pd.DataFrame:
-    """Extract a table from evaluation content and convert it to a DataFrame.
-
-    Parameters
-    ----------
-    evaluation : str
-        The evaluation content containing tables
-    table_name : str
-        The name of the table to extract
-    model_name : str, optional
-        The model to use for content generation, default is "gemini-2.5-pro-preview-03-25"
-    temperature : float, optional
-        Temperature setting for content generation, default is 0.9
-
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame containing the extracted table data
-
-    """
     """Extract a table from evaluation content and convert it to a DataFrame.
 
     Parameters

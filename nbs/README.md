@@ -1,7 +1,7 @@
 # Notebooks
 
 ## Workflow for converting videos to protocols
-- Experimenting with various prompting techniques to supply a LLM with the required background information to convert lab videos into protocols. 
+- Experimenting with various prompting techniques to supply a LLM with the required background information to convert lab videos into protocols.
     File: 1_videoToProtocol_Evaluation.ipynb
 - Analyzing the evaluaiton results to generate statistics which techniques work well
     File: 2_videoToProtocol_results.ipynb
