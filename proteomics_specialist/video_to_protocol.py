@@ -149,6 +149,7 @@ def collect_knowledge_uris(
 
     return knowledge_uris
 
+
 def generate_content_from_model(
     inputs: str | Part,
     model_name: str = "gemini-2.5-pro-preview-03-25",

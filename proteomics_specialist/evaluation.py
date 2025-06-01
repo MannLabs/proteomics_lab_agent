@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Standard library imports
 import json
 import logging
@@ -5,7 +7,7 @@ import sys
 from pathlib import Path
 
 # Type checking imports
-from typing import TYPE_CHECKING, Any, Dict, List, Union
+from typing import Dict, List, Union
 
 # Third-party imports
 import pandas as pd
@@ -23,6 +25,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+
 
 def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
     """Generates a prompt to extract a specific table from text into JSON.
@@ -55,7 +58,9 @@ def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
     """
 
 
-def extract_json_from_model_output(model_output_string: str) -> Union[pd.DataFrame, None]:
+def extract_json_from_model_output(
+    model_output_string: str,
+) -> Union[pd.DataFrame, None]:
     """Extract and parse JSON data from a model output string that contains JSON within code block markers.
 
     Parameters
