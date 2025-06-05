@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 # Type checking imports
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 # Third-party imports
 import pandas as pd
@@ -60,7 +60,7 @@ def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
 
 def extract_json_from_model_output(
     model_output_string: str,
-) -> Union[pd.DataFrame, None]:
+) -> Optional[pd.DataFrame]:
     """Extract and parse JSON data from a model output string that contains JSON within code block markers.
 
     Parameters
@@ -87,11 +87,15 @@ def extract_json_from_model_output(
         extracted_json_string = model_output_string[
             start_index + len(start_marker) : end_index
         ].strip()
-
+        logger.info("Found JSON within code block markers")
+    else:
+        extracted_json_string = model_output_string.strip()
+        logger.info("No code block markers found, trying to parse entire string as JSON")
+    
+    if extracted_json_string:
         try:
             json_data = json.loads(extracted_json_string)
             logger.info("Successfully extracted and parsed JSON.")
-
             if isinstance(json_data, list) and all(
                 isinstance(item, dict) for item in json_data
             ):
@@ -104,7 +108,7 @@ def extract_json_from_model_output(
             logger.exception("Error decoding JSON after extraction")
             logger.debug(f"Extracted string: {extracted_json_string}")
     else:
-        logger.exception("Could not find JSON code block markers in the output.")
+        logger.warning("No content to parse as JSON")
         logger.debug(f"Model output: {model_output_string}")
 
     return df
@@ -132,25 +136,6 @@ def extract_table_to_dataframe(
     Returns
     -------
     pd.DataFrame
-        DataFrame containing the extracted table data
-
-    """
-    """Extract a table from evaluation content and convert it to a DataFrame.
-
-    Parameters
-    ----------
-    evaluation : str
-        The evaluation content containing tables
-    table_name : str
-        The name of the table to extract
-    model_name : str, optional
-        The model to use for content generation, default is "gemini-2.5-pro-preview-03-25"
-    temperature : float, optional
-        Temperature setting for content generation, default is 0.9
-
-    Returns
-    -------
-    pandas.DataFrame
         DataFrame containing the extracted table data
 
     """
