@@ -8,7 +8,7 @@ import os
 from collections import defaultdict
 from pathlib import Path
 
-from vertexai.generative_models import GenerativeModel, GenerationConfig, Part
+from vertexai.generative_models import GenerationConfig, GenerativeModel, Part
 from vertexai.preview import caching
 
 MIME_TYPES = {

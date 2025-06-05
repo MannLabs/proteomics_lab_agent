@@ -9,8 +9,6 @@ import sys
 from pathlib import Path
 
 # Type checking imports
-from typing import Dict, List, Union
-
 # Third-party imports
 import pandas as pd
 
@@ -18,9 +16,6 @@ import pandas as pd
 path_to_append = str(Path(__file__).parent.parent)
 sys.path.append(path_to_append)
 import video_to_protocol
-
-# Type definitions
-JSONType = Union[Dict[str, "JSONType"], List["JSONType"], str, int, float, bool, None]
 
 # Configuration
 logger = logging.getLogger(__name__)
