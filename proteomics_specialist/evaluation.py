@@ -15,8 +15,8 @@ from typing import Dict, List, Union
 import pandas as pd
 
 # Local imports and setup
-path_to_append = Path(Path.cwd()).parent / "proteomics_specialist"
-sys.path.append(str(path_to_append))
+path_to_append = str(Path(__file__).parent.parent)
+sys.path.append(path_to_append)
 import video_to_protocol
 
 # Type definitions
