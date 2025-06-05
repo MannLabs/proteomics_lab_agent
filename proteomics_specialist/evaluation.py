@@ -117,7 +117,7 @@ def extract_table_to_dataframe(
     table_name: str,
     model_name: str = "gemini-2.5-pro-preview-03-25",
     temperature: float = 0.9,
-) -> pd.DataFrame:
+) -> pd.DataFrame | None:
     """Extract a table from evaluation content and convert it to a DataFrame.
 
     Parameters
@@ -133,8 +133,8 @@ def extract_table_to_dataframe(
 
     Returns
     -------
-    pandas.DataFrame
-        DataFrame containing the extracted table data
+    pandas.DataFrame or None
+        DataFrame containing the extracted table data, or None if extraction fails
 
     """
     extraction_prompt = get_table_json_prompt(evaluation, table_name)
