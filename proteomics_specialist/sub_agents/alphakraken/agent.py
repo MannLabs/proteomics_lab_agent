@@ -1,0 +1,47 @@
+"""alphakraken agent that can retrieve ms data points from data base"""
+
+import os
+
+from google.adk import Agent
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioConnectionParams, StdioServerParameters
+
+from . import prompt
+
+MODEL = "gemini-2.0-flash-001"
+
+KRAKEN_PORT = os.getenv("KRAKEN_PORT")
+KRAKEN_HOST = os.getenv("KRAKEN_HOST")
+KRAKEN_USER = os.getenv("KRAKEN_USER")
+KRAKEN_PASSWORD = os.getenv("KRAKEN_PASSWORD")
+
+alphakraken_agent = Agent(
+   name="alphakraken_agent",
+   model=MODEL,
+#    description="Agent to answer questions about mass spectrometer performance using one search result provided by a database.",
+   instruction=prompt.KRAKEN_MCP_PROMPT,
+   tools=[
+        MCPToolset(
+            connection_params=StdioConnectionParams(
+                server_params=StdioServerParameters(
+                    command="docker",
+                    args=[
+                        "run",
+                        "-e",
+                        f"MONGO_PORT={KRAKEN_PORT}",
+                        "-e",
+                        f"MONGO_HOST={KRAKEN_HOST}",
+                        "-e",
+                        f"MONGO_USER={KRAKEN_USER}",
+                        "-e",
+                        f"MONGO_PASSWORD={KRAKEN_PASSWORD}",
+                        "--network", 
+                        "host",
+                        "-i", 
+                        "--rm",
+                        "mcpserver"
+                    ]
+                )
+            )
+        )
+    ]
+)
