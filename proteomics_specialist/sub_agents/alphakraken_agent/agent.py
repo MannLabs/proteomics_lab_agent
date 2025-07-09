@@ -17,7 +17,7 @@ KRAKEN_PASSWORD = os.getenv("KRAKEN_PASSWORD")
 alphakraken_agent = Agent(
    name="alphakraken_agent",
    model=MODEL,
-#    description="Agent to answer questions about mass spectrometer performance using one search result provided by a database.",
+   description="An agent that can retrieve proteomics analysis results.",
    instruction=prompt.KRAKEN_MCP_PROMPT,
    tools=[
         MCPToolset(
