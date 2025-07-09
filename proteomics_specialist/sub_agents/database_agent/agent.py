@@ -14,6 +14,7 @@ MODEL = "gemini-2.0-flash-001"
 database_agent = Agent(
    name="database_agent", # alternative name: db_mcp_client_agent
    model=MODEL,
+    description="An agent that can store and retrieve past evaluations of proteomics analysis results.",
     instruction=prompt.DB_MCP_PROMPT,
     tools=[
         MCPToolset(
