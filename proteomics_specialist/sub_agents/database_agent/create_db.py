@@ -1,4 +1,4 @@
-"""database agent that can write and retrieve meta data to ms raw files into a data base"""
+"""database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
 import os
 import sqlite3
@@ -68,10 +68,10 @@ def create_database():
         """, raw_files_data)
         print(f"Inserted {len(raw_files_data)} raw files.")
         
-        # Link files to sessions (many-to-many relationships)
+        # Link sessions to files (many-to-many relationships)
         raw_files_to_session_data = [
-            (1, 1),  # performance_id=1 (good), raw_file_id=1
-            (2, 2),  # performance_id=2 (poor), raw_file_id=2
+            (1, 1),
+            (2, 2),
         ]
         
         cursor.executemany("""

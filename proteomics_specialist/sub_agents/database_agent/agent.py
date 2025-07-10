@@ -1,4 +1,4 @@
-"""database agent that can write and retrieve meta data to ms raw files into a data base"""
+"""database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
 from pathlib import Path
 
@@ -9,10 +9,10 @@ from . import prompt
 
 PATH_TO_YOUR_MCP_SERVER_SCRIPT = str((Path(__file__).parent / "server.py").resolve())
 
-MODEL = "gemini-2.0-flash-001"
+MODEL = "gemini-2.5-flash"
 
 database_agent = Agent(
-   name="database_agent", # alternative name: db_mcp_client_agent
+   name="database_agent",
    model=MODEL,
     description="An agent that can store and retrieve past evaluations of proteomics analysis results.",
     instruction=prompt.DB_MCP_PROMPT,

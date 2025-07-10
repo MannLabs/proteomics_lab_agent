@@ -1,3 +1,3 @@
-"""protocol agent that can retrieve protocols"""
+"""protocol agent can retrieve protocols"""
 
 from .agent import protocol_agent

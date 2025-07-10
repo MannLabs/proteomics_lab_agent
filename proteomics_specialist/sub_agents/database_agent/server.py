@@ -1,18 +1,12 @@
-# Similar to: https://github.com/bhancockio/adk-mcp-tutorial/
-"""database agent that can write and retrieve meta data to ms raw files into a data base"""
+"""database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
 import asyncio
 import json
-import logging  # Added logging
+import logging
 import os
-import sqlite3  # For database operations
+import re
 import sqlite3
-import tempfile
-import os
 from typing import List, Dict, Optional, Union, Tuple
-from contextlib import contextmanager
-
-import mcp.server.stdio  # For running as a stdio server
 from dotenv import load_dotenv
 
 # ADK Tool Imports
@@ -20,9 +14,11 @@ from google.adk.tools.function_tool import FunctionTool
 from google.adk.tools.mcp_tool.conversion_utils import adk_to_mcp_tool_type
 
 # MCP Server Imports
-from mcp import types as mcp_types  # Use alias to avoid conflict
+import mcp.server.stdio
+from mcp import types as mcp_types
 from mcp.server.lowlevel import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
+
 
 load_dotenv()
 
@@ -43,19 +39,22 @@ DATABASE_PATH = os.path.join(os.path.dirname(__file__), "database.db")
 # --- Database Utility Functions ---
 def get_db_connection():
     conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row  # To access columns by name
+    conn.row_factory = sqlite3.Row
     return conn
 
 
 def list_db_tables(dummy_param: str) -> dict:
     """Lists all tables in the SQLite database.
 
-    Args:
-        dummy_param (str): This parameter is not used by the function
-                           but helps ensure schema generation. A non-empty string is expected.
-    Returns:
-        dict: A dictionary with keys 'success' (bool), 'message' (str),
-              and 'tables' (list[str]) containing the table names if successful.
+    Parameters
+    ----------
+    dummy_param : str
+        This parameter is not used by the function but helps ensure schema generation. A non-empty string is expected.
+
+    Returns
+    -------
+    dict
+        A dictionary with keys 'success' (bool), 'message' (str), and 'tables' (list[str]) containing the table names if successful.
     """
     try:
         conn = get_db_connection()
@@ -70,7 +69,7 @@ def list_db_tables(dummy_param: str) -> dict:
         }
     except sqlite3.Error as e:
         return {"success": False, "message": f"Error listing tables: {e}", "tables": []}
-    except Exception as e:  # Catch any other unexpected errors
+    except Exception as e:
         return {
             "success": False,
             "message": f"An unexpected error occurred while listing tables: {e}",
@@ -82,7 +81,7 @@ def get_table_schema(table_name: str) -> dict:
     """Gets the schema (column names and types) of a specific table."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(f"PRAGMA table_info('{table_name}');")  # Use PRAGMA for schema
+    cursor.execute(f"PRAGMA table_info('{table_name}');")
     schema_info = cursor.fetchall()
     conn.close()
     if not schema_info:
@@ -95,11 +94,18 @@ def get_table_schema(table_name: str) -> dict:
 def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
     """Queries a table with an optional condition.
 
-    Args:
-        table_name: The name of the table to query.
-        columns: Comma-separated list of columns to retrieve (e.g., "id, name"). Defaults to "*".
-        condition: Optional SQL WHERE clause condition (e.g., "id = 1" or "completed = 0").
-    Returns:
+    Parameters
+    ----------
+    table_name : str
+        The name of the table to query.
+    columns : str, optional
+        Comma-separated list of columns to retrieve (e.g., "id, name"), default is "*".
+    condition : str, optional
+        Optional SQL WHERE clause condition (e.g., "id = 1" or "completed = 0").
+
+    Returns
+    -------
+    list[dict]
         A list of dictionaries, where each dictionary represents a row.
     """
     conn = get_db_connection()
@@ -122,14 +128,17 @@ def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
 def insert_data(table_name: str, data: dict) -> dict:
     """Inserts a new row of data into the specified table.
 
-    Args:
-        table_name (str): The name of the table to insert data into.
-        data (dict): A dictionary where keys are column names and values are the
-                     corresponding values for the new row.
+    Parameters
+    ----------
+    table_name : str
+        The name of the table to insert data into.
+    data : dict
+        A dictionary where keys are column names and values are the corresponding values for the new row.
 
-    Returns:
-        dict: A dictionary with keys 'success' (bool) and 'message' (str).
-              If successful, 'message' includes the ID of the newly inserted row.
+    Returns
+    -------
+    dict
+        A dictionary with keys 'success' (bool) and 'message' (str). If successful, 'message' includes the ID of the newly inserted row.
     """
     if not data:
         return {"success": False, "message": "No data provided for insertion."}
@@ -153,7 +162,7 @@ def insert_data(table_name: str, data: dict) -> dict:
             "row_id": last_row_id,
         }
     except sqlite3.Error as e:
-        conn.rollback()  # Roll back changes on error
+        conn.rollback()
         return {
             "success": False,
             "message": f"Error inserting data into table '{table_name}': {e}",
@@ -161,21 +170,24 @@ def insert_data(table_name: str, data: dict) -> dict:
     finally:
         conn.close()
 
+
 def insert_many_data(table_name: str, rows_data: list[dict]) -> dict:
-    """
-    Inserts multiple rows into a specified SQLite table in a single, efficient transaction.
+    """Inserts multiple rows into a specified SQLite table in a single transaction.
 
-    Args:
-        table_name (str): The name of the table to insert data into.
-        rows_data (list[dict]): A list of dictionaries, where each dictionary
-                                represents a row to be inserted.
+    Parameters
+    ----------
+    table_name : str
+        The name of the table to insert data into.
+    rows_data : list[dict]
+        A list of dictionaries, where each dictionary represents a row to be inserted.
 
-    Returns:
-        dict: A result dictionary with success status, a message, and a list of
-              the newly created row IDs.
+    Returns
+    -------
+    dict
+        A result dictionary with success status, a message, and a list of the newly created row IDs.
     """
     if not rows_data:
-        return {"success": True, "row_ids": [], "message": "No data provided for insertion."}
+        return {"success": False, "row_ids": [], "message": "No data provided for insertion."}
 
     columns = ", ".join(rows_data[0].keys())
     placeholders = ", ".join(["?" for _ in rows_data[0]])
@@ -214,29 +226,29 @@ def insert_many_data(table_name: str, rows_data: list[dict]) -> dict:
     finally:
         conn.close()
 
-@contextmanager
-def get_db_transaction():
-    """
-    Context manager for database transactions with proper error handling.
-    SQL Expert Pattern: Always use transactions for multi-statement operations.
-    """
-    conn = get_db_connection()
-    conn.execute("BEGIN IMMEDIATE")  # Prevent database locks
-    try:
-        yield conn
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
-    finally:
-        conn.close()
-
 
 def get_or_create_raw_file_expert(file_data: Dict) -> Dict:
+    """Gets an existing raw file record or creates/updates one based on file data.
+
+    Implements upsert logic that works with any SQLite version without requiring specific table constraints. If a file with the same name exists:
+    - Returns the existing record if instrument and gradient match exactly
+    - Updates the existing record if instrument or gradient differ
+    - Creates a new record if no file with that name exists
+
+    Parameters
+    ----------
+    file_data : dict
+        Dictionary containing file information with required keys:
+        - 'file_name' (str): The name of the file
+        - 'instrument' (str): The instrument name
+        - 'gradient' (float): The gradient value
+
+    Returns
+    -------
+    dict
+        Result with success status, file_id, action ('found_exact_match', 'updated', or 'created') and message.
     """
-    SQL Expert Pattern: Proper upsert logic that works with any SQLite version
-    and doesn't require specific table constraints.
-    """
+
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -297,29 +309,12 @@ def get_or_create_raw_file_expert(file_data: Dict) -> Dict:
 
 
 class InstrumentNormalizer:
-    """Centralized instrument name normalization."""
+    """Pattern-based instrument name normalization."""
     
-    MAPPINGS = {
-        'tims02': 'tims2',
-        'tims2': 'tims2', 
-        'TIMS02': 'tims2',
-        'TIMS2': 'tims2',
-        'tims_02': 'tims2',
-        'TIMS_02': 'tims2',
-
-        'tims01': 'tims1',
-        'tims1': 'tims1', 
-        'TIMS01': 'tims1',
-        'TIMS1': 'tims1',
-        'tims_01': 'tims1',
-        'TIMS_01': 'tims1',
-
-        'tims03': 'tims3',
-        'tims3': 'tims3', 
-        'TIMS03': 'tims3',
-        'TIMS3': 'tims3',
-        'tims_03': 'tims3',
-        'TIMS_03': 'tims3',
+    VALID_INSTRUMENTS = {
+        'astral1', 'astral2', 'astral3', 'astral4',
+        'tims1', 'tims2', 'tims3', 'tims5',
+        'eclipse1', 'zeno1', 'zeno2', 'stellar1'
     }
     
     @classmethod
@@ -327,70 +322,72 @@ class InstrumentNormalizer:
         """Normalize instrument name to standard form."""
         if not instrument:
             return instrument
+        
+        cleaned = instrument.lower().strip()
+        
+        # Matches: name + optional separator + optional leading zero + number
+        match = re.match(r'^(astral|tims|eclipse|zeno|stellar)[-_]?0?(\d+)$', cleaned)
+        if match:
+            instrument_type, number = match.groups()
+            normalized = f"{instrument_type}{number}"
             
-        # Try exact match first
-        if instrument in cls.MAPPINGS:
-            return cls.MAPPINGS[instrument]
-            
-        # Try case-insensitive match
-        lower_instrument = instrument.lower()
-        for variant, normalized in cls.MAPPINGS.items():
-            if variant.lower() == lower_instrument:
+            if normalized in cls.VALID_INSTRUMENTS:
                 return normalized
-                
-        # Return lowercase if no mapping found
-        return lower_instrument
+
+        return cleaned
     
     @classmethod
     def get_valid_instruments(cls) -> set:
-        """Get set of all valid normalized instrument names."""
-        return set(cls.MAPPINGS.values())
+        """Get set of known valid instruments."""
+        return cls.VALID_INSTRUMENTS.copy()
 
 
 def insert_performance_session(session_data: dict) -> dict:
-    """
-    Inserts a complete performance session with files in a single function call.
-    
-    Args:
-        session_data (dict): Dictionary containing:
-            - performance_status (boolean): Performance status (0 or 1). 0: Not ready for measurment, 1: measured
-            - performance_rating (int): Performance rating on a scale 0-5. 0: not rated, 1: very bad, 2: bad, 3: neutral, 4: good, 5: very good.
-            - performance_comment (str): Performance comment  
-            - raw_files (list): List of file dictionaries, each with:
-                - file_name (str): Filename
-                - instrument (str): Instrument name
-                - gradient (float): Gradient value
-    
-    Returns:
-        dict: Result with success status, message, and all inserted IDs
-    
-    Example:
-        session_data = {
-            "performance_status": 1,
-            "performance_rating": 5,
-            "performance_comment": "Excellent performance",
-            "raw_files": [
-                {
-                    "file_name": "20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d",
-                    "instrument": "tims2", 
-                    "gradient": 43.998
-                },
-                {
-                    "file_name": "20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d",
-                    "instrument": "tims2",
-                    "gradient": 43.998
-                }
-            ]
-        }
-        result = insert_performance_session(session_data)
+    """Inserts a complete performance session with files in a single function call.
+
+    Parameters
+    ----------
+    session_data : dict
+        Dictionary containing:
+        - performance_status (boolean): Performance status (0 or 1). 0: Not ready for measurment, 1: measured
+        - performance_rating (int): Performance rating on a scale 0-5. 0: not rated, 1: very bad, 2: bad, 3: neutral, 4: good, 5: very good.
+        - performance_comment (str): Performance comment
+        - raw_files (list): List of file dictionaries, each with:
+            - file_name (str): Filename
+            - instrument (str): Instrument name
+            - gradient (float): Gradient value
+
+    Returns
+    -------
+    dict
+        Result with success status, message, and all inserted IDs
+
+    Examples
+    --------
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 5,
+        "performance_comment": "Excellent performance",
+        "raw_files": [
+            {
+                "file_name": "20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d",
+                "instrument": "tims2",
+                "gradient": 43.998
+            },
+            {
+                "file_name": "20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d",
+                "instrument": "tims2",
+                "gradient": 43.998
+            }
+        ]
+    }
+    result = insert_performance_session(session_data)
     """
     if not session_data or not session_data.get("raw_files"):
         return {"success": False, "message": "Invalid session data provided"}
 
     for file_data in session_data["raw_files"]:
         if "instrument" in file_data:
-            print(file_data["instrument"])
-            print(InstrumentNormalizer.normalize(file_data["instrument"]))
             file_data["instrument"] = InstrumentNormalizer.normalize(file_data["instrument"])
     
     conn = get_db_connection()
@@ -467,26 +464,28 @@ def insert_performance_session(session_data: dict) -> dict:
 def query_performance_data(filters: dict) -> dict:
     """Queries performance data with optional filters across joined tables.
 
-    Args:
-        filters (dict): A dictionary where keys are filter field names and values are the
-                       corresponding filter values. Valid keys are:
-                       - 'performance_status': Boolean (0,1)
-                       - 'performance_rating': Integer (0-5)
-                       - 'performance_comment': String (partial match)
-                       - 'instrument': String (exact match)
-                       - 'gradient': Float (exact match) OR dict with range options
-                       - 'file_name': String (exact match)
-                       
-                       For gradient range queries, use:
-                       - 'gradient': {'min': 40.0, 'max': 45.0}  # Range query
-                       - 'gradient': {'min': 40.0}               # Greater than or equal
-                       - 'gradient': {'max': 45.0}               # Less than or equal
-                       - 'gradient': {'tolerance': 0.5, 'value': 44.0}  # Within tolerance
-                       - 'gradient': 44.0                        # Exact match (backward compatible)
+    Parameters
+    ----------
+    filters : dict
+        A dictionary where keys are filter field names and values are the corresponding filter values. Valid keys are:
+        - 'performance_status': Boolean (0,1)
+        - 'performance_rating': Integer (0-5)
+        - 'performance_comment': String (partial match)
+        - 'instrument': String (exact match)
+        - 'gradient': Float (exact match) OR dict with range options
+        - 'file_name': String (exact match)
+        
+        For gradient range queries, use:
+        - 'gradient': {'min': 40.0, 'max': 45.0} # Range query
+        - 'gradient': {'min': 40.0} # Greater than or equal
+        - 'gradient': {'max': 45.0} # Less than or equal
+        - 'gradient': {'tolerance': 0.5, 'value': 44.0} # Within tolerance
+        - 'gradient': 44.0 # Exact match (backward compatible)
 
-    Returns:
-        dict: A dictionary with keys 'success' (bool), 'message' (str), and 'data' (list).
-              If successful, 'data' contains a list of dictionaries with performance info.
+    Returns
+    -------
+    dict
+        A dictionary with keys 'success' (bool), 'message' (str), and 'data' (list). If successful, 'data' contains a list of dictionaries with performance info.
     """
     
     filter_mappings = {
@@ -536,21 +535,16 @@ def query_performance_data(filters: dict) -> dict:
             
         elif field == 'gradient':
             if isinstance(value, dict):
-                # Range or tolerance-based filtering
                 if 'min' in value and 'max' in value:
                     conditions.append(f"{db_column} BETWEEN ? AND ?")
                     params.extend([value['min'], value['max']])
-                    
                 elif 'min' in value:
                     conditions.append(f"{db_column} >= ?")
                     params.append(value['min'])
-                    
                 elif 'max' in value:
                     conditions.append(f"{db_column} <= ?")
                     params.append(value['max'])
-                    
                 elif 'tolerance' in value and 'value' in value:
-                    # Within tolerance: |gradient - value| <= tolerance
                     target = value['value']
                     tolerance = value['tolerance']
                     conditions.append(f"{db_column} BETWEEN ? AND ?")
@@ -600,14 +594,17 @@ def query_performance_data(filters: dict) -> dict:
 def delete_data(table_name: str, condition: str) -> dict:
     """Deletes rows from a table based on a given SQL WHERE clause condition.
 
-    Args:
-        table_name (str): The name of the table to delete data from.
-        condition (str): The SQL WHERE clause condition to specify which rows to delete.
-                         This condition MUST NOT be empty to prevent accidental mass deletion.
+    Parameters
+    ----------
+    table_name : str
+        The name of the table to delete data from.
+    condition : str
+        The SQL WHERE clause condition to specify which rows to delete. This condition MUST NOT be empty to prevent accidental mass deletion.
 
-    Returns:
-        dict: A dictionary with keys 'success' (bool) and 'message' (str).
-              If successful, 'message' includes the count of deleted rows.
+    Returns
+    -------
+    dict
+        A dictionary with keys 'success' (bool) and 'message' (str). If successful, 'message' includes the count of deleted rows.
     """
     if not condition or not condition.strip():
         return {
@@ -642,7 +639,7 @@ def delete_data(table_name: str, condition: str) -> dict:
 # --- MCP Server Setup ---
 logging.info(
     "Creating MCP Server instance for SQLite DB..."
-)  # Changed print to logging.info
+) 
 app = Server("sqlite-db-mcp-server")
 
 # Wrap database utility functions as ADK FunctionTools
@@ -654,7 +651,6 @@ ADK_DB_TOOLS = {
     # "delete_data": FunctionTool(func=delete_data),
     "query_performance_data": FunctionTool(func=query_performance_data),
     "insert_performance_session": FunctionTool(func=insert_performance_session),
-
 }
 
 
@@ -689,7 +685,7 @@ async def call_mcp_tool(name: str, arguments: dict) -> list[mcp_types.TextConten
         try:
             adk_tool_response = await adk_tool_instance.run_async(
                 args=arguments,
-                tool_context=None,  # type: ignore
+                tool_context=None,
             )
             logging.info(
                 f"MCP Server: ADK tool '{name}' executed. Response: {adk_tool_response}"
@@ -751,7 +747,7 @@ if __name__ == "__main__":
         asyncio.run(run_mcp_stdio_server())
     except KeyboardInterrupt:
         logging.info(
-            "\nMCP Server (stdio) stopped by user."
+            "\n MCP Server (stdio) stopped by user."
         )
     except Exception as e:
         logging.critical(

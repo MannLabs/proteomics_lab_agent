@@ -1,5 +1,5 @@
-"""protocol agent that can retrieve protocols"""
-# Used following MCP server: https://github.com/sooperset/mcp-atlassian
+"""protocol agent can retrieve protocols"""
+# Uses following MCP server: https://github.com/sooperset/mcp-atlassian
 
 import os
 
@@ -8,7 +8,7 @@ from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioConnectionPar
 
 from . import prompt
 
-MODEL = "gemini-2.0-flash-001"
+MODEL = "gemini-2.5-flash"
 
 CONFLUENCE_URL = os.getenv("CONFLUENCE_URL")
 CONFLUENCE_USERNAME = os.getenv("CONFLUENCE_USERNAME")

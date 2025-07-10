@@ -1,4 +1,4 @@
-"""alphakraken agent that can retrieve ms data points from data base"""
+"""alphakraken agent can retrieve proteomics analysis results"""
 
 import os
 
@@ -7,7 +7,7 @@ from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioConnectionPar
 
 from . import prompt
 
-MODEL = "gemini-2.0-flash-001"
+MODEL = "gemini-2.5-flash" # "gemini-2.0-flash-001" might have lower latency.
 
 KRAKEN_PORT = os.getenv("KRAKEN_PORT")
 KRAKEN_HOST = os.getenv("KRAKEN_HOST")

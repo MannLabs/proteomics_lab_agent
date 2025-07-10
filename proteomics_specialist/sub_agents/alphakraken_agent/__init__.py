@@ -1,3 +1,3 @@
-"""alphakraken agent that can retrieve ms data points from data base"""
+"""alphakraken agent can retrieve proteomics analysis results"""
 
 from .agent import alphakraken_agent
