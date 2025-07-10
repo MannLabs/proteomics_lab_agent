@@ -131,6 +131,11 @@ Docker allows applications to be packaged and run in isolated environments calle
     ```
     The `agent.py` will also load this key.
 
+### 6. Update packages regularly
+```
+pip install --upgrade google-adk
+pip install google-adk[eval]
+```
 
 ## Running the Agent and MCP Server
 

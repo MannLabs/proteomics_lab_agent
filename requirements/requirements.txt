@@ -2,3 +2,4 @@
 # gradio==4.44.1
 google-adk==1.0.0
 mcp==1.9.1
+google-cloud-aiplatform[evaluation]

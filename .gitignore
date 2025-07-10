@@ -19,6 +19,9 @@ secrets.ini
 
 **/*secrets.toml
 
+# History of evaluation tests of agent developer kit
+.adk
+
 # Github defaults are below
 # TODO: sort through them
 
