@@ -19,3 +19,7 @@ The following notebooks are the proof-of-concept workflow for generating laborat
 - Benchmark Results Analysis:
     Generate comprehensive statistics for benchmark evaluation results
     File: 3_videoToLabNotes_results.ipynb
+
+## Debugging MCP functionalities of agnets
+- Notebook for developing / debugging database functions:
+    File: database_test.ipynb
