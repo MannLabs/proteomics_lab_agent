@@ -121,7 +121,7 @@ Docker allows applications to be packaged and run in isolated environments calle
     ```bash
     docker --version
     # Run a test to ensure mongodb-mcp Docker is working correctly:
-    docker run --rm -i mongodb/mongodb-mcp-server:latest 
+    docker run --rm -i mongodb/mongodb-mcp-server:latest
     ```
     The first command should display your Docker version. Running `docker run ...` will download and run the mongodb-mcp-server, confirming this Docker container is operational.
 4.  Set the 'mongodb conection string' as an environment variable.

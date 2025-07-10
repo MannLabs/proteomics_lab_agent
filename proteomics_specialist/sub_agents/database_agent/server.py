@@ -1,29 +1,32 @@
-"""database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""Database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+
+from __future__ import annotations
 
 import asyncio
 import json
 import logging
-import os
 import re
 import sqlite3
-from typing import List, Dict, Optional, Union, Tuple
+from pathlib import Path
+from typing import ClassVar
+
+# MCP Server Imports
+import mcp.server.stdio
 from dotenv import load_dotenv
 
 # ADK Tool Imports
 from google.adk.tools.function_tool import FunctionTool
 from google.adk.tools.mcp_tool.conversion_utils import adk_to_mcp_tool_type
-
-# MCP Server Imports
-import mcp.server.stdio
 from mcp import types as mcp_types
 from mcp.server.lowlevel import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
+GRADIENT_TOLERANCE = 0.001
 
 load_dotenv()
 
 # --- Logging Setup ---
-LOG_FILE_PATH = os.path.join(os.path.dirname(__file__), "mcp_server_activity.log")
+LOG_FILE_PATH = Path(__file__).parent / "mcp_server_activity.log"
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
@@ -33,28 +36,29 @@ logging.basicConfig(
 )
 # --- End Logging Setup ---
 
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), "database.db")
+DATABASE_PATH = Path(__file__).parent / "database.db"
 
 
 # --- Database Utility Functions ---
-def get_db_connection():
+def get_db_connection() -> sqlite3.Connection:
+    """Get a database connection with row factory set to sqlite3.Row."""
     conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-def list_db_tables(dummy_param: str) -> dict:
+def list_db_tables() -> dict:
     """Lists all tables in the SQLite database.
 
     Parameters
     ----------
-    dummy_param : str
-        This parameter is not used by the function but helps ensure schema generation. A non-empty string is expected.
+    None
 
     Returns
     -------
     dict
         A dictionary with keys 'success' (bool), 'message' (str), and 'tables' (list[str]) containing the table names if successful.
+
     """
     try:
         conn = get_db_connection()
@@ -62,18 +66,13 @@ def list_db_tables(dummy_param: str) -> dict:
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = [row[0] for row in cursor.fetchall()]
         conn.close()
+    except sqlite3.Error as e:
+        return {"success": False, "message": f"Error listing tables: {e}", "tables": []}
+    else:
         return {
             "success": True,
             "message": "Tables listed successfully.",
             "tables": tables,
-        }
-    except sqlite3.Error as e:
-        return {"success": False, "message": f"Error listing tables: {e}", "tables": []}
-    except Exception as e:
-        return {
-            "success": False,
-            "message": f"An unexpected error occurred while listing tables: {e}",
-            "tables": [],
         }
 
 
@@ -107,6 +106,7 @@ def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
     -------
     list[dict]
         A list of dictionaries, where each dictionary represents a row.
+
     """
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -120,7 +120,7 @@ def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
         results = [dict(row) for row in cursor.fetchall()]
     except sqlite3.Error as e:
         conn.close()
-        raise ValueError(f"Error querying table '{table_name}': {e}")
+        raise ValueError(f"Error querying table '{table_name}': {e}") from None
     conn.close()
     return results
 
@@ -139,6 +139,7 @@ def insert_data(table_name: str, data: dict) -> dict:
     -------
     dict
         A dictionary with keys 'success' (bool) and 'message' (str). If successful, 'message' includes the ID of the newly inserted row.
+
     """
     if not data:
         return {"success": False, "message": "No data provided for insertion."}
@@ -156,16 +157,17 @@ def insert_data(table_name: str, data: dict) -> dict:
         cursor.execute(query, values)
         conn.commit()
         last_row_id = cursor.lastrowid
-        return {
-            "success": True,
-            "message": f"Data inserted successfully. Row ID: {last_row_id}",
-            "row_id": last_row_id,
-        }
     except sqlite3.Error as e:
         conn.rollback()
         return {
             "success": False,
             "message": f"Error inserting data into table '{table_name}': {e}",
+        }
+    else:
+        return {
+            "success": True,
+            "message": f"Data inserted successfully. Row ID: {last_row_id}",
+            "row_id": last_row_id,
         }
     finally:
         conn.close()
@@ -185,9 +187,14 @@ def insert_many_data(table_name: str, rows_data: list[dict]) -> dict:
     -------
     dict
         A result dictionary with success status, a message, and a list of the newly created row IDs.
+
     """
     if not rows_data:
-        return {"success": False, "row_ids": [], "message": "No data provided for insertion."}
+        return {
+            "success": False,
+            "row_ids": [],
+            "message": "No data provided for insertion.",
+        }
 
     columns = ", ".join(rows_data[0].keys())
     placeholders = ", ".join(["?" for _ in rows_data[0]])
@@ -202,32 +209,31 @@ def insert_many_data(table_name: str, rows_data: list[dict]) -> dict:
         cursor.execute(f"SELECT MAX(id) FROM {table_name}")
         max_id_result = cursor.fetchone()
         current_max_id = max_id_result[0] if max_id_result[0] is not None else 0
-        
+
         cursor.executemany(query, values_list)
         num_inserted = cursor.rowcount
-        
         first_id = current_max_id + 1
         last_id = current_max_id + num_inserted
         inserted_ids = list(range(first_id, last_id + 1))
-        
+
         conn.commit()
-        
-        return {
-            "success": True,
-            "message": f"{num_inserted} rows inserted successfully into {table_name}.",
-            "row_ids": inserted_ids,
-        }
     except sqlite3.Error as e:
         conn.rollback()
         return {
             "success": False,
             "message": f"Error batch inserting data into table '{table_name}': {e}",
         }
+    else:
+        return {
+            "success": True,
+            "message": f"{num_inserted} rows inserted successfully into {table_name}.",
+            "row_ids": inserted_ids,
+        }
     finally:
         conn.close()
 
 
-def get_or_create_raw_file_expert(file_data: Dict) -> Dict:
+def get_or_create_raw_file_expert(file_data: dict) -> dict:
     """Gets an existing raw file record or creates/updates one based on file data.
 
     Implements upsert logic that works with any SQLite version without requiring specific table constraints. If a file with the same name exists:
@@ -247,62 +253,66 @@ def get_or_create_raw_file_expert(file_data: Dict) -> Dict:
     -------
     dict
         Result with success status, file_id, action ('found_exact_match', 'updated', or 'created') and message.
-    """
 
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     try:
         cursor.execute(
-            "SELECT id, instrument, gradient FROM raw_files WHERE file_name = ?", 
-            (file_data["file_name"],)
+            "SELECT id, instrument, gradient FROM raw_files WHERE file_name = ?",
+            (file_data["file_name"],),
         )
         existing = cursor.fetchone()
-        
+
         if existing:
             existing_id, existing_instrument, existing_gradient = existing
-            
+
             # Check if the existing file matches exactly
-            if (existing_instrument == file_data["instrument"] and 
-                abs(existing_gradient - file_data["gradient"]) < 0.001):
+            if (
+                existing_instrument == file_data["instrument"]
+                and abs(existing_gradient - file_data["gradient"]) < GRADIENT_TOLERANCE
+            ):
                 return {
                     "success": True,
                     "file_id": existing_id,
                     "action": "found_exact_match",
-                    "message": f"Using existing file: {file_data['file_name']}"
+                    "message": f"Using existing file: {file_data['file_name']}",
                 }
-            else:
-                # File exists but with different data - update it
-                cursor.execute(
-                    "UPDATE raw_files SET instrument = ?, gradient = ? WHERE id = ?",
-                    (file_data["instrument"], file_data["gradient"], existing_id)
-                )
-                conn.commit()
-                return {
-                    "success": True,
-                    "file_id": existing_id,
-                    "action": "updated",
-                    "message": f"Updated existing file: {file_data['file_name']}"
-                }
-        else:
-            # File doesn't exist - create it
+            # File exists but with different data - update it
             cursor.execute(
-                "INSERT INTO raw_files (file_name, instrument, gradient) VALUES (?, ?, ?)",
-                (file_data["file_name"], file_data["instrument"], file_data["gradient"])
+                "UPDATE raw_files SET instrument = ?, gradient = ? WHERE id = ?",
+                (file_data["instrument"], file_data["gradient"], existing_id),
             )
             conn.commit()
             return {
                 "success": True,
-                "file_id": cursor.lastrowid,
-                "action": "created",
-                "message": f"Created new file: {file_data['file_name']}"
+                "file_id": existing_id,
+                "action": "updated",
+                "message": f"Updated existing file: {file_data['file_name']}",
             }
-            
+        # File doesn't exist - create it
+        cursor.execute(
+            "INSERT INTO raw_files (file_name, instrument, gradient) VALUES (?, ?, ?)",
+            (
+                file_data["file_name"],
+                file_data["instrument"],
+                file_data["gradient"],
+            ),
+        )
+        conn.commit()
+        return {
+            "success": True,
+            "file_id": cursor.lastrowid,
+            "action": "created",
+            "message": f"Created new file: {file_data['file_name']}",
+        }
+
     except sqlite3.Error as e:
         conn.rollback()
         return {
             "success": False,
-            "message": f"Error processing file '{file_data.get('file_name', 'unknown')}': {e}"
+            "message": f"Error processing file '{file_data.get('file_name', 'unknown')}': {e}",
         }
     finally:
         conn.close()
@@ -310,32 +320,41 @@ def get_or_create_raw_file_expert(file_data: Dict) -> Dict:
 
 class InstrumentNormalizer:
     """Pattern-based instrument name normalization."""
-    
-    VALID_INSTRUMENTS = {
-        'astral1', 'astral2', 'astral3', 'astral4',
-        'tims1', 'tims2', 'tims3', 'tims5',
-        'eclipse1', 'zeno1', 'zeno2', 'stellar1'
+
+    VALID_INSTRUMENTS: ClassVar[set[str]] = {
+        "astral1",
+        "astral2",
+        "astral3",
+        "astral4",
+        "tims1",
+        "tims2",
+        "tims3",
+        "tims5",
+        "eclipse1",
+        "zeno1",
+        "zeno2",
+        "stellar1",
     }
-    
+
     @classmethod
     def normalize(cls, instrument: str) -> str:
         """Normalize instrument name to standard form."""
         if not instrument:
             return instrument
-        
+
         cleaned = instrument.lower().strip()
-        
+
         # Matches: name + optional separator + optional leading zero + number
-        match = re.match(r'^(astral|tims|eclipse|zeno|stellar)[-_]?0?(\d+)$', cleaned)
+        match = re.match(r"^(astral|tims|eclipse|zeno|stellar)[-_]?0?(\d+)$", cleaned)
         if match:
             instrument_type, number = match.groups()
             normalized = f"{instrument_type}{number}"
-            
+
             if normalized in cls.VALID_INSTRUMENTS:
                 return normalized
 
         return cleaned
-    
+
     @classmethod
     def get_valid_instruments(cls) -> set:
         """Get set of known valid instruments."""
@@ -382,36 +401,39 @@ def insert_performance_session(session_data: dict) -> dict:
         ]
     }
     result = insert_performance_session(session_data)
+
     """
     if not session_data or not session_data.get("raw_files"):
         return {"success": False, "message": "Invalid session data provided"}
 
     for file_data in session_data["raw_files"]:
         if "instrument" in file_data:
-            file_data["instrument"] = InstrumentNormalizer.normalize(file_data["instrument"])
-    
+            file_data["instrument"] = InstrumentNormalizer.normalize(
+                file_data["instrument"]
+            )
+
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     try:
         conn.execute("BEGIN IMMEDIATE")
-        
-        perf_cols = [k for k in session_data.keys() if k != "raw_files"]
+
+        perf_cols = [k for k in session_data if k != "raw_files"]
         perf_values = [session_data[k] for k in perf_cols]
-        
+
         perf_query = f"""
-            INSERT INTO performance_data ({', '.join(perf_cols)})
-            VALUES ({', '.join(['?' for _ in perf_cols])})
+            INSERT INTO performance_data ({", ".join(perf_cols)})
+            VALUES ({", ".join(["?" for _ in perf_cols])})
         """
-        
+
         cursor.execute(perf_query, perf_values)
         performance_id = cursor.lastrowid
-        
+
         conn.commit()
-        
+
         file_ids = []
         file_actions = []
-        
+
         for file_data in session_data["raw_files"]:
             file_result = get_or_create_raw_file_expert(file_data)
             if file_result["success"]:
@@ -420,26 +442,26 @@ def insert_performance_session(session_data: dict) -> dict:
             else:
                 return {
                     "success": False,
-                    "message": f"Failed to process file: {file_result['message']}"
+                    "message": f"Failed to process file: {file_result['message']}",
                 }
-        
+
         conn.execute("BEGIN IMMEDIATE")
-        
+
         link_query = """
             INSERT OR IGNORE INTO raw_file_to_session (performance_id, raw_file_id)
             VALUES (?, ?)
         """
-        
+
         link_data = [(performance_id, file_id) for file_id in file_ids]
         cursor.executemany(link_query, link_data)
         links_created = cursor.rowcount
-        
+
         conn.commit()
-        
-        created_count = file_actions.count('created')
-        updated_count = file_actions.count('updated')
-        found_count = file_actions.count('found_exact_match')
-        
+
+        created_count = file_actions.count("created")
+        updated_count = file_actions.count("updated")
+        found_count = file_actions.count("found_exact_match")
+
         return {
             "success": True,
             "message": f"Session created with {len(file_ids)} files ({created_count} new, {updated_count} updated, {found_count} reused)",
@@ -448,17 +470,73 @@ def insert_performance_session(session_data: dict) -> dict:
             "files_created": created_count,
             "files_updated": updated_count,
             "files_reused": found_count,
-            "links_created": links_created
+            "links_created": links_created,
         }
-        
+
     except sqlite3.Error as e:
         conn.rollback()
         return {
             "success": False,
-            "message": f"Database error during session creation: {e}"
+            "message": f"Database error during session creation: {e}",
         }
     finally:
         conn.close()
+
+
+def _validate_filters(filters: dict, filter_mappings: dict) -> dict:
+    """Validate filter keys against allowed mappings."""
+    if not filters:
+        return {"success": True}
+
+    invalid_filters = [key for key in filters if key not in filter_mappings]
+    if invalid_filters:
+        return {
+            "success": False,
+            "message": f"Invalid filter field(s): {invalid_filters}. Valid fields: {list(filter_mappings.keys())}",
+            "data": [],
+        }
+    return {"success": True}
+
+
+def _build_gradient_condition(value: dict, db_column: str) -> tuple:
+    """Build gradient filter condition and parameters."""
+    if "min" in value and "max" in value:
+        return f"{db_column} BETWEEN ? AND ?", [value["min"], value["max"]]
+
+    if "min" in value:
+        return f"{db_column} >= ?", [value["min"]]
+
+    if "max" in value:
+        return f"{db_column} <= ?", [value["max"]]
+
+    if "tolerance" in value and "value" in value:
+        target = value["value"]
+        tolerance = value["tolerance"]
+        return f"{db_column} BETWEEN ? AND ?", [target - tolerance, target + tolerance]
+
+    return None, None
+
+
+def _build_filter_condition(
+    field: str, value: str | float | bool | dict, db_column: str
+) -> tuple:
+    """Build filter condition and parameters for a single field."""
+    if field == "performance_comment" and isinstance(value, str):
+        return f"{db_column} LIKE ?", [f"%{value}%"]
+
+    if field == "gradient":
+        if isinstance(value, dict):
+            condition, params = _build_gradient_condition(value, db_column)
+            if condition is None:
+                raise ValueError(
+                    "Invalid gradient filter format. Use 'min'/'max', 'tolerance'/'value', or numeric value."
+                )
+            return condition, params
+        # Exact match (backward compatible)
+        return f"{db_column} = ?", [value]
+
+    # Exact match for other fields
+    return f"{db_column} = ?", [value]
 
 
 def query_performance_data(filters: dict) -> dict:
@@ -474,7 +552,7 @@ def query_performance_data(filters: dict) -> dict:
         - 'instrument': String (exact match)
         - 'gradient': Float (exact match) OR dict with range options
         - 'file_name': String (exact match)
-        
+
         For gradient range queries, use:
         - 'gradient': {'min': 40.0, 'max': 45.0} # Range query
         - 'gradient': {'min': 40.0} # Greater than or equal
@@ -486,31 +564,26 @@ def query_performance_data(filters: dict) -> dict:
     -------
     dict
         A dictionary with keys 'success' (bool), 'message' (str), and 'data' (list). If successful, 'data' contains a list of dictionaries with performance info.
+
     """
-    
     filter_mappings = {
-        'performance_status': 'pd.performance_status',
-        'performance_rating': 'pd.performance_rating',
-        'performance_comment': 'pd.performance_comment',
-        'instrument': 'rf.instrument',
-        'gradient': 'rf.gradient',
-        'file_name': 'rf.file_name',
+        "performance_status": "pd.performance_status",
+        "performance_rating": "pd.performance_rating",
+        "performance_comment": "pd.performance_comment",
+        "instrument": "rf.instrument",
+        "gradient": "rf.gradient",
+        "file_name": "rf.file_name",
     }
-    
-    if filters:
-        invalid_filters = [key for key in filters.keys() if key not in filter_mappings]
-        if invalid_filters:
-            return {
-                "success": False,
-                "message": f"Invalid filter field(s): {invalid_filters}. Valid fields: {list(filter_mappings.keys())}",
-                "data": []
-            }
-    
+
+    validation_result = _validate_filters(filters, filter_mappings)
+    if not validation_result["success"]:
+        return validation_result
+
     conn = get_db_connection()
     cursor = conn.cursor()
-    
+
     base_query = """
-    SELECT 
+    SELECT
         rf.id,
         rf.file_name,
         rf.instrument,
@@ -522,70 +595,44 @@ def query_performance_data(filters: dict) -> dict:
     JOIN raw_file_to_session rfts ON rf.id = rfts.raw_file_id
     JOIN performance_data pd ON rfts.performance_id = pd.id
     """
-    
+
     conditions = []
     params = []
-    
-    for field, value in filters.items():
-        db_column = filter_mappings[field]
-        
-        if field == 'performance_comment' and isinstance(value, str):
-            conditions.append(f"{db_column} LIKE ?")
-            params.append(f"%{value}%")
-            
-        elif field == 'gradient':
-            if isinstance(value, dict):
-                if 'min' in value and 'max' in value:
-                    conditions.append(f"{db_column} BETWEEN ? AND ?")
-                    params.extend([value['min'], value['max']])
-                elif 'min' in value:
-                    conditions.append(f"{db_column} >= ?")
-                    params.append(value['min'])
-                elif 'max' in value:
-                    conditions.append(f"{db_column} <= ?")
-                    params.append(value['max'])
-                elif 'tolerance' in value and 'value' in value:
-                    target = value['value']
-                    tolerance = value['tolerance']
-                    conditions.append(f"{db_column} BETWEEN ? AND ?")
-                    params.extend([target - tolerance, target + tolerance])
-                    
-                else:
-                    return {
-                        "success": False,
-                        "message": "Invalid gradient filter format. Use 'min'/'max', 'tolerance'/'value', or numeric value.",
-                        "data": []
-                    }
-            else:
-                # Exact match (backward compatible)
-                conditions.append(f"{db_column} = ?")
-                params.append(value)
-                
-        else:
-            # Exact match for other fields
-            conditions.append(f"{db_column} = ?")
-            params.append(value)
-    
-    query = base_query
-    if conditions:
-        query += " WHERE " + " AND ".join(conditions)
-    query += " ORDER BY pd.id, rf.id"
-    
+
     try:
+        for field, value in filters.items():
+            db_column = filter_mappings[field]
+            condition, condition_params = _build_filter_condition(
+                field, value, db_column
+            )
+            conditions.append(condition)
+            params.extend(condition_params)
+
+        query = base_query
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+        query += " ORDER BY pd.id, rf.id"
+
         cursor.execute(query, params)
         results = [dict(row) for row in cursor.fetchall()]
-        
+
         return {
             "success": True,
             "message": f"Query executed successfully. Found {len(results)} record(s).",
-            "data": results
+            "data": results,
         }
-        
+
+    except ValueError as e:
+        return {
+            "success": False,
+            "message": str(e),
+            "data": [],
+        }
     except sqlite3.Error as e:
         return {
             "success": False,
             "message": f"Error querying performance data: {e}",
-            "data": []
+            "data": [],
         }
     finally:
         conn.close()
@@ -605,6 +652,7 @@ def delete_data(table_name: str, condition: str) -> dict:
     -------
     dict
         A dictionary with keys 'success' (bool) and 'message' (str). If successful, 'message' includes the count of deleted rows.
+
     """
     if not condition or not condition.strip():
         return {
@@ -621,25 +669,24 @@ def delete_data(table_name: str, condition: str) -> dict:
         cursor.execute(query)
         rows_deleted = cursor.rowcount
         conn.commit()
-        return {
-            "success": True,
-            "message": f"{rows_deleted} row(s) deleted successfully from table '{table_name}'.",
-            "rows_deleted": rows_deleted,
-        }
     except sqlite3.Error as e:
         conn.rollback()
         return {
             "success": False,
             "message": f"Error deleting data from table '{table_name}': {e}",
         }
+    else:
+        return {
+            "success": True,
+            "message": f"{rows_deleted} row(s) deleted successfully from table '{table_name}'.",
+            "rows_deleted": rows_deleted,
+        }
     finally:
         conn.close()
 
 
 # --- MCP Server Setup ---
-logging.info(
-    "Creating MCP Server instance for SQLite DB..."
-) 
+logging.info("Creating MCP Server instance for SQLite DB...")
 app = Server("sqlite-db-mcp-server")
 
 # Wrap database utility functions as ADK FunctionTools
@@ -657,9 +704,7 @@ ADK_DB_TOOLS = {
 @app.list_tools()
 async def list_mcp_tools() -> list[mcp_types.Tool]:
     """MCP handler to list tools this server exposes."""
-    logging.info(
-        "MCP Server: Received list_tools request."
-    )
+    logging.info("MCP Server: Received list_tools request.")
     mcp_tools_list = []
     for tool_name, adk_tool_instance in ADK_DB_TOOLS.items():
         if not adk_tool_instance.name:
@@ -694,19 +739,15 @@ async def call_mcp_tool(name: str, arguments: dict) -> list[mcp_types.TextConten
             return [mcp_types.TextContent(type="text", text=response_text)]
 
         except Exception as e:
-            logging.error(
-                f"MCP Server: Error executing ADK tool '{name}': {e}", exc_info=True
-            )
+            logging.exception(f"MCP Server: Error executing ADK tool '{name}'")
             error_payload = {
                 "success": False,
-                "message": f"Failed to execute tool '{name}': {str(e)}",
+                "message": f"Failed to execute tool '{name}': {e!s}",
             }
             error_text = json.dumps(error_payload)
             return [mcp_types.TextContent(type="text", text=error_text)]
     else:
-        logging.warning(
-            f"MCP Server: Tool '{name}' not found/exposed by this server."
-        )
+        logging.warning(f"MCP Server: Tool '{name}' not found/exposed by this server.")
         error_payload = {
             "success": False,
             "message": f"Tool '{name}' not implemented by this server.",
@@ -716,12 +757,10 @@ async def call_mcp_tool(name: str, arguments: dict) -> list[mcp_types.TextConten
 
 
 # --- MCP Server Runner ---
-async def run_mcp_stdio_server():
+async def run_mcp_stdio_server() -> None:
     """Runs the MCP server, listening for connections over standard input/output."""
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        logging.info(
-            "MCP Stdio Server: Starting handshake with client..."
-        )
+        logging.info("MCP Stdio Server: Starting handshake with client...")
         await app.run(
             read_stream,
             write_stream,
@@ -734,26 +773,18 @@ async def run_mcp_stdio_server():
                 ),
             ),
         )
-        logging.info(
-            "MCP Stdio Server: Run loop finished or client disconnected."
-        )
+        logging.info("MCP Stdio Server: Run loop finished or client disconnected.")
 
 
 if __name__ == "__main__":
-    logging.info(
-        "Launching SQLite DB MCP Server via stdio..."
-    )
+    logging.info("Launching SQLite DB MCP Server via stdio...")
     try:
         asyncio.run(run_mcp_stdio_server())
     except KeyboardInterrupt:
-        logging.info(
-            "\n MCP Server (stdio) stopped by user."
-        )
-    except Exception as e:
+        logging.info("\n MCP Server (stdio) stopped by user.")
+    except (OSError, RuntimeError, ValueError) as e:
         logging.critical(
             f"MCP Server (stdio) encountered an unhandled error: {e}", exc_info=True
         )
     finally:
-        logging.info(
-            "MCP Server (stdio) process exiting."
-        )
+        logging.info("MCP Server (stdio) process exiting.")

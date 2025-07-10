@@ -1,4 +1,4 @@
-"""database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""Database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
 DB_MCP_PROMPT = """
 You are a highly proactive and efficient assistant for interacting with a local SQLite database.

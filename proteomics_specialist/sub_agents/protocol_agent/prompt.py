@@ -1,6 +1,6 @@
-"""protocol agent can retrieve protocols"""
+"""Protocol agent can retrieve protocols from Confluence."""
 
-PROTOCOL_PROMPT ="""
+PROTOCOL_PROMPT = """
 You are an expert in interacting with Confluence and you can retrieve information from the knowledge database in Confluence.
 
 - You always search for information with a space_key of 'ProtocolMCP'.
@@ -29,6 +29,6 @@ You are an expert in interacting with Confluence and you can retrieve informatio
     - The column should be completely detached from the Evosep
     - Figures
     - References
-    
+
 - If you do not find any content check if your search query was too narrow. In general, do not restrict the query to single instrument_ids but rather instrument types (e.g. timsTOF, Astral, ...).
 """

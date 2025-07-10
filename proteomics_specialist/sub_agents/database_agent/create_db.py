@@ -1,18 +1,23 @@
-"""database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""Database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
-import os
+import logging
 import sqlite3
+from pathlib import Path
 
-DATABASE_PATH = os.path.join(os.path.dirname(__file__), "database.db")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+DATABASE_PATH = Path(__file__).parent / "database.db"
 
-def create_database():
-    db_exists = os.path.exists(DATABASE_PATH)
+
+def create_database() -> None:
+    """Create the database and initialize tables if it doesn't exist."""
+    db_exists = DATABASE_PATH.exists()
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
-    
+
     if not db_exists:
-        print(f"Creating new database at {DATABASE_PATH}...")
-    
+        logging.info(f"Creating new database at {DATABASE_PATH}...")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS performance_data (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,8 +27,8 @@ def create_database():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
-        print("Created 'performance_data' table.")
-        
+        logging.info("Created 'performance_data' table.")
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,8 +37,8 @@ def create_database():
                 gradient REAL NOT NULL
             )
         """)
-        print("Created 'raw_files' table.")
-        
+        logging.info("Created 'raw_files' table.")
+
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_file_to_session (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,48 +49,65 @@ def create_database():
                 UNIQUE(performance_id, raw_file_id)
             )
         """)
-        print("Created 'raw_file_to_session' junction table.")
-        
+        logging.info("Created 'raw_file_to_session' junction table.")
+
         sessions = [
             (1, 4, "good performance"),
             (0, 0, "High mass error for MS1 and MS2. TOF needs calibration."),
         ]
-        
-        cursor.executemany("""
+        cursor.executemany(
+            """
             INSERT OR IGNORE INTO performance_data (performance_status, performance_rating, performance_comment)
             VALUES (?, ?, ?)
-        """, sessions)
-        print(f"Inserted {len(sessions)} performance sessions.")
-        
+            """,
+            sessions,
+        )
+        logging.info(f"Inserted {len(sessions)} performance sessions.")
+
         raw_files_data = [
-            ("20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d", "tims2", 43.998),
-            ("20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d", "tims2", 43.998),
+            (
+                "20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d",
+                "tims2",
+                43.998,
+            ),
+            (
+                "20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d",
+                "tims2",
+                43.998,
+            ),
         ]
-        
-        cursor.executemany("""
+        cursor.executemany(
+            """
             INSERT OR IGNORE INTO raw_files (file_name, instrument, gradient)
             VALUES (?, ?, ?)
-        """, raw_files_data)
-        print(f"Inserted {len(raw_files_data)} raw files.")
-        
+            """,
+            raw_files_data,
+        )
+        logging.info(f"Inserted {len(raw_files_data)} raw files.")
+
         # Link sessions to files (many-to-many relationships)
         raw_files_to_session_data = [
             (1, 1),
             (2, 2),
         ]
-        
-        cursor.executemany("""
+        cursor.executemany(
+            """
             INSERT OR IGNORE INTO raw_file_to_session (performance_id, raw_file_id)
             VALUES (?, ?)
-        """, raw_files_to_session_data)
-        print(f"Inserted {len(raw_files_to_session_data)} file-to-session links.")
-        
+            """,
+            raw_files_to_session_data,
+        )
+        logging.info(
+            f"Inserted {len(raw_files_to_session_data)} file-to-session links."
+        )
+
         conn.commit()
-        print("Database created and populated successfully.")
+        logging.info("Database created and populated successfully.")
     else:
-        print(f"Database already exists at {DATABASE_PATH}. No changes made.")
-    
+        logging.info(f"Database already exists at {DATABASE_PATH}. No changes made.")
+
     conn.close()
+
 
 if __name__ == "__main__":
     create_database()

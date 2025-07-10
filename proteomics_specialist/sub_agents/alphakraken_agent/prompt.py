@@ -1,6 +1,6 @@
-"""alphakraken agent can retrieve proteomics analysis results"""
+"""Alphakraken agent can retrieve proteomics analysis results."""
 
-KRAKEN_MCP_PROMPT ="""
+KRAKEN_MCP_PROMPT = """
 You are an expert in interacting with a database and you proactively answer users questions.
 
 # Systematic approach to answer

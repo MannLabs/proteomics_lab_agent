@@ -1,3 +1,5 @@
+"""Root agent is designed to support proteomics researchers."""
+
 from google.adk.agents import LlmAgent
 from google.adk.tools.agent_tool import AgentTool
 
@@ -9,13 +11,13 @@ from .sub_agents.protocol_agent import protocol_agent
 MODEL = "gemini-2.5-flash"
 
 root_agent = LlmAgent(
-   name="ai_proteomics_adviser",
-   model=MODEL,
-   description="""Agent to support proteomics researchers.""",
-   instruction=prompt.PROMPT,
-   tools=[
-      AgentTool(agent=alphakraken_agent), 
-      AgentTool(agent=database_agent),
-      AgentTool(agent=protocol_agent)
-      ]
+    name="ai_proteomics_adviser",
+    model=MODEL,
+    description="""Agent to support proteomics researchers.""",
+    instruction=prompt.PROMPT,
+    tools=[
+        AgentTool(agent=alphakraken_agent),
+        AgentTool(agent=database_agent),
+        AgentTool(agent=protocol_agent),
+    ],
 )
