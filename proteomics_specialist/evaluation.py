@@ -111,7 +111,7 @@ def extract_table_to_dataframe(
     table_name: str,
     model_name: str,
     temperature: float,
-) -> pd.DataFrame:
+) -> pd.DataFrame | None:
     """Extract a table from evaluation content and convert it to a DataFrame.
 
     Parameters
@@ -131,10 +131,26 @@ def extract_table_to_dataframe(
         DataFrame containing the extracted table data
 
     """
-    extraction_prompt = get_table_json_prompt(evaluation, table_name)
+    try:
+        if not evaluation or not evaluation.strip():
+            logging.warning("Empty evaluation content provided")
+            return None
 
-    json_response, _ = video_to_protocol.generate_content_from_model(
-        extraction_prompt, model_name=model_name, temperature=temperature
-    )
+        if not table_name or not table_name.strip():
+            logging.warning("Empty table name provided")
+            return None
 
-    return extract_json_from_model_output(json_response)
+        extraction_prompt = get_table_json_prompt(evaluation, table_name)
+
+        json_response, _ = video_to_protocol.generate_content_from_model(
+            extraction_prompt, model_name=model_name, temperature=temperature
+        )
+
+        return extract_json_from_model_output(json_response)
+
+    except ValueError:
+        logging.exception("ValueError in table extraction")
+        return None
+    except Exception:
+        logging.exception("Unexpected error in table extraction")
+        return None
