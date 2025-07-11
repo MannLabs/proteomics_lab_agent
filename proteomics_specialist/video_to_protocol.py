@@ -8,7 +8,7 @@ import os
 from collections import defaultdict
 from pathlib import Path
 
-from vertexai.generative_models import Part
+from vertexai.generative_models import GenerationConfig, GenerativeModel, Part
 from vertexai.preview import caching
 
 MIME_TYPES = {
@@ -24,14 +24,13 @@ logging.basicConfig(
 )
 
 
-def upload_video_to_gcs(
+def upload_file_to_gcs(
     path: str,
     bucket: str,
     subfolder_in_bucket: str | None = None,
     custom_blob_name: str | None = None,
 ) -> str:
-    """Upload a video file to Google Cloud Storage and return its URI.
-
+    """Upload a file to Google Cloud Storage and return its URI.
     Uses the original filename as the blob name by default.
 
     Parameters
@@ -48,7 +47,7 @@ def upload_video_to_gcs(
     Returns
     -------
     str
-        Cloud Storage URI for the uploaded video
+        Cloud Storage URI for the uploaded file
 
     """
     path_obj = Path(path)
@@ -142,9 +141,60 @@ def collect_knowledge_uris(
         if filename.lower().endswith(supported_extensions):
             path = Path(folder_path) / filename
             try:
-                file_uri = upload_video_to_gcs(path, bucket, subfolder_in_bucket)
+                file_uri = upload_file_to_gcs(path, bucket, subfolder_in_bucket)
                 knowledge_uris.append(file_uri)
             except OSError:
                 logging.exception(f"Error processing {filename}")
 
     return knowledge_uris
+
+
+def generate_content_from_model(
+    inputs: str | list,
+    model_name: str = "gemini-2.5-pro-preview-03-25",
+    temperature: float = 0.9,
+) -> tuple:
+    """Generate content using Google's Generative AI model.
+
+    This function sends inputs to a specified Gemini model and returns the
+    generated response along with usage metadata.
+
+    Parameters
+    ----------
+    inputs : str, list
+        The inputs to send to the model as str or list. The list can include text (str), images (Part), or videos (Part).
+    model_name : str, default="gemini-2.5-pro-preview-03-25"
+        Name of the generative model to use.
+    temperature : float, default=0.9
+        Controls the randomness of the output. Higher values (closer to 1.0)
+        make output more random, lower values make it more deterministic.
+
+    Returns
+    -------
+    tuple
+        A tuple containing (response_text, usage_metadata)
+
+    Raises
+    ------
+    ValueError
+        If the model fails to generate content.
+
+    """
+    try:
+        model = GenerativeModel(model_name)
+
+        generation_config = GenerationConfig(
+            temperature=temperature,
+            # Uncomment if using single audio/video input
+            # audio_timestamp=True
+        )
+
+        response = model.generate_content(inputs, generation_config=generation_config)
+        lab_notes = response.text
+        usage_metadata = response.usage_metadata
+
+    except Exception as e:
+        logger.exception("Error during content generation")
+        raise ValueError(f"Failed to generate content: {e!s}") from None
+
+    return lab_notes, usage_metadata

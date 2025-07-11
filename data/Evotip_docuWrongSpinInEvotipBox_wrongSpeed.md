@@ -2,34 +2,25 @@
 
 
 ## Aim
-
 Spinning Evotips.
 
 
 ## Materials
 
 ### Equipment
-
-- **Evotips**
-- **Evotip holders wilth solvent reservior**
-- **Centrifuge**
+- Evotips
+- Evotip holders wilth solvent reservior
+- Centrifuge
 
 
 ## Procedure
+*Timing: 1 minute*
 
-*Estimated timing: 1 minute*
-
-1. Equaly distributed Evotips onto two Evotip holders by using a multichannel pipette. 12 Evotips each.
-**Error**: Used Evotip boxes instead of Evotip holders.
-
-2. **Omitted** Switching on the centrifuge.
-
+1. ❌ **Error:** Equaly distributed Evotips with 12 Evotips each by using a multichannel pipette. 12 Evotips each. However, used Evotip boxes instead of Evotip holders.
+2. ❌ **Omitted:** Did not switching on the centrifuge as it was already in operation.
 3. Placed the Evotip holders within centrifuge holders at opposite positions.
-
-4. Spun the Evotips at 700g for 1 minute in a centrifuge.
-**Error** Should have been spun Evotips at 800g instead.
+4. ❌ **Error:** Spun the Evotips at 700g for 1 minute in a centrifuge. However, they should have been spun Evotips at 800g instead.
 
 
 ## Results
-
-A balanced centrifuge that spins at 700g for 1 minute.
+Evotips were spun in a balanced centrifuge at 700g for 1 minute.

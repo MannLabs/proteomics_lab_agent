@@ -17,7 +17,7 @@ This protocol describes how to disconnect an IonOpticks column from an Evosep li
 
 
 ## Procedure
-Estimated timing: 1 minute
+*Estimated timing: 1 minute*
 
 ### Verify timsTOF is in standby mode:
 1. Check timsControl software status in top left corner.
@@ -29,16 +29,18 @@ Estimated timing: 1 minute
 5. Attach the NanoViper adapter to the sample line for easier handling.
 6. Hold the column fitting with pliers for easier handling.
 7. Unscrew the NanoViper connector to detach the sample line from the IonOpticks column by turning it counter clock-wise.
-8. Position the sample line ensuring it forms a gentle curve. One method is to place it over the transparent bumper of the Evosep.
+8. Position the sample line ensuring it does not bend. One method is to place it over the transparent bumper of the Evosep.
+
 
 ## Expected Results
-- The column should be completely detached from the Evosep
 - The timsTOF is in standby mode
+- The column should be completely detached from the Evosep
+
 
 ## Figures
-Figure 1: TimsControl
+### Figure 1: TimsControl
 
-Figure 2: IonOpticks column connected with UltraSource of timsTOF and Evosep
+### Figure 2: IonOpticks column connected with UltraSource of timsTOF and Evosep
 
 ## References
 1. Bruker Daltonics. (2023). timsTOF User Manual. [Link to user manual]
