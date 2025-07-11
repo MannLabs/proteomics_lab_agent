@@ -1,7 +1,7 @@
 """Protocol agent can retrieve protocols from Confluence."""
 # Uses following MCP server: https://github.com/sooperset/mcp-atlassian
 
-import os
+import logging
 
 from google.adk import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import (
@@ -10,13 +10,19 @@ from google.adk.tools.mcp_tool.mcp_toolset import (
     StdioServerParameters,
 )
 
+from .. import utils  # noqa: TID252
 from . import prompt
 
-MODEL = "gemini-2.5-flash"
+logger = logging.getLogger(__name__)
 
-CONFLUENCE_URL = os.getenv("CONFLUENCE_URL")
-CONFLUENCE_USERNAME = os.getenv("CONFLUENCE_USERNAME")
-CONFLUENCE_API_TOKEN = os.getenv("CONFLUENCE_API_TOKEN")
+MODEL = "gemini-2.5-flash"  # "gemini-2.0-flash-001" might have lower latency.
+
+try:
+    CONFLUENCE_URL = utils.get_required_env("CONFLUENCE_URL")
+    CONFLUENCE_USERNAME = utils.get_required_env("CONFLUENCE_USERNAME")
+    CONFLUENCE_API_TOKEN = utils.get_required_env("CONFLUENCE_API_TOKEN")
+except ValueError:
+    logger.exception("Configuration error occurred")
 
 protocol_agent = Agent(
     name="protocol_agent",

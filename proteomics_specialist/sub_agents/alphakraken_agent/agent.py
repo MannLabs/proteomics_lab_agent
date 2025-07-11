@@ -1,6 +1,6 @@
 """Alphakraken agent can retrieve proteomics analysis results."""
 
-import os
+import logging
 
 from google.adk import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import (
@@ -9,14 +9,20 @@ from google.adk.tools.mcp_tool.mcp_toolset import (
     StdioServerParameters,
 )
 
+from .. import utils  # noqa: TID252
 from . import prompt
+
+logger = logging.getLogger(__name__)
 
 MODEL = "gemini-2.5-flash"  # "gemini-2.0-flash-001" might have lower latency.
 
-KRAKEN_PORT = os.getenv("KRAKEN_PORT")
-KRAKEN_HOST = os.getenv("KRAKEN_HOST")
-KRAKEN_USER = os.getenv("KRAKEN_USER")
-KRAKEN_PASSWORD = os.getenv("KRAKEN_PASSWORD")
+try:
+    KRAKEN_PORT = utils.get_required_env("KRAKEN_PORT")
+    KRAKEN_HOST = utils.get_required_env("KRAKEN_HOST")
+    KRAKEN_USER = utils.get_required_env("KRAKEN_USER")
+    KRAKEN_PASSWORD = utils.get_required_env("KRAKEN_PASSWORD")
+except ValueError:
+    logger.exception("Configuration error occurred")
 
 alphakraken_agent = Agent(
     name="alphakraken_agent",
