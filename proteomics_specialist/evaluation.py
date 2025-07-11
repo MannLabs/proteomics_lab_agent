@@ -1,26 +1,17 @@
+"""Contains functions that are required to support notebooks with automatic LLM evaluation."""
+
 from __future__ import annotations
 
-# Standard library imports
 import json
 import logging
-import sys
-from pathlib import Path
+from typing import Dict, List, Union
 
-# Type checking imports
-from typing import Dict, List, Optional, Union
-
-# Third-party imports
 import pandas as pd
 
-# Local imports and setup
-path_to_append = Path(Path.cwd()).parent / "proteomics_specialist"
-sys.path.append(str(path_to_append))
-import video_to_protocol
+from . import video_to_protocol
 
-# Type definitions
 JSONType = Union[Dict[str, "JSONType"], List["JSONType"], str, int, float, bool, None]
 
-# Configuration
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -31,9 +22,8 @@ def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
     """Generates a prompt to extract a specific table from text into JSON.
 
     Args:
-        text_with_tables: The full text containing the table(s).
-        table_identifier: A string to help the model identify the target table
-                          (e.g., the table title, or a unique phrase near it).
+        text_with_tables: The full text containing the table.
+        table_identifier: A string to help the model identify the target table.
 
     Returns:
         A formatted prompt string.
@@ -60,7 +50,7 @@ def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
 
 def extract_json_from_model_output(
     model_output_string: str,
-) -> Optional[pd.DataFrame]:
+) -> pd.DataFrame | None:
     """Extract and parse JSON data from a model output string that contains JSON within code block markers.
 
     Parameters
@@ -90,8 +80,10 @@ def extract_json_from_model_output(
         logger.info("Found JSON within code block markers")
     else:
         extracted_json_string = model_output_string.strip()
-        logger.info("No code block markers found, trying to parse entire string as JSON")
-    
+        logger.info(
+            "No code block markers found, trying to parse entire string as JSON"
+        )
+
     if extracted_json_string:
         try:
             json_data = json.loads(extracted_json_string)
@@ -117,8 +109,8 @@ def extract_json_from_model_output(
 def extract_table_to_dataframe(
     evaluation: str,
     table_name: str,
-    model_name: str = "gemini-2.5-pro-preview-03-25",
-    temperature: float = 0.9,
+    model_name: str,
+    temperature: float,
 ) -> pd.DataFrame:
     """Extract a table from evaluation content and convert it to a DataFrame.
 
@@ -129,9 +121,9 @@ def extract_table_to_dataframe(
     table_name : str
         The name of the table to extract
     model_name : str, optional
-        The model to use for content generation, default is "gemini-2.5-pro-preview-03-25"
+        The model to use for content generation
     temperature : float, optional
-        Temperature setting for content generation, default is 0.9
+        Temperature setting for content generation
 
     Returns
     -------
