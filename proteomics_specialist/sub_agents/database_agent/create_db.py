@@ -1,4 +1,48 @@
-"""Database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""Database Schema Documentation.
+
+============================
+
+This module creates and initializes database for performance evaluations of analysis results.
+
+Database Structure:
+------------------
+
+1. performance_data
+   - Primary table storing performance sessions
+   - Each record represents one performance evaluation session
+   - Fields:
+     * id: Unique identifier (PRIMARY KEY)
+     * performance_status: Boolean (0=not ready, 1=measured)
+     * performance_rating: Integer 0-5 (0=not rated, 1=very bad, 5=very good)
+     * performance_comment: Text description of performance
+     * created_at: Timestamp when record was created
+
+2. raw_files
+   - Stores information about raw data files
+   - Each file is unique by filename
+   - Fields:
+     * id: Unique identifier (PRIMARY KEY)
+     * file_name: Unique filename (UNIQUE constraint)
+     * instrument: Instrument used (e.g., 'tims2')
+     * gradient: Gradient time in minutes
+
+3. raw_file_to_session (Junction Table)
+   - Links performance sessions to raw files (many-to-many relationship)
+   - Fields:
+     * id: Unique identifier (PRIMARY KEY)
+     * performance_id: Foreign key to performance_data.id
+     * raw_file_id: Foreign key to raw_files.id
+     * UNIQUE constraint on (performance_id, raw_file_id) prevents duplicates
+
+Relationships:
+-------------
+performance_data (1) ←→ (M) raw_file_to_session (M) ←→ (1) raw_files
+
+- One performance session can be linked to multiple raw files
+- One raw file can be associated with multiple performance sessions
+- CASCADE DELETE: Deleting a performance session or raw file removes all links.
+
+"""
 
 import logging
 import sqlite3
@@ -11,7 +55,14 @@ DATABASE_PATH = Path(__file__).parent / "database.db"
 
 
 def create_database() -> None:
-    """Create the database and initialize tables if it doesn't exist."""
+    """Create the database and initialize tables if it doesn't exist.
+
+    This function:
+    1. Creates the database file if it doesn't exist
+    2. Creates three tables: performance_data, raw_files, raw_file_to_session
+    3. Populates tables with sample data for testing
+    4. Sets up foreign key relationships and constraints
+    """
     db_exists = DATABASE_PATH.exists()
     conn = sqlite3.connect(DATABASE_PATH)
     cursor = conn.cursor()
