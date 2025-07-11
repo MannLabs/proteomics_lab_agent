@@ -30,7 +30,7 @@ def upload_file_to_gcs(
     subfolder_in_bucket: str | None = None,
     custom_blob_name: str | None = None,
 ) -> str:
-    """Upload a video file to Google Cloud Storage and return its URI.
+    """Upload a file to Google Cloud Storage and return its URI.
 
     Uses the original filename as the blob name by default.
 
@@ -48,7 +48,7 @@ def upload_file_to_gcs(
     Returns
     -------
     str
-        Cloud Storage URI for the uploaded video
+        Cloud Storage URI for the uploaded file
 
     """
     path_obj = Path(path)
@@ -151,7 +151,7 @@ def collect_knowledge_uris(
 
 
 def generate_content_from_model(
-    inputs: str | Part,
+    inputs: str | list,
     model_name: str = "gemini-2.5-pro-preview-03-25",
     temperature: float = 0.9,
 ) -> tuple[str, any]:
@@ -162,8 +162,8 @@ def generate_content_from_model(
 
     Parameters
     ----------
-    inputs : Any
-        The inputs to send to the model (text, images, or videos).
+    inputs : str, list
+        The inputs to send to the model as str or list. The list can include text (str), images (Part), or videos (Part).
     model_name : str, default="gemini-2.5-pro-preview-03-25"
         Name of the generative model to use.
     temperature : float, default=0.9
