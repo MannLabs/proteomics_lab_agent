@@ -10,6 +10,8 @@ from google.adk.tools.mcp_tool.mcp_toolset import (
     StdioServerParameters,
 )
 
+from proteomics_specialist.config import config
+
 from .. import utils  # noqa: TID252
 from . import prompt
 
@@ -26,7 +28,7 @@ except ValueError:
 
 protocol_agent = Agent(
     name="protocol_agent",
-    model=MODEL,
+    model=config.model,
     description="Agent to search and create protocols in our Confluence database.",
     instruction=prompt.PROTOCOL_PROMPT,
     tools=[
