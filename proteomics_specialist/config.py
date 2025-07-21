@@ -8,13 +8,15 @@ class ResearchConfiguration:
     """Configuration for research-related models and parameters.
 
     Attributes:
-        critic_model (str): Model for evaluation tasks.
-        worker_model (str): Model for working/generation tasks.
-        max_search_iterations (int): Maximum search iterations allowed.
+        model (str): Model for response tasks.
+        temperature (float): Controls randomness in model outputs. Higher values (0.7-1.0)
+            produce more creative/varied responses, lower values (0.1-0.3) produce more
+            deterministic responses.
 
     """
 
     model: str = "gemini-2.5-flash"
+    temperature: float = 0.9
 
 
 config = ResearchConfiguration()
