@@ -134,6 +134,7 @@ Docker allows applications to be packaged and run in isolated environments calle
 ### 6. Update packages regularly
 ```
 pip install --upgrade google-adk
+pip show google-adk
 pip install google-adk[eval]
 ```
 
