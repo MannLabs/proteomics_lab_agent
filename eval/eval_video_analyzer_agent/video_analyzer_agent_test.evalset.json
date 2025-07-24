@@ -1,0 +1,57 @@
+{
+  "eval_set_id": "video_analyzer_agent",
+  "name": "video_analyzer_agent",
+  "description": null,
+  "eval_cases": [
+    {
+      "eval_id": "ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl",
+      "conversation": [
+        {
+          "invocation_id": "e-4ccc4327-9fe6-48ca-a889-4a0d753a36e0",
+          "user_content": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Analyse this video: \"/Users/patriciaskowronek/Downloads/ultra_short.mp4\"."
+              }
+            ],
+            "role": "user"
+          },
+          "final_response": {
+            "parts": [
+              {
+                "video_metadata": null,
+                "thought": null,
+                "inline_data": null,
+                "file_data": null,
+                "thought_signature": null,
+                "code_execution_result": null,
+                "executable_code": null,
+                "function_call": null,
+                "function_response": null,
+                "text": "Connecting IonOpticks column & sample line"
+              }
+            ],
+            "role": null
+          },
+          "creation_timestamp": 1753161029.845856
+        }
+      ],
+      "session_input": {
+        "app_name": "proteomics_specialist",
+        "user_id": "user",
+        "state": {}
+      },
+      "creation_timestamp": 1753161361.9640331
+    }
+  ],
+  "creation_timestamp": 1753161290.354451
+}
