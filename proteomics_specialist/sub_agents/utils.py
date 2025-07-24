@@ -37,6 +37,15 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
         Tuple of (file_path, filename, remaining_message).
 
     """
+    # Pattern for GCS URIs (gs://)
+    gcs_pattern = r"(gs://[^\s\'\"]+\.(mp4|avi|mov|mkv|mp3|wav|jpg|png|pdf|txt|csv))"
+    match = re.search(gcs_pattern, query, re.IGNORECASE)
+    if match:
+        file_path = match.group(1)
+        filename = Path(file_path).name
+        remaining_message = query.replace(file_path, "").strip()
+        return file_path, filename, remaining_message
+
     # Pattern for quoted file paths (single or double quotes)
     quoted_pattern = (
         r"""(['"])([^'"]*\.(mp4|avi|mov|mkv|mp3|wav|jpg|png|pdf|txt|csv))\1"""
@@ -135,9 +144,21 @@ def generate_part_from_path(
         - mime_type: MIME type of the file
 
     """
-    file_path, file_uri, filename = upload_file_from_path_to_gcs(
-        path, bucket, subfolder_in_bucket
-    )
+    if path.startswith("gs://"):
+        logging.info(f"Path is already a GCS URI, skipping upload: {path}")
+
+        path_obj = Path(path)
+        filename = path_obj.name
+
+        file_uri = path
+        file_path = path
+
+    else:
+        # Upload local file to GCS
+        logging.info(f"Uploading local file to GCS: {path}")
+        file_path, file_uri, filename = upload_file_from_path_to_gcs(
+            path, bucket, subfolder_in_bucket
+        )
 
     mime_type, _ = mimetypes.guess_type(filename)
 
