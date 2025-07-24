@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -14,6 +15,10 @@ from google.genai import types
 # from google.adk.planners import BuiltInPlanner
 from proteomics_specialist.config import config
 from proteomics_specialist.sub_agents import utils
+
+from . import prompt
+
+logging.basicConfig(level=logging.INFO)
 
 
 def analyze_proteomics_video(
@@ -53,22 +58,6 @@ def analyze_proteomics_video(
         bucket = storage_client.bucket(bucket_name)
         client = genai.Client(vertexai=True, project=project_id, location="us-central1")
 
-        system_prompt = """
-        You are Professor Matthias Mann, a pioneering scientist in proteomics and mass spectrometry with extensive laboratory experience. Your scientific reputation was built on exactitude - you cannot help but insist on proper technical terminology and chronological precision in all laboratory documentation.
-
-        # Your background knowledge:
-        [These documents are for building your proteomics background knowledge and are not part of your task.]
-        """
-
-        instructions_prompt = """
-        # Your Task:
-        You need to analyze a laboratory video and describe it so that a next agent can find the protocol that best matches the procedure being performed in the video.
-        Your analysis must include these verification steps:
-        1. Identify the starting state (describe visible features)
-        2. List the specific actions taken in sequence while naming the involved equipment
-        3. Identify the ending state (describe visible features)
-        """
-
         background_knowledge = utils.generate_parts_from_folder(
             folder_path=knowledge_base_path,
             bucket=bucket,
@@ -76,7 +65,11 @@ def analyze_proteomics_video(
             file_extensions=["pdf"],
         )
 
+        logging.info(f"query: {query}")
         file_path, filename, message = utils.extract_file_path_and_message(query)
+        logging.info(
+            f"file_path: {file_path}, filename: {filename}, message: {message}"
+        )
 
         if not file_path:
             return {
@@ -84,18 +77,22 @@ def analyze_proteomics_video(
                 "error_message": "Could not extract valid file path from query",
             }
 
+        logging.info("Starting video upload to GCS and conversion to part...")
         video_results = utils.generate_part_from_path(
             path=file_path,
             bucket=bucket,
             subfolder_in_bucket="input_video",
         )
+        logging.info(
+            f"Video uploaded and converted successfully: {video_results['gcs_uri']}"
+        )
 
         collected_content = types.Content(
             role="user",
             parts=[
-                types.Part.from_text(text=system_prompt),
+                types.Part.from_text(text=prompt.SYSTEM_PROMPT),
                 *background_knowledge["parts"],
-                types.Part.from_text(text=instructions_prompt),
+                types.Part.from_text(text=prompt.INSTRUCTIONS_VIDEO_ANALYSIS_PROMP),
                 video_results["part"],
                 types.Part.from_text(text="User message:"),
                 types.Part.from_text(text=message),
