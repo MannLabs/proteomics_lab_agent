@@ -49,7 +49,7 @@ async def test_eval_agent() -> None:
         await AgentEvaluator.evaluate(
             agent_module="proteomics_specialist",
             eval_dataset_file_path_or_dir=(
-                "/Users/patriciaskowronek/Documents/proteomics_specialist/eval/eval_video_analyzer_agent/video_analyzer_agent_test.evalset.json"
+                "/Users/patriciaskowronek/Documents/proteomics_specialist/eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json"
             ),
             num_runs=1,
         )
