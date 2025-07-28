@@ -1,23 +1,17 @@
-"""Functions for LLM evaluation."""
+"""Contains functions that are required to support notebooks with automatic LLM evaluation."""
 
 from __future__ import annotations
 
-# Standard library imports
 import json
 import logging
-import sys
-from pathlib import Path
+from typing import Dict, List, Union
 
-# Type checking imports
-# Third-party imports
 import pandas as pd
 
-# Local imports and setup
-path_to_append = str(Path(__file__).parent.parent)
-sys.path.append(path_to_append)
-import video_to_protocol
+from . import video_to_protocol
 
-# Configuration
+JSONType = Union[Dict[str, "JSONType"], List["JSONType"], str, int, float, bool, None]
+
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -89,11 +83,17 @@ def extract_json_from_model_output(
         extracted_json_string = model_output_string[
             start_index + len(start_marker) : end_index
         ].strip()
+        logger.info("Found JSON within code block markers")
+    else:
+        extracted_json_string = model_output_string.strip()
+        logger.info(
+            "No code block markers found, trying to parse entire string as JSON"
+        )
 
+    if extracted_json_string:
         try:
             json_data = json.loads(extracted_json_string)
             logger.info("Successfully extracted and parsed JSON.")
-
             if isinstance(json_data, list) and all(
                 isinstance(item, dict) for item in json_data
             ):
@@ -106,7 +106,7 @@ def extract_json_from_model_output(
             logger.exception("Error decoding JSON after extraction")
             logger.debug(f"Extracted string: {extracted_json_string}")
     else:
-        logger.exception("Could not find JSON code block markers in the output.")
+        logger.warning("No content to parse as JSON")
         logger.debug(f"Model output: {model_output_string}")
 
     return df
@@ -115,8 +115,8 @@ def extract_json_from_model_output(
 def extract_table_to_dataframe(
     evaluation: str,
     table_name: str,
-    model_name: str = "gemini-2.5-pro-preview-03-25",
-    temperature: float = 0.9,
+    model_name: str,
+    temperature: float,
 ) -> pd.DataFrame | None:
     """Extract a table from evaluation content and convert it to a DataFrame.
 
@@ -127,20 +127,36 @@ def extract_table_to_dataframe(
     table_name : str
         The name of the table to extract
     model_name : str, optional
-        The model to use for content generation, default is "gemini-2.5-pro-preview-03-25"
+        The model to use for content generation
     temperature : float, optional
-        Temperature setting for content generation, default is 0.9
+        Temperature setting for content generation
 
     Returns
     -------
-    pandas.DataFrame or None
-        DataFrame containing the extracted table data, or None if extraction fails
+    pd.DataFrame
+        DataFrame containing the extracted table data
 
     """
-    extraction_prompt = get_table_json_prompt(evaluation, table_name)
+    try:
+        if not evaluation or not evaluation.strip():
+            logging.warning("Empty evaluation content provided")
+            return None
 
-    json_response, _ = video_to_protocol.generate_content_from_model(
-        extraction_prompt, model_name=model_name, temperature=temperature
-    )
+        if not table_name or not table_name.strip():
+            logging.warning("Empty table name provided")
+            return None
 
-    return extract_json_from_model_output(json_response)
+        extraction_prompt = get_table_json_prompt(evaluation, table_name)
+
+        json_response, _ = video_to_protocol.generate_content_from_model(
+            extraction_prompt, model_name=model_name, temperature=temperature
+        )
+
+        return extract_json_from_model_output(json_response)
+
+    except ValueError:
+        logging.exception("ValueError in table extraction")
+        return None
+    except Exception:
+        logging.exception("Unexpected error in table extraction")
+        return None
