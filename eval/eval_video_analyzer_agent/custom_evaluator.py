@@ -27,6 +27,8 @@ from pydantic import BaseModel
 from rouge_score import rouge_scorer
 from typing_extensions import override
 
+from . import prompt
+
 if TYPE_CHECKING:
     from google.adk.evaluation.eval_case import Invocation
     from google.adk.evaluation.eval_set import EvalSet
@@ -42,43 +44,6 @@ class ProtocolTitleExtractor:
     def __init__(self, extraction_model: str) -> None:
         """Initialize the protocol title extractor with an LLM model and prompt."""
         self.extraction_model = extraction_model
-        self._extraction_prompt_template = """
-            You are a protocol title extraction expert. Your task is to identify and extract protocol titles from text responses.
-
-            Look for protocol titles that are typically:
-            - Enclosed in quotes
-            - Mentioned after words like "protocol", "found", "titled", "called", etc.
-            - The main protocol(s) being referenced in the response
-
-            Text to analyze: {response_text}
-
-            Extract the protocol title(s) and return your response in the following JSON format:
-
-            If there's one clear main protocol:
-            {{
-                "protocol_titles": ["single title here"],
-                "selection_reasoning": "why this single title was selected"
-            }}
-
-            If there are multiple equally important protocols:
-            {{
-                "protocol_titles": ["first title", "second title", "etc"],
-                "selection_reasoning": "why multiple titles were selected as equally important"
-            }}
-
-            If no protocol title is found:
-            {{
-                "protocol_titles": [],
-                "selection_reasoning": "why no titles were found"
-            }}
-
-            Guidelines:
-            - Include all titles that appear to be equally important or prominent
-            - If one protocol is clearly the main focus, return only that one
-            - If the response mentions multiple protocols but discusses them all equally, return all of them
-            - Always return an array, even for single titles
-            - Use semantic understanding to determine which quoted text represents actual protocol titles
-        """
 
     async def extract_protocol_title(
         self,
@@ -104,7 +69,7 @@ class ProtocolTitleExtractor:
             return None
 
         try:
-            prompt = self._extraction_prompt_template.format(
+            custom_prompt = prompt.CUSTOM_EVALUATOR_EXTRACTION_PROMPT_TEMPLATE.format(
                 response_text=response_text
             )
 
@@ -115,7 +80,7 @@ class ProtocolTitleExtractor:
             client = genai.Client()
             response = client.models.generate_content(
                 model=self.extraction_model,
-                contents=prompt,
+                contents=custom_prompt,
                 config={
                     "response_mime_type": "application/json",
                     "response_schema": list[ProtocolTitles],

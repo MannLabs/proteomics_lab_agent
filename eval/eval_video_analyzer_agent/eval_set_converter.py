@@ -17,48 +17,13 @@ from typing import Any
 from google.genai import Client
 from pydantic import BaseModel
 
+from . import prompt
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 EXTRACTION_MODEL = "gemini-2.5-flash"
 GCS_BUCKET_PATH = "gs://ai-proteomics-advisor/input_video"
-EXTRACTION_PROMPT_TEMPLATE = """
-  You are an extraction expert. Your task is to identify and extract video uri
-  and protocol title from text responses.
-
-  Look for video uri that are typically:
-  - local paths in the initial user request
-  - Enclosed in quotes
-
-  Look for protocol title that are typically:
-  - in the last model or user responses
-  - Enclosed in quotes
-  - Mentioned after words like "protocol", "found", "titled", "called", etc.
-  - The main protocol being referenced in the response
-
-  Text to analyze: {response_text}
-
-  Extract the video uri and protocol title and return your response in the following
-  JSON format:
-
-  If there is a clear main protocol:
-  {{
-      "video_uri": ["uri here"]
-      "protocol_title": ["title here"],
-      "selection_reasoning": "why this uri and title was selected"
-  }}
-
-  If no uri or protocol title is found:
-  {{
-      "video_uri": [],
-      "protocol_titles": [],
-      "selection_reasoning": "why no uri or titles were found"
-  }}
-
-  Guidelines:
-  - Use semantic understanding to determine which quoted text represents the actual
-    uri and protocol title
-  """
 
 
 class Information(BaseModel):
@@ -205,10 +170,12 @@ class ProtocolFinderConverter:
 
         """
         try:
-            prompt = EXTRACTION_PROMPT_TEMPLATE.format(response_text=response_text)
+            custom_prompt = prompt.EXTRACTION_PROMPT_TEMPLATE.format(
+                response_text=response_text
+            )
             response = self.client.models.generate_content(
                 model=EXTRACTION_MODEL,
-                contents=prompt,
+                contents=custom_prompt,
                 config={
                     "response_mime_type": "application/json",
                     "response_schema": Information,
@@ -501,12 +468,11 @@ def main() -> None:
 
     Sets up file paths and runs the evaluation set conversion process.
     """
-    input_file = Path(
-        "/Users/patriciaskowronek/Documents/proteomics_specialist/proteomics_specialist/protocol_finder.evalset.json"
-    )
-    output_file = Path(
-        "/Users/patriciaskowronek/Documents/proteomics_specialist/"
-        "eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json"
+    base_dir = Path(__file__).parent.parent
+    input_file = base_dir / "proteomics_specialist/protocol_finder.evalset.json"
+    output_file = (
+        base_dir
+        / "eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json"
     )
 
     converter = ProtocolFinderConverter()
