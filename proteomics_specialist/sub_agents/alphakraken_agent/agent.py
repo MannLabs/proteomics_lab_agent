@@ -21,6 +21,7 @@ try:
     KRAKEN_HOST = utils.get_required_env("KRAKEN_HOST")
     KRAKEN_USER = utils.get_required_env("KRAKEN_USER")
     KRAKEN_PASSWORD = utils.get_required_env("KRAKEN_PASSWORD")
+    KRAKEN_MCP_IMAGE = utils.get_required_env("KRAKEN_MCP_IMAGE")
 except ValueError:
     logger.exception("Configuration error occurred")
 
@@ -48,7 +49,7 @@ alphakraken_agent = Agent(
                         "host",
                         "-i",
                         "--rm",
-                        "mcpserver",
+                        f"{KRAKEN_MCP_IMAGE}",
                     ],
                 )
             )

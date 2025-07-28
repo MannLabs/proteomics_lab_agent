@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import configparser
 import logging
 import mimetypes
 import os
@@ -11,13 +12,18 @@ from pathlib import Path
 from google.genai import types
 
 logger = logging.getLogger(__name__)
+config = configparser.ConfigParser()
 
-# import config
+current_file = Path(__file__).resolve()
+project_root = current_file.parent.parent.parent
+secrets_path = project_root / "secrets.ini"
+
+config.read(secrets_path)
 
 
 def get_required_env(var_name: str) -> str:
     """Get required environment variable or raise error."""
-    value = os.getenv(var_name)
+    value = config["DEFAULT"][var_name]
     if value is None:
         raise ValueError(f"Required environment variable {var_name} is not set")
     return value

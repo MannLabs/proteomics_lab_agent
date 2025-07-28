@@ -1,4 +1,4 @@
-"""Functions for LLM evaluation."""
+"""Contains functions that are required to support notebooks with automatic LLM evaluation."""
 
 from __future__ import annotations
 
