@@ -11,19 +11,21 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
+import prompt
 from google.genai import Client
 from pydantic import BaseModel
-
-from . import prompt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+GCS_BUCKET_PATH = os.getenv("GCS_BUCKET_PATH")
+BASE_DIR = Path(__file__).parent.parent.parent
+
 EXTRACTION_MODEL = "gemini-2.5-flash"
-GCS_BUCKET_PATH = "gs://ai-proteomics-advisor/input_video"
 
 
 class Information(BaseModel):
@@ -468,10 +470,9 @@ def main() -> None:
 
     Sets up file paths and runs the evaluation set conversion process.
     """
-    base_dir = Path(__file__).parent.parent
-    input_file = base_dir / "proteomics_specialist/protocol_finder.evalset.json"
+    input_file = BASE_DIR / "proteomics_specialist/protocol_finder.evalset.json"
     output_file = (
-        base_dir
+        BASE_DIR
         / "eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json"
     )
 

@@ -45,12 +45,12 @@ async def test_eval_agent() -> None:
     logger = logging.getLogger(__name__)
     print(f"Evaluation logs saved to: {log_file}")  # noqa: T201 (must show up in terminal)
 
+    base_dir = Path(__file__).parent.parent.parent
     try:
         await AgentEvaluator.evaluate(
             agent_module="proteomics_specialist",
-            eval_dataset_file_path_or_dir=(
-                "/Users/patriciaskowronek/Documents/proteomics_specialist/eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json"
-            ),
+            eval_dataset_file_path_or_dir=base_dir
+            / "eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json",
             num_runs=1,
         )
     except (ValueError, TypeError, RuntimeError, ConnectionError):

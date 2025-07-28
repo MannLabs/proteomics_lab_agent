@@ -39,7 +39,7 @@ def analyze_proteomics_video(
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         knowledge_base_path = os.getenv("KNOWLEDGE_BASE_PATH")
 
-        model = "gemini-2.5-pro"  # config.model
+        model = config.analysis_model
         temperature = config.temperature
 
         if (
