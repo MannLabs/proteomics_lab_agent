@@ -31,6 +31,7 @@ def upload_file_to_gcs(
     custom_blob_name: str | None = None,
 ) -> str:
     """Upload a file to Google Cloud Storage and return its URI.
+
     Uses the original filename as the blob name by default.
 
     Parameters
@@ -151,8 +152,8 @@ def collect_knowledge_uris(
 
 def generate_content_from_model(
     inputs: str | list,
-    model_name: str = "gemini-2.5-pro-preview-03-25",
-    temperature: float = 0.9,
+    model_name: str,
+    temperature: float,
 ) -> tuple:
     """Generate content using Google's Generative AI model.
 
@@ -171,7 +172,7 @@ def generate_content_from_model(
 
     Returns
     -------
-    tuple
+    tuple[str, any]
         A tuple containing (response_text, usage_metadata)
 
     Raises

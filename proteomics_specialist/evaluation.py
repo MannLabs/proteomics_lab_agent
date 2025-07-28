@@ -21,11 +21,17 @@ logging.basicConfig(
 def get_table_json_prompt(text_with_tables: str, table_identifier: str) -> str:
     """Generates a prompt to extract a specific table from text into JSON.
 
-    Args:
-        text_with_tables: The full text containing the table.
-        table_identifier: A string to help the model identify the target table.
+    Parameters
+    ----------
+    text_with_tables : str
+        The full text containing the table(s).
+    table_identifier : str
+        A string to help the model identify the target table
+        (e.g., the table title, or a unique phrase near it).
 
-    Returns:
+    Returns
+    -------
+    str
         A formatted prompt string.
 
     """
