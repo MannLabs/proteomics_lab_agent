@@ -1,6 +1,6 @@
 # proteomics_specialist
 
-The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_specialist, a tool that ... To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_specialist).
+The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_specialist (also called AI Proteomics Advisor), a multimodal, agentic AI framework that aims to democratizes mass spectrometry-based proteomics through personalized laboratory assistance and automated documentation. To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_specialist).
 
 * [**About**](#about)
 * [**License**](#license)
@@ -17,7 +17,16 @@ The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.
 ---
 ## About
 
-...
+Mass spectrometry-based proteomics has advanced significantly in the last decade, yet its widespread adoption remains constrained by complex instrumentations & software that requires extensive expertise. We identified documentation and knowledge transfer as key bottlenecks in proteomics accessibility and developed an AI Proteomics Advisor to address these challenges.
+
+The AI Proteomics Advisor is a multimodal agentic framework that combines Mann Labs' proteomics expertise with Google's cloud infrastructure. The framework incorporates lab-specific knowledge through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services, integrated with local MCP servers including Alphakraken for retrieving QC results and Confluence for managing lab-internal protocols.
+
+### Key Features
+
+It provides:
+* **Personalized guidance** based on user expertise levels
+* **Automatic protocol generation:** Transforms notes, photos, or laboratory videos with expert voice-over explanations into Nature-style protocols, significantly lowering documentation barriers for researchers.
+* **Automated laboratory notes generation and error detection:** Generates error-flagging laboratory notes by comparing video footage with baseline protocol procedures.
 
 ---
 ## License
@@ -164,13 +173,34 @@ You should see log output from both the agent (if any) and the MCP server (in `p
 ---
 ## Usage
 
-* [**Python**](#python-and-jupyter-notebooks)
+### Jupyter notebooks
 
-### Python and Jupyter notebooks
+The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on using proteomics_specialist as a Python package. The following notebooks have a dual purpose: they function as tutorials and provide the basis for paper figures.
 
-proteomics_specialist can be imported as a Python package into any Python script or notebook with the command `import proteomics_specialist`.
+#### Workflow for converting videos to protocols
+- Experimenting with various prompting techniques to supply a LLM with the required background information to convert lab videos into protocols.
+    File: 1_videoToProtocol_Evaluation.ipynb
+- Analyzing the evaluaiton results to generate statistics which techniques work well
+    File: 2_videoToProtocol_results.ipynb
 
-An ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks as tutorials on using proteomics_specialist as a Python package.
+#### Workflow for generatig laboratory notes from videos:
+The following notebooks are the proof-of-concept workflow for generating laboratory notes from videos.
+
+- Protocol Selection and Accuracy Evaluation:
+    Identify the protocol that best matches the procedure shown in the video
+    File: 1_videoToLabNotes_ProtocolFinder.ipynb
+- Lab Notes Generation and Error Analysis:
+    Compare video with ground-truth protocol to generate lab notes and identify procedural errors
+    Automatically evaluate lab note assistant's error detection against benchmark dataset
+    File: 2_videoToLabNotes_CompareVideoWithProtocol.ipynb
+- Benchmark Results Analysis:
+    Generate comprehensive statistics for benchmark evaluation results
+    File: 3_videoToLabNotes_results.ipynb
+
+#### Debugging MCP functionalities of agnets
+- Notebook for developing / debugging database functions:
+    File: database_test.ipynb
+
 
 ---
 ## Troubleshooting
@@ -187,7 +217,7 @@ In case of issues, check out the following links:
 ---
 ## Citations
 
-TBD.
+We are currently writting the manuscript.
 
 ---
 ## How to contribute
@@ -219,9 +249,3 @@ pip install detect-secrets
 (check `.pre-commit-config.yaml` for the exact parameters)
 3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
 4. Commit the latest version of `.secrets.baseline`
-
-
----
-## Changelog
-
-See the [HISTORY.md](HISTORY.md) for a complete overview of the changes made in each version.

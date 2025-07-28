@@ -152,9 +152,9 @@ def collect_knowledge_uris(
 
 def generate_content_from_model(
     inputs: str | list,
-    model_name: str = "gemini-2.5-pro-preview-03-25",
-    temperature: float = 0.9,
-) -> tuple[str, any]:
+    model_name: str,
+    temperature: float,
+) -> tuple:
     """Generate content using Google's Generative AI model.
 
     This function sends inputs to a specified Gemini model and returns the
