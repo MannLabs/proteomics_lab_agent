@@ -86,7 +86,10 @@ ignore = [
     "D401", # First line of docstring should be in imperative mood
     "B023", # Function definition does not bind loop variable
     "PD901", # Avoid using the generic variable name `df` for DataFrames"
-    "TCH003" # Move standard library import into a type-checking block
+    "TCH003", # Move standard library import into a type-checking block
+    # Added by Patricia:
+    "E402", # Module level import not at top of cell
+    "S608" # Possible SQL injection vector through string-based query construction
 ]
 
 [tool.ruff.lint.per-file-ignores]

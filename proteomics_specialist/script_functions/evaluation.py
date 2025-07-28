@@ -133,8 +133,8 @@ def extract_table_to_dataframe(
 
     Returns
     -------
-    pd.DataFrame
-        DataFrame containing the extracted table data
+    pandas.DataFrame or None
+        DataFrame containing the extracted table data, or None if extraction fails
 
     """
     try:

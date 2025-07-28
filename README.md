@@ -36,11 +36,31 @@ proteomics_specialist was developed by the [Mann Labs at the Max Planck Institut
 ---
 ## Installation
 
-* [**Developer installer:**](#developer) Choose this installation if you are familiar with CLI tools, [conda](https://docs.conda.io/en/latest/), and Python. This installation allows access to all available features of proteomics_specialist and even allows to modify its source code directly. Generally, the developer version of proteomics_specialist outperforms the precompiled versions.
+### Project Structure
+
+```
+proteomics_specialist/
+...
+proteomics_specialist/
+├── eval/                          # Evaluation scripts and test conversion utilities
+├── nbs/                           # Jupyter notebooks for tutorials and figures
+├── proteomics_specialist/         # Main agent package
+│   ├── __init__.py
+│   ├── agent.py                   # Root ADK agent orchestrating tools/subagents
+│   ├── prompt.py                  # Root agent prompt
+│   └── sub_agents/
+│       └── alphakraken_agent/     # Sub-agent module
+│           ├── __init__.py
+│           ├── agent.py           # Local MCP server integration
+│           └── prompt.py          # Subagent prompt
+├── .env                           # Environment variables (from .env.example)
+├── secrets.ini                    # Secrets configuration (from secrets.ini.example)
+└── README.md                      # Project documentation
+```
 
 ### Developer
 
-proteomics_specialist can also be installed in editable (i.e. developer) mode with a few `bash` commands. This allows to fully customize the software and even modify the source code to your specific needs. When an editable Python package is installed, its source code is stored in a transparent location of your choice. While optional, it is advised to first (create and) navigate to e.g. a general software folder:
+proteomics_specialist can be installed in editable (i.e. developer) mode with a few `bash` commands. This allows to fully customize the software and even modify the source code to your specific needs. When an editable Python package is installed, its source code is stored in a transparent location of your choice. While optional, it is advised to first (create and) navigate to e.g. a general software folder:
 
 ```bash
 mkdir ~/folder/where/to/install/software
@@ -55,20 +75,105 @@ Next, download the proteomics_specialist repository from GitHub either directly 
 git clone https://github.com/MannLabs/proteomics_specialist.git
 ```
 
-For any Python package, it is highly recommended to use a separate [conda virtual environment](https://docs.conda.io/en/latest/), as otherwise *dependency conflicts can occur with already existing packages*.
+## Setup Instructions
 
+### 1. Prerequisites
+- Python 3.12+
+- Access to a terminal or command prompt
+- Google Cloud Project
+
+Once you have created your project, [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/install). Then run the following command to authenticate:
 ```bash
-conda create --name proteomics_specialist python=3.11 -y
-conda activate proteomics_specialist
+gcloud auth login
+```
+This allows the ADK agent in this project to use a Gemini model.
+
+### 2. Create and Activate Virtual Environment
+
+It's highly recommended to use a virtual environment to manage project dependencies. Create a virtual environment (e.g., named .venv)
+```bash
+python3 -m venv .venv
 ```
 
-Finally, proteomics_specialist and all its [dependencies](requirements) need to be installed.
+Activate the virtual environment:
+1. On macOS/Linux:
+```bash
+source .venv/bin/activate
+```
+2. On Windows:
+```bash
+.venv\Scripts\activate
+```
 
+### 3. Install dependencies
+
+Install proteomics_specialist and all its [dependencies](requirements):
 ```bash
 pip install -e "./proteomics_specialist"
 ```
 
 ***By using the editable flag `-e`, all modifications to the [proteomics_specialist source code folder](proteomics_specialist) are directly reflected when running proteomics_specialist. Note that the proteomics_specialist folder cannot be moved and/or renamed if an editable version is installed.***
+
+### 4. Configure settings
+The `agent.py` will load the keys defined in .env and secrets.ini.
+
+1. Set the environment variables. You can set them in your .env file (modify and rename .env.example file to .env). The `agent.py` will load the defined Google Cloud project to be able to access the Gemini model.
+2. Set secrets. You can set them in your secrets.ini file (modify and rename secrets.ini.example file to secrets.ini).
+3. Generate a Confluence API Token for Authentication (Cloud) - **Recommended**
+    1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
+    2. Click **Create API token**, name it
+    3. Copy the token immediately
+
+### 5. Establish MCP servers with Docker
+
+Docker allows applications to be packaged and run in isolated environments called containers. Some MCP servers are distributed as Docker images, making them easy to run across different operating systems.
+
+1.   **Installation**: Download and install Docker Desktop from the [official Docker website](https://www.docker.com/products/docker-desktop/). Docker Desktop is available for Windows, macOS, and Linux and provides a graphical interface as well as command-line tools.
+2.   **Post-Installation**: Ensure Docker Desktop is running after installation, as this starts the Docker daemon (the background service that manages containers).
+3.   **Verification**: Open a terminal or command prompt and verify the Docker installation by typing:
+```bash
+docker --version
+```
+4.  **Install the Alphakraken MCP server**: Clone the alphakraken repository:
+```bash
+git clone https://github.com/MannLabs/alphakraken.git
+cd directory/of/alphakraken
+docker build -t mcpserver -f mcp-server/Dockerfile .
+# test that the mcpserver works
+docker run -t mcpserver
+```
+5.  **Install the Confluence MCP server**: MCP Atlassian is distributed as a Docker image. This is the recommended way to run the server, especially for IDE integration.
+```bash
+# Pull Pre-built Image
+docker pull ghcr.io/sooperset/mcp-atlassian:latest
+```
+
+### 6. Update packages regularly
+```
+pip install --upgrade google-adk
+pip install google-adk[eval]
+```
+
+## Running the Agent
+
+You can run the agent locally using the `adk` command in your terminal:
+* First ensure your virtual environment is active and you are in the root directory of the `proteomics_specialist` project.
+
+1.  To run the agent from the CLI:
+```bash
+adk run proteomics_specialist
+```
+2.  To run the agent from the ADK web UI:
+```bash
+adk web
+```
+Then select the `proteomics_specialist` from the dropdown.
+
+This will:
+- Start the adk root agent (`proteomics_specialist/agent.py`).
+- The root agent can initialize the `MCPToolset` of subagents such as alphakraken_agent, database_agent or protocol_agent.
+- The MCP servers will start automatically and listen for tool calls from the agents via stdio.
+- The agents will then be ready to process your instructions (which you would typically provide in a client application or test environment that uses these agents).
 
 ---
 ## Usage
@@ -96,6 +201,10 @@ The following notebooks are the proof-of-concept workflow for generating laborat
 - Benchmark Results Analysis:
     Generate comprehensive statistics for benchmark evaluation results
     File: 3_videoToLabNotes_results.ipynb
+
+#### Debugging MCP functionalities of agnets
+- Notebook for developing / debugging database functions:
+    File: database_test.ipynb
 
 
 ---
@@ -135,12 +244,12 @@ You can run the checks yourself using:
 pre-commit run --all-files
 ```
 
-##### The `detect-secrets` hook fails
+#### `detect-secrets` hook
 To set up a secret in your repository:
 ```bash
 pip install detect-secrets
 ```
-1. Generate a secrets.ini file with the secret and add secrets.ini to .gitignore
+1. Generate a secrets.ini file with the secret. Take 'secrets.ini.example' as a template.
 2. Run `detect-secrets scan --exclude-files testfiles --exclude-lines '"(hash|id|image/\w+)":.*' > .secrets.baseline` to scan your repository and create a .secrets.baseline file
 (check `.pre-commit-config.yaml` for the exact parameters)
 3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
