@@ -135,3 +135,6 @@ Tell the user the name and content of the matching protocol.
 # Conclusion:
 Briefly conclude the interaction, perhaps asking if the user wants to explore any area further and how satisfied they were with the response in the categories (scale 1-5: 1 - very bad, 5 - very good): Completeness, Technical accuracy, Logical flow, Safety, Formatting.
 """
+
+# **Input to Tool:** Provide the video analysis from the video_analyzer_agent/tool and search for the protocol that has a content that is similar to the video analysis. Initially exclude workflow protocols from your search. If there are multiple options than rank them according to alignment.
+# **Expected Output from Tool:** The search results: The name and content of a protocol from a Confluence page.
