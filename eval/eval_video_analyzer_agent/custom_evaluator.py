@@ -6,7 +6,7 @@ import inspect
 import json
 import logging
 import re
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from google import genai
 from google.adk.evaluation.agent_evaluator import AgentEvaluator
@@ -42,7 +42,7 @@ class ProtocolTitleExtractor:
     """Utility class to extract protocol titles from LLM responses using semantic understanding."""
 
     def __init__(self, extraction_model: str) -> None:
-        """Initialize the protocol title extractor with an LLM model and prompt."""
+        """Initialize the protocol title extractor with an LLM model."""
         self.extraction_model = extraction_model
 
     async def extract_protocol_title(
@@ -117,6 +117,10 @@ class ProtocolTitleExtractor:
 
 class ProtocolTitleRougeEvaluator(Evaluator):
     """Evaluator that extracts protocol titles and compares them using ROUGE."""
+
+    cumulative_total_videos = 0
+    cumulative_passed_count = 0
+    cumulative_total_score = 0.0
 
     def __init__(self, eval_metric: EvalMetric) -> None:
         """Initialize the evaluator with metric configuration and scoring tools.
@@ -226,8 +230,7 @@ class ProtocolTitleRougeEvaluator(Evaluator):
     ) -> EvaluationResult:
         """Evaluate accuracy for extracting protocol title from video using LLM-based extraction and ROUGE scoring.
 
-        Extracts protocol titles from actual invocation responses (agent response) using LLM semantic analysis
-        (with regex fallback) and compares them against expected titles using ROUGE-1 F-measure.
+        Extracts protocol titles from actual invocation responses (agent response) using LLM semantic analysis (with regex fallback) and compares them against expected titles using ROUGE-1 F-measure.
         Processes each invocation pair, calculates individual ROUGE scores, and aggregates
         results into an overall evaluation with pass/fail status based on configured threshold.
 
@@ -248,77 +251,175 @@ class ProtocolTitleRougeEvaluator(Evaluator):
             extracted titles, expected titles, ROUGE scores, and evaluation status
 
         """
-        total_score = 0.0
-        num_invocations = 0
-        per_invocation_results = []
+        self._log_evaluation_header()
 
+        (
+            total_score,
+            per_invocation_results,
+            passed_count,
+        ) = await self._process_invocation_pairs(
+            actual_invocations, expected_invocations
+        )
+
+        self._update_cumulative_stats(
+            len(actual_invocations), passed_count, total_score
+        )
+
+        if not per_invocation_results:
+            return EvaluationResult()
+
+        overall_score, overall_status = self._calculate_overall_results(
+            total_score, len(per_invocation_results)
+        )
+
+        self._log_final_results(overall_score, overall_status)
+        self._log_cumulative_summary()
+
+        return EvaluationResult(
+            overall_score=overall_score,
+            overall_eval_status=overall_status,
+            per_invocation_results=per_invocation_results,
+        )
+
+    def _log_evaluation_header(self) -> None:
+        """Log the evaluation header."""
         logger.info("=" * 80)
         logger.info("LLM-BASED PROTOCOL TITLE EXTRACTION & ROUGE EVALUATION")
         logger.info("=" * 80)
 
+    async def _process_invocation_pairs(
+        self,
+        actual_invocations: list[Invocation],
+        expected_invocations: list[Invocation],
+    ) -> tuple[float, list[PerInvocationResult], int]:
+        """Process each invocation pair and return aggregated results."""
+        total_score = 0.0
+        per_invocation_results = []
+        passed_count = 0
+
         for actual, expected in zip(actual_invocations, expected_invocations):
-            response_text = get_text_from_content(actual.final_response) or ""
-            extracted_title = await self.extractor.extract_protocol_title(response_text)
-            expected_title = self._get_expected_protocol_title(expected)
+            result = await self._evaluate_single_invocation(actual, expected)
+            per_invocation_results.append(result)
+            total_score += result.score
 
-            logger.info("-" * 80)
-            logger.info(f"Full Response: {response_text}")
-            logger.info(
-                f"Extracted Title(s): {self._format_titles_for_display(extracted_title)}"
+            if result.eval_status.name == "PASSED":
+                passed_count += 1
+
+        return total_score, per_invocation_results, passed_count
+
+    async def _evaluate_single_invocation(
+        self, actual: Invocation, expected: Invocation
+    ) -> PerInvocationResult:
+        """Evaluate a single invocation pair."""
+        response_text = get_text_from_content(actual.final_response) or ""
+        extracted_title = await self.extractor.extract_protocol_title(response_text)
+        expected_title = self._get_expected_protocol_title(expected)
+
+        self._log_invocation_details(response_text, extracted_title, expected_title)
+
+        rouge_score = self._calculate_rouge_score_with_logging(
+            extracted_title, expected_title
+        )
+        eval_status = get_eval_status(rouge_score, self._eval_metric.threshold)
+
+        return PerInvocationResult(
+            actual_invocation=actual,
+            expected_invocation=expected,
+            score=rouge_score,
+            eval_status=eval_status,
+        )
+
+    def _log_invocation_details(
+        self,
+        response_text: str,
+        extracted_title: str | None,
+        expected_title: str | None,
+    ) -> None:
+        """Log details for a single invocation evaluation."""
+        logger.info("-" * 80)
+        logger.info(f"Full Response: {response_text}")
+        logger.info(
+            f"Extracted Title(s): {self._format_titles_for_display(extracted_title)}"
+        )
+        logger.info(
+            f"Expected Title(s): {self._format_titles_for_display(expected_title)}"
+        )
+
+    def _calculate_rouge_score_with_logging(
+        self, extracted_title: str | None, expected_title: str | None
+    ) -> float:
+        """Calculate ROUGE score and log the result with appropriate messages."""
+        if extracted_title and expected_title:
+            rouge_score = self._calculate_rouge_score(extracted_title, expected_title)
+            logger.info(f"ROUGE-1 F-measure: {rouge_score:.4f}")
+        elif not extracted_title and not expected_title:
+            rouge_score = 0.0
+            logger.info(f"Both titles are None/empty - No match: {rouge_score:.4f}")
+        elif not extracted_title:
+            rouge_score = 0.0
+            logger.warning(
+                f"Failed to extract protocol title - Score: {rouge_score:.4f}"
             )
-            logger.info(
-                f"Expected Title(s): {self._format_titles_for_display(expected_title)}"
+        else:  # not expected_title
+            rouge_score = 0.0
+            logger.warning(
+                f"Expected no title but extracted {self._format_titles_for_display(extracted_title)} - Score: {rouge_score:.4f}"
             )
 
-            if extracted_title and expected_title:
-                rouge_score = self._calculate_rouge_score(
-                    extracted_title, expected_title
-                )
-                logger.info(f"ROUGE-1 F-measure: {rouge_score:.4f}")
-            elif not extracted_title and not expected_title:
-                rouge_score = 0.0
-                logger.info(f"Both titles are None/empty - No match: {rouge_score:.4f}")
-            elif not extracted_title:
-                rouge_score = 0.0
-                logger.warning(
-                    f"Failed to extract protocol title - Score: {rouge_score:.4f}"
-                )
-            elif not expected_title:
-                rouge_score = 0.0
-                logger.warning(
-                    f"Expected no title but extracted {self._format_titles_for_display(extracted_title)} - Score: {rouge_score:.4f}"
-                )
+        return rouge_score
 
-            eval_status = get_eval_status(rouge_score, self._eval_metric.threshold)
-            per_invocation_results.append(
-                PerInvocationResult(
-                    actual_invocation=actual,
-                    expected_invocation=expected,
-                    score=rouge_score,
-                    eval_status=eval_status,
-                )
+    def _update_cumulative_stats(
+        self, num_invocations: int, passed_count: int, total_score: float
+    ) -> None:
+        """Update class-level cumulative statistics."""
+        ProtocolTitleRougeEvaluator.cumulative_total_videos += num_invocations
+        ProtocolTitleRougeEvaluator.cumulative_passed_count += passed_count
+        ProtocolTitleRougeEvaluator.cumulative_total_score += total_score
+
+    def _calculate_overall_results(
+        self, total_score: float, num_invocations: int
+    ) -> tuple[float, Any]:
+        """Calculate overall score and status."""
+        overall_score = total_score / num_invocations
+        overall_status = get_eval_status(overall_score, self._eval_metric.threshold)
+        return overall_score, overall_status
+
+    def _log_final_results(self, overall_score: float, overall_status: Any) -> None:  # noqa: ANN401 (allow any)
+        """Log the final evaluation results."""
+        logger.info("=" * 80)
+        logger.info("FINAL RESULTS")
+        logger.info(f"Overall Actual Score: {overall_score:.4f}")
+        logger.info(f"Required Score / Threshold: {self._eval_metric.threshold}")
+        logger.info(f"Status: {overall_status.name}")
+        logger.info("=" * 80)
+
+    def _log_cumulative_summary(self) -> None:
+        """Log cumulative summary statistics."""
+        cumulative_avg_score = (
+            ProtocolTitleRougeEvaluator.cumulative_total_score
+            / ProtocolTitleRougeEvaluator.cumulative_total_videos
+            if ProtocolTitleRougeEvaluator.cumulative_total_videos > 0
+            else 0
+        )
+        cumulative_pass_percentage = (
+            (
+                ProtocolTitleRougeEvaluator.cumulative_passed_count
+                / ProtocolTitleRougeEvaluator.cumulative_total_videos
             )
-            total_score += rouge_score
-            num_invocations += 1
+            * 100
+            if ProtocolTitleRougeEvaluator.cumulative_total_videos > 0
+            else 0
+        )
 
-        if per_invocation_results:
-            overall_score = total_score / num_invocations
-            overall_status = get_eval_status(overall_score, self._eval_metric.threshold)
-
-            logger.info("=" * 80)
-            logger.info("FINAL RESULTS")
-            logger.info(f"Overall Actual Score: {overall_score:.4f}")
-            logger.info(f"Required Score / Threshold: {self._eval_metric.threshold}")
-            logger.info(f"Status: {overall_status.name}")
-            logger.info("=" * 80)
-
-            return EvaluationResult(
-                overall_score=overall_score,
-                overall_eval_status=overall_status,
-                per_invocation_results=per_invocation_results,
-            )
-
-        return EvaluationResult()
+        logger.info("CUMULATIVE SUMMARY STATISTICS")
+        logger.info(
+            f"Total Videos: {ProtocolTitleRougeEvaluator.cumulative_total_videos}"
+        )
+        logger.info(
+            f"Passed: {ProtocolTitleRougeEvaluator.cumulative_passed_count}/{ProtocolTitleRougeEvaluator.cumulative_total_videos} ({cumulative_pass_percentage:.1f}%)"
+        )
+        logger.info(f"Average ROUGE Score: {cumulative_avg_score:.4f}")
+        logger.info("=" * 80)
 
     def _format_titles_for_display(self, titles: str | list[str]) -> str:
         """Format titles for display in console output."""
