@@ -37,7 +37,6 @@ If no protocol title is found:
 Guidelines:
 - Include all titles that appear to be equally important or prominent
 - If one protocol is clearly the main focus, return only that one
-- If the response mentions multiple protocols but discusses them all equally, return all of them
 - Always return an array, even for single titles
 - Use semantic understanding to determine which quoted text represents actual protocol titles
 """

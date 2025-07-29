@@ -8,7 +8,6 @@ import logging
 import re
 from typing import TYPE_CHECKING, Callable
 
-import prompt
 from google import genai
 from google.adk.evaluation.agent_evaluator import AgentEvaluator
 from google.adk.evaluation.eval_metrics import EvalMetric, JudgeModelOptions
@@ -27,6 +26,8 @@ from google.adk.evaluation.metric_evaluator_registry import (
 from pydantic import BaseModel
 from rouge_score import rouge_scorer
 from typing_extensions import override
+
+from . import prompt
 
 if TYPE_CHECKING:
     from google.adk.evaluation.eval_case import Invocation

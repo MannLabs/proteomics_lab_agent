@@ -51,7 +51,7 @@ protocol_agent = Agent(
                         "-e",
                         "MCP_LOGGING_STDOUT",
                         "-e",
-                        "READ_ONLY_MODE",
+                        "ENABLED_TOOLS",
                         "-e",
                         "CONFLUENCE_SPACES_FILTER",
                         "ghcr.io/sooperset/mcp-atlassian:latest",
@@ -62,8 +62,9 @@ protocol_agent = Agent(
                         "CONFLUENCE_API_TOKEN": CONFLUENCE_API_TOKEN,
                         "MCP_VERBOSE": "true",
                         "MCP_LOGGING_STDOUT": "true",
-                        "READ_ONLY_MODE": "true",
+                        # "READ_ONLY_MODE": "true",
                         "CONFLUENCE_SPACES_FILTER": "ProtocolMCP",
+                        "ENABLED_TOOLS": "confluence_search,confluence_get_page,confluence_get_page_children,confluence_get_labels,confluence_create_page,confluence_update_page,confluence_add_label",
                     },
                 )
             )
