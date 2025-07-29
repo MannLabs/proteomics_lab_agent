@@ -192,9 +192,6 @@ The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on usin
 #### Workflow for generatig laboratory notes from videos:
 The following notebooks are the proof-of-concept workflow for generating laboratory notes from videos.
 
-- Protocol Selection and Accuracy Evaluation:
-    Identify the protocol that best matches the procedure shown in the video
-    File: 1_videoToLabNotes_ProtocolFinder.ipynb
 - Lab Notes Generation and Error Analysis:
     Compare video with ground-truth protocol to generate lab notes and identify procedural errors
     Automatically evaluate lab note assistant's error detection against benchmark dataset
@@ -202,6 +199,8 @@ The following notebooks are the proof-of-concept workflow for generating laborat
 - Benchmark Results Analysis:
     Generate comprehensive statistics for benchmark evaluation results
     File: 3_videoToLabNotes_results.ipynb
+- Debugging notebook for video analysis wihtin the ADK workflow
+    File: 4_videoToLabNotes_adk_workflow.ipynb
 
 #### Debugging MCP functionalities of agnets
 - Notebook for developing / debugging database functions:
