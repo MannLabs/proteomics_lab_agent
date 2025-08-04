@@ -70,4 +70,5 @@ protocol_agent = Agent(
             )
         )
     ],
+    output_key="retrieved_protocol",
 )
