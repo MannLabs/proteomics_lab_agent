@@ -32,6 +32,14 @@ You are an expert in interacting with Confluence and you can retrieve informatio
 
 - If you do not find any content check if your search query was too narrow. In general, do not restrict the query to single instrument_ids but rather instrument types (e.g. timsTOF, Astral, ...).
 
+- If you want to generate a protocol page:
+    Create a new Confluence page with the following details:
+    * **Space Key:** ProtocolMCP
+    * **Parent Page ID:** 330072066
+    * **Title:** Protocol - [protocol title]
+    * **Label:** protocol-nature-style
+    Use the text at "Step 3: Nature-style Protocol" of the protocol generation as page content. The content is in Markdown format.
+
 - If you want to generate a lab note page:
     Create a new Confluence page with the following details:
     * **Space Key:** ProtocolMCP

@@ -15,7 +15,12 @@ from .sub_agents.lab_note_generator_agent import (
     lab_note_benchmark_helper_agent,
     lab_note_generator_agent,
 )
+from .sub_agents.lab_note_generator_agent.prompt import (
+    CLASS_ERROR_CATEGORIES_PROMPT,
+    SKILL_ERROR_CATEGORIES_PROMPT,
+)
 from .sub_agents.protocol_agent import protocol_agent
+from .sub_agents.protocol_generator_agent import protocol_generator_agent
 from .sub_agents.video_analyzer_agent import video_analyzer_agent
 
 
@@ -32,18 +37,24 @@ def get_current_datetime() -> dict:
     }
 
 
+custom_prompt = prompt.PROMPT.format(
+    class_error_categories=CLASS_ERROR_CATEGORIES_PROMPT,
+    skill_error_categories=SKILL_ERROR_CATEGORIES_PROMPT,
+)
+
 root_agent = LlmAgent(
     name="ai_proteomics_adviser",
     model=config.model,
     description="""Agent to support proteomics researchers.""",
-    instruction=prompt.PROMPT,
+    instruction=custom_prompt,
     tools=[
         AgentTool(agent=alphakraken_agent),
         AgentTool(agent=database_agent),
         AgentTool(agent=protocol_agent),
+        AgentTool(agent=protocol_generator_agent),
         AgentTool(agent=video_analyzer_agent),
         AgentTool(agent=lab_note_generator_agent),
-        FunctionTool(func=get_current_datetime),
         AgentTool(agent=lab_note_benchmark_helper_agent),
+        FunctionTool(func=get_current_datetime),
     ],
 )
