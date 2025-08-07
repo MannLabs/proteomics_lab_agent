@@ -90,7 +90,8 @@ This allows the ADK agent in this project to use a Gemini model.
 
 ### 2. Create and Activate Virtual Environment
 
-It's highly recommended to use a virtual environment to manage project dependencies. Create a virtual environment (e.g., named .venv)
+
+It's highly recommended to use a virtual environment to manage project dependencies. Navigate to the folder with this code base. Create a virtual environment (e.g., named .venv)
 ```bash
 python3 -m venv .venv
 ```
@@ -109,10 +110,12 @@ source .venv/bin/activate
 
 Install proteomics_specialist and all its [dependencies](requirements):
 ```bash
-pip install -e "./proteomics_specialist"
-```
+# Install main requirements
+pip install -r requirements/requirements.txt
 
-***By using the editable flag `-e`, all modifications to the [proteomics_specialist source code folder](proteomics_specialist) are directly reflected when running proteomics_specialist. Note that the proteomics_specialist folder cannot be moved and/or renamed if an editable version is installed.***
+# Install development requirements (if you need dev dependencies)
+pip install -r requirements/requirements_development.txt
+```
 
 ### 4. Configure settings
 The `agent.py` will load the keys defined in .env and secrets.ini.
