@@ -91,7 +91,7 @@ def generate_lab_notes(
             folder_path=knowledge_base_path,
             bucket=bucket,
             subfolder_in_bucket="background_knowledge",
-            file_extensions=["pdf"],
+            file_extensions=[".pdf"],
         )
 
         examples = {
