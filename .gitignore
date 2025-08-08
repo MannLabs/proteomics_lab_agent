@@ -22,6 +22,7 @@ secrets.ini
 # History of evaluation tests of agent developer kit
 .adk
 eval_lab_note_results/
+eval_protocol_results/
 
 # Github defaults are below
 # TODO: sort through them

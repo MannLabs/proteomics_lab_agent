@@ -16,11 +16,11 @@ TEST_THRESHOLD = 0.5
 
 def setup_logging() -> Path:
     """Setup logging for lab note evaluation."""
-    log_dir = Path("./lab_note_eval_logs")
+    log_dir = Path("./eval_logs")
     log_dir.mkdir(exist_ok=True)
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    log_file = log_dir / f"lab_note_eval_{timestamp}.log"
+    log_file = log_dir / f"eval_{timestamp}.log"
 
     logging.basicConfig(
         level=logging.INFO,

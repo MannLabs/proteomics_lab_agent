@@ -50,6 +50,13 @@ WRITING_GUIDELINES = """
     - Language: Use direct, action-oriented language with commonly used vocabularies
     - Estimated timing: Use the video legth
 """
+SIMPLE_INSTRUCTIONS_PROTOCOL_GENERATION_FROM_VIDEO_PROMP = """
+# Instruction
+
+You work with following input:
+- Video: An instructional video that demonstrates how a researcher carries out a laboratory procedure.\n
+Your task is to analyze the provided video and to convert it into a Nature-style protocol. The goal is a clear, concise, unambiguous protocol reproducible by someone with no prior knowledge.\n
+"""
 
 INSTRUCTIONS_PROTOCOL_GENERATION_FROM_VIDEO_PROMP = """
 # Instruction
@@ -57,6 +64,7 @@ INSTRUCTIONS_PROTOCOL_GENERATION_FROM_VIDEO_PROMP = """
 You work with following input:
 - Video: An instructional video that demonstrates how a researcher carries out a laboratory procedure.\n
 Your task is to analyze the provided video and to convert it into a Nature-style protocol. The goal is a clear, concise, unambiguous protocol reproducible by someone with no prior knowledge.\n
+
 ## Follow this structured approach:
 * Step 1: Go through the 'Video' completely from beginning to end.
 * Step 2: Document all observations:
@@ -147,10 +155,21 @@ You work with following input:
 - Text: Notes about a laboratory procedure.\n
 
 Your task is to analyze the provided text and to convert it into a Nature-style protocol. The goal is a clear, concise, unambiguous protocol reproducible by someone with no prior knowledge.\n
+
 ## Follow this structured approach:
 * Step 1: Go through the 'Text' completely from beginning to end.
 * Step 2: Convert your text into a Nature-style protocol:
 {WRITING_GUIDELINES}
+
+"""
+
+SIMPLE_INSTRUCTIONS_PROTOCOL_GENERATION_FROM_TEXT_PROMP = """\
+# Instruction
+
+You work with following input:
+- Text: Notes about a laboratory procedure.\n
+
+Your task is to analyze the provided text and to convert it into a Nature-style protocol. The goal is a clear, concise, unambiguous protocol reproducible by someone with no prior knowledge.\n
 
 """
 
