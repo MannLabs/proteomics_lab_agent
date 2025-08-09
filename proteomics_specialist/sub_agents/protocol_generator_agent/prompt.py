@@ -58,7 +58,7 @@ You work with following input:
 Your task is to analyze the provided video and to convert it into a Nature-style protocol. The goal is a clear, concise, unambiguous protocol reproducible by someone with no prior knowledge.\n
 """
 
-INSTRUCTIONS_PROTOCOL_GENERATION_FROM_VIDEO_PROMP = """
+INSTRUCTIONS_PROTOCOL_GENERATION_FROM_VIDEO_PROMP = f"""
 # Instruction
 
 You work with following input:
@@ -148,7 +148,7 @@ FINAL_INSTRUCTIONS_PROMPT = """
 Protocol:
 """
 
-INSTRUCTIONS_PROTOCOL_GENERATION_FROM_TEXT_PROMP = """\
+INSTRUCTIONS_PROTOCOL_GENERATION_FROM_TEXT_PROMP = f"""
 # Instruction
 
 You work with following input:
@@ -160,7 +160,6 @@ Your task is to analyze the provided text and to convert it into a Nature-style 
 * Step 1: Go through the 'Text' completely from beginning to end.
 * Step 2: Convert your text into a Nature-style protocol:
 {WRITING_GUIDELINES}
-
 """
 
 SIMPLE_INSTRUCTIONS_PROTOCOL_GENERATION_FROM_TEXT_PROMP = """\

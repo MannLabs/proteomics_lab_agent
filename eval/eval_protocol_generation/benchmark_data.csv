@@ -1,5 +1,5 @@
-eval_set_name,protocol_type,user_prompt,input_type,ground_truth_protocol,ai_protocol,user_protcol_rating,comments
-ConnectingColumnSampleLine,specialized_equipment,"Generate a protocol based on this video ""gs://ai-proteomics-advisor/input_for_protocol/ConnectingColumnSampleLine_protocolCorrect.MP4"".",video,"# Connecting IonOpticks Column & sample line of Evosep
+eval_set_name,protocol_type,activity_type,user_prompt,input_type,ground_truth_protocol,ai_protocol,user_protcol_rating,comments
+ConnectingColumnSampleLine,specialized_equipment,connecting_columns:,"Generate a protocol based on this video ""gs://ai-proteomics-advisor/input_for_protocol/ConnectingColumnSampleLine_protocolCorrect.MP4"".",video,"# Connecting IonOpticks Column & sample line of Evosep
 
 ## Abstract
 This protocol explains how to connect an IonOpticks column inserted into a timsTOF Ultra with an sample line of an Evosep.
@@ -124,12 +124,8 @@ This protocol provides a step-by-step guide for the correct physical and electri
 ### Figure 2: Software Workflow for Initiating Spray
 ![Placeholder for a composite image showing screenshots of the software interfaces: (A) The 'Standby' button in timsControl. (B) The 'Idle flow -> Run' command in the HyStar right-click menu. (C) The timsControl interface showing a stable TIC signal after the system is set to 'Operating' and idle flow has commenced.](placeholder_image_url)
 ***(A) Ensure the mass spectrometer is in 'Standby' in timsControl before making connections. (B) Use the HyStar menu to start the 'Idle flow'. (C) After switching to 'Operating' mode, monitor for a stable signal in timsControl.***
-","Completeness: 5
-Technical Accuracy: 5
-Logical Flow: 5
-Safety: 4
-Formatting: 2",
-MagneticBeadBasedEnrichmentPlasma,regular_wetlab,"Generate a protocol based on these notes: #Magnetic beads - Sample preparation
+","{'Completeness': 5, 'Technical Accuracy': 5, 'Logical Flow': 5, 'Safety': 4, 'Formatting': 2}",
+MagneticBeadBasedEnrichmentPlasma,regular_wetlab,plasma_enrichment,"Generate a protocol based on these notes: #Magnetic beads - Sample preparation
 
  Aliquot 10 µl bead slurry
 Wash 2x with ddH2O
@@ -305,8 +301,4 @@ This protocol details a robust method for the enrichment and subsequent proteoly
 
 ## Figures
 ### Figure 1: Workflow for On-Bead Digestion of Plasma Proteins
-[Placeholder for a flowchart diagram illustrating the main steps: (A) Bead Washing, (B) Protein Binding from Plasma, (C) Post-binding Washes, (D) On-bead Lysis and Digestion, and (E) Peptide Elution and Collection.]","Completeness: 5
-*   Technical Accuracy: 3
-*   Logical Flow: 5
-*   Safety: 4
-*   Formatting: 5",
+[Placeholder for a flowchart diagram illustrating the main steps: (A) Bead Washing, (B) Protein Binding from Plasma, (C) Post-binding Washes, (D) On-bead Lysis and Digestion, and (E) Peptide Elution and Collection.]","{'Completeness': 5, 'Technical Accuracy': 3, 'Logical Flow': 5, 'Safety': 4, 'Formatting': 5}",

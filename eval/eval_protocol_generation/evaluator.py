@@ -231,10 +231,13 @@ def _run_single_evaluation(
             "run": run_number,
             "function_name": selected_function["name"],
             "protocol": generated_protocol["protocol"],
-            "protocol_generation_time_seconds": protocol_generation_time,
-            "usage_metadata_protocol_generation": generated_protocol["usage_metadata"],
+            "generation_time_seconds": protocol_generation_time,
+            "usage_metadata_generation": generated_protocol["usage_metadata"],
             "summary_rating": dict_rating,
             "complete_rating": df_rating.to_dict("records"),
+            "protocol_type": row["protocol_type"],
+            "input_type": row["input_type"],
+            "model": selected_function.get("model", "gemini-2.5-pro"),
         }
         logger.info(
             f"Run {run_number} for eval set {eval_set_name} completed successfully"
@@ -313,98 +316,6 @@ def _setup_output_directory(output_dir: str) -> None:
         raise
 
 
-def _process_eval_set(
-    row: pd.Series,
-    function_list: list[dict[str, Callable]],
-    num_runs: int,
-) -> list[dict]:
-    """Process a single evaluation set with all function configurations.
-
-    Parameters
-    ----------
-    row : pd.Series
-        Row from benchmark data containing eval set information
-    function_list : list[dict[str, Callable]]
-        List of protocol generation functions to evaluate
-    num_runs : int
-        Number of runs per function configuration
-
-    Returns
-    -------
-    list[dict]
-        Results from all runs for this evaluation set
-
-    """
-    eval_set_name = row["eval_set_name"]
-
-    eval_set_results = []
-
-    for selected_function in function_list:
-        logger.info(
-            f"Testing configuration: {selected_function['name']} for {num_runs!s} times"
-        )
-
-        for run in range(1, num_runs + 1):
-            result = _run_single_evaluation(row, eval_set_name, run, selected_function)
-            if result:
-                eval_set_results.append(result)
-
-    logger.info(
-        f"\nEval set {eval_set_name} completed - {len(eval_set_results)} runs processed successfully"
-    )
-
-    return eval_set_results
-
-
-def _save_eval_set_results(
-    eval_set_name: str, eval_set_results: list[dict], output_dir: str
-) -> None:
-    """Save results for a single evaluation set.
-
-    Parameters
-    ----------
-    eval_set_name : str
-        Name of the evaluation set
-    eval_set_results : list[dict]
-        Results to save
-    output_dir : str
-        Output directory path
-
-    """
-    if not eval_set_results:
-        return
-
-    try:
-        eval_set_output_file = (
-            Path(output_dir) / f"eval_set_{eval_set_name}_all_runs.json"
-        )
-        with Path.open(eval_set_output_file, "w") as f:
-            json.dump(eval_set_results, f, indent=2, default=str)
-        logger.info(f"Eval set {eval_set_name} results saved to {eval_set_output_file}")
-    except Exception:
-        logger.exception(f"Failed to save eval set {eval_set_name} results.")
-
-
-def _save_final_results(all_results: list[dict], output_dir: str) -> None:
-    """Save final combined results.
-
-    Parameters
-    ----------
-    all_results : list[dict]
-        All evaluation results
-    output_dir : str
-        Output directory path
-
-    """
-    try:
-        final_output_file = Path(output_dir) / "all_eval_sets_all_runs.json"
-        with Path.open(final_output_file, "w") as f:
-            json.dump(all_results, f, indent=2, default=str)
-        logger.info(f"Final results saved to {final_output_file}")
-    except Exception:
-        logger.exception("Failed to save final results.")
-
-
 async def evaluate_protocols(
     csv_file: str,
     function_list: list[dict[str, Callable]],
@@ -414,9 +325,8 @@ async def evaluate_protocols(
     """Execute a lab note evaluation.
 
     This function orchestrates the entire evaluation process. It loads benchmark data from a CSV file,
-    iterates through each evaluation set, and performs a specified number of runs for each set.
-    The function generates protocols, evaluates them, and saves the
-    results in JSON files for each evaluation set and a combined file for all runs.
+    iterates through each function, then each evaluation set, and performs a specified number of runs.
+    The function generates protocols, evaluates them, and saves the results in JSON files.
 
     Parameters
     ----------
@@ -450,26 +360,128 @@ async def evaluate_protocols(
     logger.info("=== STARTING EVALUATION ===")
     logger.info(f"CSV file: {csv_file}")
     logger.info(f"Number of runs: {num_runs}")
+    logger.info(f"Number of functions: {len(function_list)}")
 
     df_benchmark_data = _load_benchmark_data(csv_file)
     _setup_output_directory(output_dir)
 
     all_results = []
     total_eval_sets = len(df_benchmark_data)
+    total_functions = len(function_list)
 
-    for index, row in df_benchmark_data.iterrows():
-        logger.info(f"\n{'=' * 60}")
+    for func_index, selected_function in enumerate(function_list):
+        logger.info(f"\n{'=' * 80}")
         logger.info(
-            f"PROCESSING EVAL SET: {row['eval_set_name']} ({index + 1}/{total_eval_sets})"
+            f"PROCESSING FUNCTION: {selected_function['name']} ({func_index + 1}/{total_functions})"
         )
-        eval_set_results = _process_eval_set(row, function_list, num_runs)
-        all_results.extend(eval_set_results)
-        _save_eval_set_results(row["eval_set_name"], eval_set_results, output_dir)
+        logger.info(f"{'=' * 80}")
+
+        function_results = []
+
+        for eval_index, row in df_benchmark_data.iterrows():
+            eval_set_name = row["eval_set_name"]
+            logger.info(f"\n{'-' * 60}")
+            logger.info(
+                f"EVAL SET: {eval_set_name} ({eval_index + 1}/{total_eval_sets})"
+            )
+            logger.info(f"FUNCTION: {selected_function['name']}")
+            logger.info(f"{'-' * 60}")
+
+            eval_set_results = []
+
+            for run in range(1, num_runs + 1):
+                logger.info(
+                    f"Run {run}/{num_runs} for {eval_set_name} with {selected_function['name']}"
+                )
+                result = _run_single_evaluation(
+                    row, eval_set_name, run, selected_function
+                )
+                if result:
+                    eval_set_results.append(result)
+                    function_results.append(result)
+                    all_results.append(result)
+
+            _save_eval_set_results_per_function(
+                eval_set_name, selected_function["name"], eval_set_results, output_dir
+            )
+
+            logger.info(
+                f"Eval set {eval_set_name} with {selected_function['name']} completed - "
+                f"{len(eval_set_results)} runs processed successfully"
+            )
+
+        _save_function_results(selected_function["name"], function_results, output_dir)
+
+        logger.info(
+            f"\nFunction {selected_function['name']} completed - "
+            f"{len(function_results)} total runs processed"
+        )
 
     _save_final_results(all_results, output_dir)
 
+    logger.info("=" * 80)
     logger.info("EVALUATION COMPLETE")
-    logger.info(f"Total cases processed: {len(all_results)}")
+    logger.info(f"Total functions processed: {len(function_list)}")
+    logger.info(f"Total eval sets processed: {total_eval_sets}")
+    logger.info(f"Total runs processed: {len(all_results)}")
     logger.info(f"Results saved to: {output_dir}")
+    logger.info("=" * 80)
 
     return all_results
+
+
+def _save_results_to_file(
+    results: list[dict], filename: str, output_dir: str, description: str = "Results"
+) -> None:
+    """Generic function to save results to a JSON file.
+
+    Parameters
+    ----------
+    results : list[dict]
+        Results to save
+    filename : str
+        Name of the output file (without path)
+    output_dir : str
+        Output directory path
+    description : str, optional
+        Description for logging messages
+
+    """
+    if not results:
+        return
+
+    try:
+        output_file = Path(output_dir) / filename
+        with Path.open(output_file, "w") as f:
+            json.dump(results, f, indent=2, default=str)
+        logger.info(f"{description} saved to {output_file}")
+    except Exception:
+        logger.exception(f"Failed to save {description.lower()}.")
+
+
+def _save_eval_set_results_per_function(
+    eval_set_name: str,
+    function_name: str,
+    eval_set_results: list[dict],
+    output_dir: str,
+) -> None:
+    """Save results for all runs of a single evaluation set with a specific function."""
+    filename = f"eval_set_{eval_set_name}_function_{function_name}_all_runs.json"
+    description = f"Eval set {eval_set_name} with {function_name} results"
+    _save_results_to_file(eval_set_results, filename, output_dir, description)
+
+
+def _save_function_results(
+    function_name: str, function_results: list[dict], output_dir: str
+) -> None:
+    """Save results for all eval sets processed with a specific function."""
+    filename = f"function_{function_name}_all_eval_sets_all_runs.json"
+    description = f"Function {function_name} results"
+    _save_results_to_file(function_results, filename, output_dir, description)
+
+
+def _save_final_results(all_results: list[dict], output_dir: str) -> None:
+    """Save final combined results."""
+    filename = "all_eval_sets_all_runs.json"
+    description = "Final results"
+    _save_results_to_file(all_results, filename, output_dir, description)
