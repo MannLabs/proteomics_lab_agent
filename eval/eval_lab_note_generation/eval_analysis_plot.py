@@ -415,14 +415,14 @@ def create_timing_visualization(df_timing: pd.DataFrame, output_dir: Path) -> No
     with plt.rc_context({"font.size": 14}):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
 
-        df_timing[["lab_notes_generate_time"]].boxplot(ax=ax1)
+        df_timing[["generate_time"]].boxplot(ax=ax1)
         ax1.set_ylabel("Time (seconds)")
         ax1.set_title("Generation Times")
+        max_time = df_timing["generate_time"].max()
+        ax1.set_ylim(bottom=0, top=max_time * 1.1)
 
-        ax2.scatter(
-            df_timing["lab_notes_generate_time"], df_timing["lab_notes_generate_cost"]
-        )
-        ax2.set_xlabel("Lab Notes Generation Time (s)")
+        ax2.scatter(df_timing["generate_time"], df_timing["generate_cost"])
+        ax2.set_xlabel("Generation Time (s)")
         ax2.set_ylabel("Costs per Generation ($)")
         ax2.set_title("Generation Times & Costs")
 

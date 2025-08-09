@@ -71,11 +71,15 @@ MODEL_PRICING = {
         "input": {"text": 0.1, "image": 0.1, "video": 0.1, "audio": 0.3},
         "output": 0.4,
     },
-    "flash_ga": {
+    "gemini-2.0-flash-001": {
+        "input": {"text": 0.15, "image": 0.15, "video": 0.15, "audio": 1.0},
+        "output": 0.6,
+    },
+    "gemini-2.5-flash": {
         "input": {"text": 0.30, "image": 0.30, "video": 0.30, "audio": 1.0},
         "output": 2.50,
     },
-    "pro": {
+    "gemini-2.5-pro": {
         "input_low": {
             "text": 1.25,
             "image": 1.25,
@@ -313,7 +317,7 @@ def parse_usage_metadata_string(usage_str: str) -> ParsedUsageMetadata:
 
 
 def calculate_gemini_cost(
-    usage_metadata: ParsedUsageMetadata, model_type: str = "pro"
+    usage_metadata: ParsedUsageMetadata, model_type: str = "gemini-2.5-pro"
 ) -> dict[str, float | str]:
     """Calculates Gemini API costs based on usage metadata and model type.
 
@@ -322,8 +326,8 @@ def calculate_gemini_cost(
     usage_metadata : ParsedUsageMetadata
         An object containing the parsed token usage.
     model_type : str, optional
-        The type of Gemini model used ('pro', 'flash_lite', 'flash_ga').
-        Defaults to 'pro'.
+        The type of Gemini model used ('gemini-2.5-pro', 'flash_lite', 'gemini-2.5-flash').
+        Defaults to 'gemini-2.5-pro'.
 
     Returns
     -------
@@ -344,7 +348,7 @@ def calculate_gemini_cost(
         if modality in input_tokens_by_modality:
             input_tokens_by_modality[modality] = token_detail.token_count
 
-    if model_type == "pro":
+    if model_type == "gemini-2.5-pro":
         use_high_pricing = (
             usage_metadata.prompt_token_count > GEMINI_PRO_HIGH_PRICING_THRESHOLD
         )
@@ -396,18 +400,32 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
     timing_data = []
 
     for item in json_data:
-        usage_metadata = parse_usage_metadata_string(
-            item["usage_metadata_lab_note_generation"]
-        )
-        cost = calculate_gemini_cost(usage_metadata, "pro")
+        usage_metadata = parse_usage_metadata_string(item["usage_metadata_generation"])
+        if item["model"] is not None:
+            cost = calculate_gemini_cost(usage_metadata, item["model"])
+        else:
+            cost = calculate_gemini_cost(usage_metadata)
 
-        timing_data.append(
-            {
-                "experiment_name": item["eval_set"] + str(item["run"]),
-                "lab_notes_generate_time": item["lab_note_generation_time_seconds"],
-                "lab_notes_generate_cost": cost["total_cost"],
-            }
-        )
+        if item["protocol_type"] is not None:
+            timing_data.append(
+                {
+                    "experiment_name": item["eval_set"] + str(item["run"]),
+                    "function_name": item["function_name"],
+                    "protocol_type": item["protocol_type"],
+                    "input_type": item["input_type"],
+                    "model": item["model"],
+                    "generate_time": item["generation_time_seconds"],
+                    "generate_cost": cost["total_cost"],
+                }
+            )
+        else:
+            timing_data.append(
+                {
+                    "experiment_name": item["eval_set"] + str(item["run"]),
+                    "generate_time": item["generation_time_seconds"],
+                    "generate_cost": cost["total_cost"],
+                }
+            )
 
     return pd.DataFrame(timing_data)
 
@@ -428,11 +446,11 @@ def generate_timing_statistics(df_timing: pd.DataFrame) -> dict[str, dict[str, f
 
     """
     return {
-        "lab_notes_time": {
-            "mean": df_timing["lab_notes_generate_time"].mean(),
-            "median": df_timing["lab_notes_generate_time"].median(),
-            "std": df_timing["lab_notes_generate_time"].std(),
-            "min": df_timing["lab_notes_generate_time"].min(),
-            "max": df_timing["lab_notes_generate_time"].max(),
+        "times": {
+            "mean": df_timing["generate_time"].mean(),
+            "median": df_timing["generate_time"].median(),
+            "std": df_timing["generate_time"].std(),
+            "min": df_timing["generate_time"].min(),
+            "max": df_timing["generate_time"].max(),
         },
     }
