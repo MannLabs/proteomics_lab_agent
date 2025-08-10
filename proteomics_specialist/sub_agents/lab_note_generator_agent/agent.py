@@ -36,7 +36,7 @@ def generate_lab_notes(
     query : str
         Query containing video path and analysis request.
     tool_context : ToolContext | None
-        ToolContext containing shared state from the protocol agent.
+        ToolContext containing shared state from the lab_knowledge agent .
     protocol_input : str, optional
         Protocol provided as a string as alternative to provided by ToolContext.
 

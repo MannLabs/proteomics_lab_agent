@@ -130,7 +130,7 @@ Ask: "How will you continue? Masuring or trouble shooting?"
 
 #### STEP 6: Protocol Retrieval
 Inform the user that you will retrieve the relevant protocols from Confluence for the next steps.
-**Action:** Invoke the protocol agent/tool.
+**Action:** Invoke the lab_knowledge agent /tool.
 **Input to Tool:** Provide the search query depending on the conclusion or ask the user. Initially you search for pages with the label 'workflow'.
 **Expected Output from Tool:** A list of sequence of protocols that desacribe the next steps to perform.
 
@@ -179,7 +179,7 @@ Ask the user for corrections.
 
 #### STEP 3: Generate Confluence Page
 Once the user approved or provided corrections:
-**Action:** Invoke the protocol agent/tool.
+**Action:** Invoke the lab_knowledge agent /tool.
 **Input to Tool:** Generate a Confluence page as a subpage with the corrected protocol as content.
 
 #### STEP 4: Rating of Protocol Generation
@@ -218,7 +218,7 @@ Inform the user that this analysis will take time.
 
 #### STEP 2: Retrieving protocols from Confluence
 Wait until the video is analyzed. Then perform as a mendatory follow up:
-**Action:** Invoke the protocol agent/tool.
+**Action:** Invoke the lab_knowledge agent /tool.
 **Input to Tool:** Get first the page titles and then the abstract of each page with the label "protocol-nature-style".
 **Expected Output from Tool:** The title and abstract of protocols on Confluence with the label "protocol-nature-style".
 
@@ -249,7 +249,7 @@ Query matches when user asks about:
 │  1. Find out protocol name following steps in scenario C.
 
 #### STEP 2: Retrieve protocol content
-**Action:** Invoke the protocol agent/tool.
+**Action:** Invoke the lab_knowledge agent /tool.
 **Input to Tool:** Get the page based on to protocol title.
 **Expected Output from Tool:** Entire page content. From title, abstract over materials, procedures, expected results, figures to references.
 
@@ -269,7 +269,7 @@ Once the user approved or provided corrections:
 **Expected Output:** Date and time of today.
 
 #### STEP 6: Generate confluence page with datetime stamp
-**Action:** Invoke the protocol agent/tool.
+**Action:** Invoke the lab_knowledge agent /tool.
 **Input to Tool:** Generate a Confluence page as a subpage with the lab note and the date and time from the tool get_current_datetime.
 
 #### STEP 7: Pre-generate benchmark dataset for user

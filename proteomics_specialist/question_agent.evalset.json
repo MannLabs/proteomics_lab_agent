@@ -591,7 +591,7 @@
                 "args": {
                   "request": "Next steps for running samples on a mass spectrometer after good QC"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": [
@@ -1027,7 +1027,7 @@
                 "args": {
                   "request": "steps to run samples on tims2"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": [
@@ -1095,7 +1095,7 @@
                 "args": {
                   "request": "content of Workflow: Start measurement"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -1145,7 +1145,7 @@
                 "args": {
                   "request": "How to calibrate TIMS"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -1195,14 +1195,14 @@
                 "args": {
                   "request": "content of Calibrate the TIMS device"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-55ba8bde-58f9-408c-9eeb-25df3ce80cb5",
                 "args": {
                   "request": "get content of page with id 309887085"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -1252,14 +1252,14 @@
                 "args": {
                   "request": "get full content of page with id 309887085"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-ad102119-66b2-46d2-95fb-26c353c10816",
                 "args": {
                   "request": "content of Calibrate the TIMS device"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -1309,7 +1309,7 @@
                 "args": {
                   "request": "get full content of page with id 309887085"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -1401,7 +1401,7 @@
                 "args": {
                   "request": "Procedure section of Calibrate the TIMS device"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -1469,7 +1469,7 @@
                 "args": {
                   "request": "maintenance protocols for tims2"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": [
@@ -1554,7 +1554,7 @@
                 "args": {
                   "request": "Disconnecting a IonOpticks column from an Evosep System"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []

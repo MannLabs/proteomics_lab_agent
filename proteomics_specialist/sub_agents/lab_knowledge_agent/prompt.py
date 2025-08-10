@@ -1,4 +1,4 @@
-"""Protocol agent can retrieve protocols from Confluence."""
+"""lab_knowledge agent  can retrieve protocols from Confluence."""
 
 PROTOCOL_PROMPT = """
 You are an expert in interacting with Confluence and you can retrieve information from the knowledge database in Confluence.

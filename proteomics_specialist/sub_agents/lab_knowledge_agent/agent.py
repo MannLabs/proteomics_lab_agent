@@ -1,4 +1,4 @@
-"""Protocol agent can retrieve protocols from Confluence."""
+"""lab_knowledge agent  can retrieve protocols from Confluence."""
 # Uses following MCP server: https://github.com/sooperset/mcp-atlassian
 
 import logging
@@ -26,8 +26,8 @@ try:
 except ValueError:
     logger.exception("Configuration error occurred")
 
-protocol_agent = Agent(
-    name="protocol_agent",
+lab_knowledge_agent = Agent(
+    name="lab_knowledge_agent",
     model=config.model,
     description="Agent to search and create protocols in our Confluence database.",
     instruction=prompt.PROTOCOL_PROMPT,

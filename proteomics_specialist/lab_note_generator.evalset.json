@@ -49,7 +49,7 @@
                 "args": {
                   "request": "Get page content for protocol: Connecting IonOpticks column & sample line"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-d385db1c-ed4f-46a1-9517-4f663f11395a",
@@ -213,7 +213,7 @@
                 "args": {
                   "request": "Create a Confluence page as a subpage of page_id: 331612194. The title should be \"2025-07-30 - Lab Note - Connecting IonOpticks column & sample line\". The content should be:\n\n# Connecting IonOpticks column & sample line\n\n## Aim\nAn IonOpticks column was connected to the Evosep One sample line at the UltraSource of a timsTOF Ultra mass spectrometer.\n\n## Materials\n\n### Equipment\n*   IonOpticks Column (pre-installed)\n*   timsTOF Ultra Mass Spectrometer with UltraSource and column oven\n*   Evosep One LC System sample line with a gold-colored metal connector\n*   Pliers (red-and-yellow handled)\n\n## Procedure\n*Timing: 1 minute, 8 seconds*\n\n1.  ❌ Omitted: Verification of the timsTOF instrument status in the timsControl software was not performed.\n2.  The IonOpticks column was confirmed to be pre-installed in the UltraSource. ([00:00:00])\n3.  ⚠️ Deviation: The LC sample line used had a gold-colored metal connector, not the specified black NanoViper adapter. However, the connection was functionally correct. ([00:00:03])\n4.  ✅ Action Confirmed: The researcher inspected the connector, and no excess liquid was observed, so removal was not required.\n5.  The column fitting was held with pliers, and the sample line connector was hand-tightened onto it. ([00:00:18])\n6.  The column oven was drawn closer to the UltraSource, enclosing the connection. Securing the oven with the bottom screw was not visually confirmed. ([00:00:37])\n7.  A metal grounding clip was attached to the column-sample line junction to establish the ESI ground. ([00:00:56])\n8.  ❌ Error: The main door of the UltraSource was closed instead of the specified column oven lid, which was already in a closed state. ([01:01:03])\n9.  The oven temperature was confirmed to be set at 50°C, as indicated by the illumination of three green LEDs. ([00:00:59])\n10. ❌ Omitted: The timsTOF was not switched from 'Standby' to 'Operate' mode during the recorded procedure.\n\n## Results\n*   The connection between the IonOpticks column and the Evosep sample line was established.\n*   The column oven was positioned, and the electrical ground was connected, resulting in the oven heating to its setpoint of 50°C.\n*   ❌ Omitted: As the mass spectrometer was not switched to 'Operate' mode, the stability of the ESI spray and the system pressure could not be evaluated.\n\nAnd the page should have the label \"automatic_lab_note\"."
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
@@ -274,7 +274,7 @@
                 "args": {
                   "request": "Get page content of \"Connecting IonOpticks column & sample line\""
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-ede1491b-081a-4fbd-9c27-dd7554b6ac98",
@@ -481,14 +481,14 @@
                 "args": {
                   "request": "Create Confluence page as a subpage of \"Lab Notes\" (page_id: 331612194) at the space_key 'ProtocolMCP'. Use the title \"2025-08-03 - Lab Note - Connecting IonOpticks column & sample line\" and content of the generated lab note and with the label \"automatic_lab_note\""
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-dc41f2cf-d11b-4e77-afd3-681fc49fd7c8",
                 "args": {
                   "request": "Create Confluence page as a subpage of \"Lab Notes\" (page_id: 331612194) at the space_key 'ProtocolMCP'. Use the title \"2025-08-03 - Lab Note - Connecting IonOpticks column & sample line\" and content of the generated lab note:\n# Connecting IonOpticks column & sample line\n\n## Aim\nThis protocol explains how to connect an IonOpticks column inserted into a timsTOF Ultra with an sample line of an Evosep.\n\n## Materials\n### Equipment\n*   IonOpticks Column\n*   timsTOF Ultra Mass Spectrometer\n    *   Equipped with UltraSource ion source\n    *   Equipped with column oven for temperature control\n*   Evosep One LC System\n    *   with sample line\n*   NanoViper Adapter (black)\n*   Pliers\n\n## Procedure\n*Timing: 1 minute, 8 seconds*\n\n1.  ❌ **Omitted:** The instrument status was not verified to be in standby mode.\n\n### Connect column and sample line\n\n2.  The presence of a pre-inserted IonOpticks column in the UltraSource of the timsTOF Ultra was visually confirmed.\n3.  The LC sample line was connected using the existing metallic fitting, which was correctly executed.\n4.  Excess liquid was managed as part of the correct connection procedure.\n5.  The column fitting of the IonOpticks column was held with pliers.\n6.  The fitting of the LC sample line was hand-tightened to the column fitting.\n7.  The NanoViper adapter was not used, as intended, allowing the oven to be tightly closed.\n8.  The column oven was drawn closer to the UltraSource and secured in its position.\n9.  A metal grounding plate was placed over the column-sample line connection to establish grounding with the column oven.\n10. The lid of the oven was closed.\n11. The column oven temperature was verified as part of the correct procedure.\n\n### Switch timsTOF to operate and idle flow\n\n12. ❌ **Omitted:** The instrument was not transitioned to operation mode in the software.\n13. ❌ **Omitted:** The idle flow was not activated in the software.\n14. ❌ **Omitted:** The MS signal was not checked in the software.\n\n## Results\n*   Signal intensity and stability in timsControl were not evaluated, as the final software-dependent steps of the protocol were omitted.\nand with the label \"automatic_lab_note\""
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-245881d9-e1b6-4cb8-95bb-6e949e44f1df",
@@ -650,7 +650,7 @@
                 "args": {
                   "request": "Get page content for \"Connecting IonOpticks column & sample line\""
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-77a5565f-54ff-40af-85a5-cc2eb0745f50",
@@ -730,7 +730,7 @@
                 "args": {
                   "request": "Create Confluence page as a subpage of 'Lab Notes' (page_id: 331612194) at the space_key 'ProtocolMCP'. Use the title '2025-08-03 - Lab Note - Connecting IonOpticks column & sample line' and content '# **Connecting IonOpticks column & sample line**\n\n## **Aim**\nThis protocol explains how to connect an IonOpticks column inserted into a timsTOF Ultra with a sample line of an Evosep.\n\n## **Materials**\n\n### **Equipment**\n*   IonOpticks Column\n*   timsTOF Ultra Mass Spectrometer\n    *   Equipped with UltraSource ion source\n    *   Equipped with column oven for temperature control\n*   Evosep One LC System\n    *   with sample line\n*   NanoViper Adapter (black)\n*   Pliers\n\n## **Procedure**\n*Timing: 1 minute, 5 seconds*\n\n1.  ❌ **Omitted:** Did not verify if the instrument was in standby mode.\n\n### **Connect column and sample line**\n\n2.  Verified that an IonOpticks column was already inserted into the UltraSource of the timsTOF Ultra.\n3.  Attached a black NanoViper adapter to the LC sample line.\n4.  Removed any access liquid from the top of the nanoViper of the sample line.\n5.  Held the column fitting of the IonOpticks column with pliers.\n6.  Hand-tightened the fitting of the LC sample line onto the column fitting.\n7.  Removed the NanoViper adapter so that the oven could be tightly closed.\n8.  Drew the oven closer to the UltraSource and secured it with the screw on the bottom.\n9.  Lifted and placed the metal grounding screw at the column-sample line connection.\n10. Closed the lid of the oven.\n11. Verified the temperature at 50°C for IonOpticks columns.\n\n### **Switch timsTOF to operate and idle flow**\n\n12. ❌ **Omitted:** Did not transition the instrument to operation mode in timsControl.\n13. ❌ **Omitted:** Did not activate idle flow in Hystar.\n14. ❌ **Omitted:** Did not check the MS signal in timsControl.\n\n## **Results**\n*   The final steps of the protocol to activate the system and check for a signal were omitted. Consequently, it was not possible to verify signal intensity or stability.' and labels = 'automatic_lab_note'"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-bec4842c-e692-41fa-bbd3-0d1745e67bcf",
@@ -875,7 +875,7 @@
                 "args": {
                   "request": "Get the page content for \"Connecting IonOpticks column & sample line\""
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               },
               {
                 "id": "adk-06c884df-0ba6-4353-ba09-43aff90db7af",
@@ -1023,7 +1023,7 @@
                 "args": {
                   "request": "Create a Confluence page as a subpage of \"Lab Notes\" (page_id: 331612194) at the space_key 'ProtocolMCP'. Use the title \"2025-08-03 15:50:35 - Lab Note - Connecting IonOpticks column & sample line\" and content of the generated lab note and with the label \"automatic_lab_note\"."
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": [

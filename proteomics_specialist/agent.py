@@ -10,11 +10,11 @@ from proteomics_specialist.config import config
 
 from . import prompt
 from .sub_agents.instrument_agent import instrument_agent
+from .sub_agents.lab_knowledge_agent import lab_knowledge_agent
 from .sub_agents.lab_note_generator_agent import (
     lab_note_benchmark_helper_agent,
     lab_note_generator_agent,
 )
-from .sub_agents.protocol_agent import protocol_agent
 from .sub_agents.protocol_generator_agent import protocol_generator_agent
 from .sub_agents.qc_memory_agent import qc_memory_agent
 from .sub_agents.video_analyzer_agent import video_analyzer_agent
@@ -41,7 +41,7 @@ root_agent = LlmAgent(
     tools=[
         AgentTool(agent=instrument_agent),
         AgentTool(agent=qc_memory_agent),
-        AgentTool(agent=protocol_agent),
+        AgentTool(agent=lab_knowledge_agent),
         AgentTool(agent=protocol_generator_agent),
         AgentTool(agent=video_analyzer_agent),
         AgentTool(agent=lab_note_generator_agent),

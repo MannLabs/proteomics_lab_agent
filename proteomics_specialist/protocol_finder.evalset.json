@@ -66,7 +66,7 @@
                 "args": {
                   "request": "search for a protocol that has content similar to the following video analysis:\n\n### Laboratory Procedure Analysis\n\n**1. Identify the starting state (t=00:00):**\n* The viewpoint is from a seated position, presumably an operator's chair, located in front of a mass spectrometer installation.\n* To the left is the rear or side of a large instrument console, which includes the primary heat exchanger unit. The \"IN\" and \"OUT\" ports for the coolant lines are clearly visible and connected. Below this, an array of four cooling fans is present. The system appears to be in a static, non-operational state.\n* To the right, positioned under the laboratory bench, is a floor-standing roughing pump (also known as a fore-pump), connected to an exhaust line. This pump is essential for establishing the preliminary vacuum for the mass spectrometer's turbomolecular pumps.\n* A persistent, high-frequency audible alarm is active. This is a critical observation, indicating a system fault, a warning, or a state requiring immediate operator intervention. The system is not in a ready or operational state.\n\n**2. List the specific actions taken in sequence:**\n* **00:00 - 00:09:** No physical actions are performed by an operator during the entire duration of the video segment. The scene remains completely static.\n* **00:00 - 00:09:** The audible alarm continues without interruption, indicating the system remains in a persistent fault condition.\n\n**3. Identify the ending state (t=00:09):**\n* The ending state is identical to the starting state. The instrumentation remains physically unchanged.\n* The roughing pump and heat exchanger are in the same position.\n* Critically, the audible alarm signifying a system fault is still active. The system remains in a non-operational, error state.\n\nExclude workflow protocols from the search."
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": [
@@ -134,7 +134,7 @@
                 "args": {
                   "request": "Connecting IonOpticks column & sample line"
                 },
-                "name": "protocol_agent"
+                "name": "lab_knowledge_agent"
               }
             ],
             "intermediate_responses": []
