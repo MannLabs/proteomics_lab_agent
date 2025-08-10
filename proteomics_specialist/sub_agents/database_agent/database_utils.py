@@ -152,7 +152,11 @@ def insert_data(table_name: str, data: dict) -> dict:
         conn.close()
 
 
-def _get_or_create_raw_file_expert(file_data: dict) -> dict:
+def _get_or_create_raw_file(
+    file_data: dict,
+    conn: sqlite3.Connection | None = None,
+    cursor: sqlite3.Cursor | None = None,
+) -> dict:
     """Gets an existing raw file record or creates/updates one based on file data.
 
     Implements upsert logic that works with any SQLite version without requiring specific table constraints. If a file with the same name exists:
@@ -167,6 +171,10 @@ def _get_or_create_raw_file_expert(file_data: dict) -> dict:
         - 'file_name' (str): The name of the file
         - 'instrument' (str): The instrument name
         - 'gradient' (float): The gradient value
+    conn : Optional[sqlite3.Connection], optional
+        Existing database connection. If None, creates a new one.
+    cursor : Optional[sqlite3.Cursor], optional
+        Existing database cursor. If None, creates from conn.
 
     Returns
     -------
@@ -174,8 +182,14 @@ def _get_or_create_raw_file_expert(file_data: dict) -> dict:
         Result with success status, file_id, action ('found_exact_match', 'updated', or 'created') and message.
 
     """
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    # Use provided connection or create new one
+    own_connection = conn is None
+    if own_connection:
+        conn = get_db_connection()
+        conn.execute("PRAGMA foreign_keys = ON")
+        cursor = conn.cursor()
+    elif cursor is None:
+        cursor = conn.cursor()
 
     try:
         cursor.execute(
@@ -185,56 +199,91 @@ def _get_or_create_raw_file_expert(file_data: dict) -> dict:
         existing = cursor.fetchone()
 
         if existing:
-            existing_id, existing_instrument, existing_gradient = existing
-
-            # Check if the existing file matches exactly
-            if (
-                existing_instrument == file_data["instrument"]
-                and abs(existing_gradient - file_data["gradient"]) < GRADIENT_TOLERANCE
-            ):
-                return {
-                    "success": True,
-                    "file_id": existing_id,
-                    "action": "found_exact_match",
-                    "message": f"Using existing file: {file_data['file_name']}",
-                }
-            # File exists but with different data - update it
-            cursor.execute(
-                "UPDATE raw_files SET instrument = ?, gradient = ? WHERE id = ?",
-                (file_data["instrument"], file_data["gradient"], existing_id),
+            return _handle_existing_file(
+                existing, file_data, cursor, conn, own_connection
             )
-            conn.commit()
-            return {
-                "success": True,
-                "file_id": existing_id,
-                "action": "updated",
-                "message": f"Updated existing file: {file_data['file_name']}",
-            }
-        # File doesn't exist - create it
-        cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument, gradient) VALUES (?, ?, ?)",
-            (
-                file_data["file_name"],
-                file_data["instrument"],
-                file_data["gradient"],
-            ),
-        )
-        conn.commit()
-        return {
-            "success": True,
-            "file_id": cursor.lastrowid,
-            "action": "created",
-            "message": f"Created new file: {file_data['file_name']}",
-        }
+        return _create_new_file(file_data, cursor, conn, own_connection)
 
     except sqlite3.Error as e:
-        conn.rollback()
+        if own_connection:
+            conn.rollback()
         return {
             "success": False,
             "message": f"Error processing file '{file_data.get('file_name', 'unknown')}': {e}",
         }
     finally:
-        conn.close()
+        if own_connection:
+            conn.close()
+
+
+def _handle_existing_file(
+    existing: tuple,
+    file_data: dict,
+    cursor: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    *,
+    own_connection: bool,
+) -> dict:
+    """Handle logic for existing file."""
+    existing_id, existing_instrument, existing_gradient = existing
+
+    # Check if the existing file matches exactly
+    instrument_match = existing_instrument == file_data["instrument"]
+    gradient_diff = abs(existing_gradient - file_data["gradient"])
+    gradient_match = gradient_diff < GRADIENT_TOLERANCE
+
+    if instrument_match and gradient_match:
+        return {
+            "success": True,
+            "file_id": existing_id,
+            "action": "found_exact_match",
+            "message": f"Using existing file: {file_data['file_name']}",
+        }
+
+    # File exists but with different data - update it
+    cursor.execute(
+        "UPDATE raw_files SET instrument = ?, gradient = ? WHERE id = ?",
+        (file_data["instrument"], file_data["gradient"], existing_id),
+    )
+
+    if own_connection:
+        conn.commit()
+
+    return {
+        "success": True,
+        "file_id": existing_id,
+        "action": "updated",
+        "message": f"Updated existing file: {file_data['file_name']}",
+    }
+
+
+def _create_new_file(
+    file_data: dict,
+    cursor: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    *,
+    own_connection: bool,
+) -> dict:
+    """Create a new file record."""
+    cursor.execute(
+        "INSERT INTO raw_files (file_name, instrument, gradient) VALUES (?, ?, ?)",
+        (
+            file_data["file_name"],
+            file_data["instrument"],
+            file_data["gradient"],
+        ),
+    )
+    new_id = cursor.lastrowid
+
+    if own_connection:
+        conn.commit()
+
+    return {
+        "success": True,
+        "file_id": new_id,
+        "action": "created",
+        "message": f"Created new file: {file_data['file_name']}",
+    }
 
 
 class InstrumentNormalizer:
@@ -343,13 +392,21 @@ def _insert_performance_record(session_data: dict, cursor: sqlite3.Cursor) -> in
     return cursor.lastrowid
 
 
-def _process_raw_files(raw_files: list) -> dict:
+def _process_raw_files(
+    raw_files: list,
+    conn: sqlite3.Connection | None = None,
+    cursor: sqlite3.Cursor | None = None,
+) -> dict:
     """Processes all raw files and returns their IDs and processing results.
 
     Parameters
     ----------
     raw_files : list
         List of raw file data dictionaries
+    conn : Optional[sqlite3.Connection], optional
+        Database connection to use
+    cursor : Optional[sqlite3.Cursor], optional
+        Database cursor to use
 
     Returns
     -------
@@ -361,7 +418,7 @@ def _process_raw_files(raw_files: list) -> dict:
     file_actions = []
 
     for file_data in raw_files:
-        file_result = _get_or_create_raw_file_expert(file_data)
+        file_result = _get_or_create_raw_file(file_data, conn, cursor)
         if file_result["success"]:
             file_ids.append(file_result["file_id"])
             file_actions.append(file_result["action"])
@@ -497,13 +554,14 @@ def insert_performance_session(session_data: dict) -> dict:
 
     _normalize_file_instruments(session_data["raw_files"])
     conn = get_db_connection()
+    conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
 
     try:
         conn.execute("BEGIN IMMEDIATE")
         performance_id = _insert_performance_record(session_data, cursor)
 
-        file_result = _process_raw_files(session_data["raw_files"])
+        file_result = _process_raw_files(session_data["raw_files"], conn, cursor)
         if not file_result["success"]:
             raise SessionError(f"File processing failed: {file_result['message']}")  # noqa: TRY301
 
