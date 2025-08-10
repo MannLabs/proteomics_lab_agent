@@ -9,8 +9,8 @@ from google.adk.tools.agent_tool import AgentTool
 from proteomics_specialist.config import config
 
 from . import prompt
-from .sub_agents.alphakraken_agent import alphakraken_agent
 from .sub_agents.database_agent import database_agent
+from .sub_agents.instrument_agent import instrument_agent
 from .sub_agents.lab_note_generator_agent import (
     lab_note_benchmark_helper_agent,
     lab_note_generator_agent,
@@ -39,7 +39,7 @@ root_agent = LlmAgent(
     description="""Agent to support proteomics researchers.""",
     instruction=prompt.PROMPT,
     tools=[
-        AgentTool(agent=alphakraken_agent),
+        AgentTool(agent=instrument_agent),
         AgentTool(agent=database_agent),
         AgentTool(agent=protocol_agent),
         AgentTool(agent=protocol_generator_agent),

@@ -49,7 +49,7 @@ proteomics_specialist/
 │   ├── agent.py                   # Root ADK agent orchestrating tools/subagents
 │   ├── prompt.py                  # Root agent prompt
 │   └── sub_agents/
-│       └── alphakraken_agent/     # Sub-agent module
+│       └── instrument_agent/     # Sub-agent module
 │           ├── __init__.py
 │           ├── agent.py           # Local MCP server integration
 │           └── prompt.py          # Subagent prompt
@@ -175,7 +175,7 @@ Then select the `proteomics_specialist` from the dropdown.
 
 This will:
 - Start the adk root agent (`proteomics_specialist/agent.py`).
-- The root agent can initialize the `MCPToolset` of subagents such as alphakraken_agent, database_agent or protocol_agent.
+- The root agent can initialize the `MCPToolset` of subagents such as instrument_agent, database_agent or protocol_agent.
 - The MCP servers will start automatically and listen for tool calls from the agents via stdio.
 - The agents will then be ready to process your instructions (which you would typically provide in a client application or test environment that uses these agents).
 

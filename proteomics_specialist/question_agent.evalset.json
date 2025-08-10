@@ -49,7 +49,7 @@
                 "args": {
                   "request": "current performance on tims02"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": []
@@ -160,7 +160,7 @@
                 "args": {
                   "request": "tims02, max_age_in_days=7"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": [
@@ -228,7 +228,7 @@
                 "args": {
                   "request": "tims2, max_age_in_days=7"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": [
@@ -399,7 +399,7 @@
                 "args": {
                   "request": "Get the last QC runs for tims2 in the last 7 days"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": [
@@ -467,7 +467,7 @@
                 "args": {
                   "request": "Get the following information for tims2 raw files: 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A1_1_21379.d, 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A2_1_21380.d, 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21381.d, 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d, 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d: Proteins, Precursors, FWHM RT, Calibration MS1 Median Accuracy, Calibration MS2 Median Accuracy, Raw Gradient Length (m), Precursor Intensity Median"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": [
@@ -584,7 +584,7 @@
                 "args": {
                   "request": "Get the following information for tims2 raw files: 20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d, 20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d, 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A1_1_21379.d, 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A2_1_21380.d, 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21381.d, 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d, 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d: Proteins, Precursors, FWHM RT, Calibration MS1 Median Accuracy, Calibration MS2 Median Accuracy, Raw Gradient Length (m), Precursor Intensity Median"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-67d61d9f-5de7-43ee-a6eb-234e45b63493",
@@ -704,7 +704,7 @@
                 "args": {
                   "request": "last QC runs for tims2 in the last 7 days"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": [
@@ -807,49 +807,49 @@
                 "args": {
                   "request": "analysis results for 20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-cf358c74-4dc3-4c3a-9faa-2df1949ba99c",
                 "args": {
                   "request": "analysis results for 20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-5ac23390-dc12-4cef-8c43-c28d9e164e10",
                 "args": {
                   "request": "analysis results for 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A1_1_21379.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-c88de3cc-84c4-4c0c-96c9-1a17e20977dd",
                 "args": {
                   "request": "analysis results for 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A2_1_21380.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-3626e753-3106-46fe-ac66-27299c6ef87a",
                 "args": {
                   "request": "analysis results for 20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21381.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-6ffeaf50-1330-4d83-9d36-ec8e352b53ac",
                 "args": {
                   "request": "analysis results for 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-4a4d1786-09a0-40f7-b507-56cc9c605fcd",
                 "args": {
                   "request": "analysis results for 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               }
             ],
             "intermediate_responses": [
@@ -1462,7 +1462,7 @@
                 "args": {
                   "request": "last QC runs for tims2 in the last 7 days"
                 },
-                "name": "alphakraken_agent"
+                "name": "instrument_agent"
               },
               {
                 "id": "adk-a7be6589-99c8-4c3a-9b40-cf9f4718c01b",

@@ -1,4 +1,4 @@
-"""Alphakraken agent can retrieve proteomics analysis results."""
+"""instrument agent can retrieve proteomics analysis results."""
 
 import logging
 
@@ -25,8 +25,8 @@ try:
 except ValueError:
     logger.exception("Configuration error occurred")
 
-alphakraken_agent = Agent(
-    name="alphakraken_agent",
+instrument_agent = Agent(
+    name="instrument_agent",
     model=config.model,
     description="An agent that can retrieve proteomics analysis results.",
     instruction=prompt.KRAKEN_MCP_PROMPT,
