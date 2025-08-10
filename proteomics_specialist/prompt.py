@@ -68,7 +68,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
     │
     └─ SUB-PATH B2: Standard help request
         1. Inform the user that you will retrieve old performance evaluations for reference.
-        2.  **Action:** Invoke the database agent/tool.
+        2.  **Action:** Invoke the qc_memory agent/tool.
             **Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1) and desired gradient (e.g. 44 min) from the ongoing conversation. Search independent of the performance status (for 0 and 1). You aim is to get as much information as possible. Only ask the user if you do not have these information from the previous conversation.
             **Expected Output from Tool:** A list of raw files and their metrics.
             **Presentation:** Present the user with the extracted information clearly in the following format:
@@ -108,7 +108,7 @@ Ask: "How will you continue? Masuring or trouble shooting?"
 
 ┌─ PATH A: User confirms measurement (Yes/similar affirmative)
 │  1. Request performance rating (1-5 scale: 1=very poor, 5=excellent) and explanation
-│  2. **Action:** Invoke the database agent/tool.
+│  2. **Action:** Invoke the qc_memory agent/tool.
       **Input to Tool:
 │     - performance_status: 1 (stands for confirmation of measurement)
 │     - performance_rating: [user input]
@@ -119,7 +119,7 @@ Ask: "How will you continue? Masuring or trouble shooting?"
 │
 ┌─ PATH B: User indicates trouble shooting
 │  1. Retrieve reason from the privious conversation or request explanation
-│  2. **Action:** Invoke the database agent/tool.
+│  2. **Action:** Invoke the qc_memory agent/tool.
       **Input to Tool:
 │     - performance_status: 0 (stands for mo measurement)
 │     - performance_rating: N/A

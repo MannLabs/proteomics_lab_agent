@@ -4,7 +4,7 @@
   "description": null,
   "eval_cases": [
     {
-      "eval_id": "current_performance_alphakraken_database_agent",
+      "eval_id": "current_performance_alphakraken_qc_memory_agent",
       "conversation": [
         {
           "invocation_id": "e-6a841f3d-d3fa-4343-a8ab-ae2aad612013",
@@ -99,7 +99,7 @@
                 "args": {
                   "request": "User sentiment: This is a great performance for raw file: 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d with Proteins: 6281.0, Precursors: 90055.0, FWHM RT: 4.936, Calibration MS1 Median Accuracy: 1.4258, Calibration MS2 Median Accuracy: 1.4961, Raw Gradient Length (m): 43.998, Precursor Intensity Median: 16.316. Also for raw file: 20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d with Proteins: 6233.0, Precursors: 88300.0, FWHM RT: 4.9244, Calibration MS1 Median Accuracy: 1.7577, Calibration MS2 Median Accuracy: 1.6192, Raw Gradient Length (m): 43.998, Precursor Intensity Median: 16.272"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               }
             ],
             "intermediate_responses": []
@@ -296,14 +296,14 @@
                 "args": {
                   "request": "{\"performance_status\": 1, \"performance_rating\": 4, \"performance_comment\": \"It is a good performance\", \"raw_files\": [{\"file_name\": \"20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A1_1_21379.d\", \"instrument_id\": \"tims2\", \"gradient\": 43.998}, {\"file_name\": \"20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A2_1_21380.d\", \"instrument_id\": \"tims2\", \"gradient\": 43.997}, {\"file_name\": \"20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21381.d\", \"instrument_id\": \"tims2\", \"gradient\": 43.998}, {\"file_name\": \"20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d\", \"instrument_id\": \"tims2\", \"gradient\": 43.998}, {\"file_name\": \"20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d\", \"instrument_id\": \"tims2\", \"gradient\": 43.998}]}"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-abf4d3f7-63b9-49a6-bb83-47d548fdcf51",
                 "args": {
                   "request": "{\"performance_status\": 1, \"performance_rating\": 4, \"performance_comment\": \"It is a good performance\", \"raw_files\": [{\"file_name\": \"20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A1_1_21379.d\", \"instrument\": \"tims2\", \"gradient\": 43.998}, {\"file_name\": \"20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A2_1_21380.d\", \"instrument\": \"tims2\", \"gradient\": 43.997}, {\"file_name\": \"20250620_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21381.d\", \"instrument\": \"tims2\", \"gradient\": 43.998}, {\"file_name\": \"20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d\", \"instrument\": \"tims2\", \"gradient\": 43.998}, {\"file_name\": \"20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d\", \"instrument\": \"tims2\", \"gradient\": 43.998}]}"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               }
             ],
             "intermediate_responses": [
@@ -577,7 +577,7 @@
                 "args": {
                   "request": "Retrieve evaluations for instrument tims2 with gradient 43.998 m"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-c18cef83-72ac-4b41-bbf9-3c9c94fb450a",
@@ -772,35 +772,35 @@
                 "args": {
                   "request": "past performance evaluations for tims2 with 44min gradient"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-888834da-063f-4413-a5dc-6125036f9c29",
                 "args": {
                   "request": "all past performance evaluations for tims2 with 44min gradient"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-d8165bb4-6214-478a-b74a-41eb102e537d",
                 "args": {
                   "request": "details of all past performance evaluations for tims2 with 44min gradient"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-1e84917c-5ae4-45d1-a947-092216530bfe",
                 "args": {
                   "request": "list all past performance evaluations for tims2 with a 44-minute gradient"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-e51229c1-0de7-4f38-bb50-0b541a513850",
                 "args": {
                   "request": "{\"query\": \"get all evaluations for instrument tims2 with gradient 44 min\"}"
                 },
-                "name": "database_agent"
+                "name": "qc_memory_agent"
               },
               {
                 "id": "adk-b676db99-ed21-4d5f-9ff8-667e9a9fffe4",

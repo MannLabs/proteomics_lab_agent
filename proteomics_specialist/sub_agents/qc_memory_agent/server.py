@@ -1,4 +1,4 @@
-"""Database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""qc_memory agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
 from __future__ import annotations
 

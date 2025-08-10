@@ -1,4 +1,4 @@
-"""Database agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""qc_memory agent can store and retrieve past evaluations of proteomics analysis results into a database."""
 
 from pathlib import Path
 
@@ -13,8 +13,8 @@ PATH_TO_YOUR_MCP_SERVER_SCRIPT = str((Path(__file__).parent / "server.py").resol
 
 MODEL = "gemini-2.5-flash"
 
-database_agent = Agent(
-    name="database_agent",
+qc_memory_agent = Agent(
+    name="qc_memory_agent",
     model=config.model,
     description="An agent that can store and retrieve past evaluations of proteomics analysis results.",
     instruction=prompt.DB_MCP_PROMPT,
