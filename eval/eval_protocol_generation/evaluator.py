@@ -19,7 +19,7 @@ from pydantic import BaseModel, Field
 path_to_append = Path(Path.cwd()).parent.parent
 sys.path.append(str(path_to_append))
 
-from .prompt import PROTOCOL_EVALUATION_PROMPT
+from .prompt import create_protocol_evaluation_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -153,7 +153,7 @@ def generate_protocols_evaluation(
         A tuple containing (evaluation_text, usage_metadata)
 
     """
-    custom_prompt = PROTOCOL_EVALUATION_PROMPT.format(
+    custom_prompt = create_protocol_evaluation_prompt(
         gt_protocol=protocol_gt, generated_protocol=protocol_ai
     )
 
