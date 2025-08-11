@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import Literal, Optional
 
 from dotenv import load_dotenv
 from google import genai
 from google.adk.agents import LlmAgent
+from google.adk.tools import ToolContext  # noqa: TC002
 from google.cloud import storage
 from google.genai import types
 from pydantic import BaseModel, Field
@@ -17,9 +18,6 @@ from proteomics_specialist.config import config
 from proteomics_specialist.sub_agents import utils
 
 from . import prompt
-
-if TYPE_CHECKING:
-    from google.adk.tools import ToolContext
 
 logging.basicConfig(level=logging.INFO)
 
@@ -149,6 +147,7 @@ def generate_lab_notes(
                 types.Part.from_text(text=prompt.FINAL_INSTRUCTIONS_PROMPT),
             ],
         )
+        logging.info(f"Prompt: {collected_content}")
 
         logging.info("Preparing response...")
         response = client.models.generate_content(

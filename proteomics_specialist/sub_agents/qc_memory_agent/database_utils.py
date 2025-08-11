@@ -200,9 +200,9 @@ def _get_or_create_raw_file(
 
         if existing:
             return _handle_existing_file(
-                existing, file_data, cursor, conn, own_connection
+                existing, file_data, cursor, conn, own_connection=own_connection
             )
-        return _create_new_file(file_data, cursor, conn, own_connection)
+        return _create_new_file(file_data, cursor, conn, own_connection=own_connection)
 
     except sqlite3.Error as e:
         if own_connection:

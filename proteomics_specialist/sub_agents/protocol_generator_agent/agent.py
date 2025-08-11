@@ -190,7 +190,8 @@ protocol_generator_agent = LlmAgent(
     name="protocol_generator_agent",
     model=config.model,
     description="Agent converts text input or video files into protocols.",
-    instruction="Always analyse the user query by invoking the tool 'generate_protocols' and reply the generated response.",
+    instruction="""Path A: If the user provides you with a path or notes analyse the user query by invoking the tool 'generate_protocols' and reply the generated response.
+    Path B: If the user or model ask you to make corrections to already generated protocols then apply them without invoking the tool 'generate_protocols'.""",
     tools=[generate_protocols],
     output_key="protocol_result",
 )

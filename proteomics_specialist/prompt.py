@@ -257,10 +257,10 @@ Query matches when user asks about:
 Next, inform the user that the follwing comparision will take time.
 **Action:** Invoke the lab_note_generator_agent/tool.
 **Input to Tool:** Provide the entire user query.
-**Expected Output from Tool:** The generated lab note.
+**Expected Output from Tool:** An AI video and protocol comparision including the generated lab note.
 
 #### STEP 4: Request user feedback to lab note
-Provide the generated lab notes to the user.
+Provide the generated lab notes  the user. You can find them at the AI comparision at 'STEP 4: Resulting Lab Notes'.
 Ask the user for corrections of this lab note and if you missidentified something.
 
 #### STEP 5: Retrieve datetime stamp
@@ -271,9 +271,11 @@ Once the user approved or provided corrections:
 #### STEP 6: Generate confluence page with datetime stamp
 **Action:** Invoke the lab_knowledge agent /tool.
 **Input to Tool:** Generate a Confluence page as a subpage with the lab note and the date and time from the tool get_current_datetime.
+**Output to Tool:** Link to Confluence page.
 
 #### STEP 7: Pre-generate benchmark dataset for user
 Once the page is generated:
+Priovide the link to the Confluence Page to the user.
 **Action:** Invoke the lab_note_benchmark_helper_agent/tool.
 **Input to Tool:** Provide the generated lab note.
 **Expected Output from Tool:** Dictonary for the benchmark dataset from the generate lab note.

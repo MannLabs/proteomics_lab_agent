@@ -137,7 +137,7 @@ EXTRACTION_PROMPT = """\
     ## Classification Table
     """
 
-EVAL_SET_CONVERTER_PROMPT = """/
+EVAL_SET_CONVERTER_PROMPT = """\
 You are an expert data extractor analyzing a conversation log between a user and an AI assistant.
 The log details the AI generating lab notes from a video based on a scientific protocol.
 

@@ -291,6 +291,7 @@ def _process_errors_dataframes(row: Series, error_response: Any) -> pd.DataFrame
 
     df_error_benchmark = pd.DataFrame(error_dict)
     df_errors = df_error_benchmark.merge(df_error_ai, on="Step", how="outer")
+    df_errors = df_errors.fillna("N/A")
 
     df_errors["Identification"] = df_errors.apply(identify_error_type, axis=1)
     df_errors["Classification"] = df_errors.apply(classify_error_type, axis=1)
@@ -339,6 +340,9 @@ def _run_single_evaluation(
         logger.info(protocol_display)
 
         start_time = time.time()
+        logger.info(f"video_path: {row['video_path']}")
+        logger.info(f"protocol: {row['protocol']}")
+
         generated_lab_note = agent.generate_lab_notes(
             row["video_path"],
             None,
