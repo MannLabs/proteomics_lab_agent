@@ -119,7 +119,7 @@ def generate_lab_notes(
         video = utils.generate_part_from_path(
             path=file_path,
             bucket=bucket,
-            subfolder_in_bucket="input_video",
+            subfolder_in_bucket="input_for_lab_note",
         )
         logging.info(f"Video uploaded and converted successfully: {video['gcs_uri']}")
 
@@ -155,7 +155,7 @@ def generate_lab_notes(
             contents=collected_content,
             config=types.GenerateContentConfig(temperature=temperature),
         )
-
+        logging.info(f"Metadata: {video['metadata']}")
         return {
             "status": "success",
             "local_video_path": file_path,
@@ -165,6 +165,7 @@ def generate_lab_notes(
             "protocol": protocol,
             "lab_notes": response.text,
             "usage_metadata": response.usage_metadata,
+            "metadata": video["metadata"] or {},
         }
 
     except (OSError, ValueError, TypeError, RuntimeError) as e:

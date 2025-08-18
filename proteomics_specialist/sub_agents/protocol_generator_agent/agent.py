@@ -132,17 +132,24 @@ def generate_protocols(query: str) -> dict:
                 ],
             )
             gcs_file_path = video["gcs_uri"]
+            metadata = video["metadata"]
 
         else:
             logging.info("Could not extract valid file path from query")
             gcs_file_path = None
             file_path = None
             filename = None
+            metadata = None
 
             logging.info("Generating content with text input...")
             custom_text_input_prompt = prompt.ANNOUNCING_INPUT_TEXT_PROMPT.format(
                 text_input=query,
             )
+            word_count = len(query.split())
+            metadata = {
+                "word_count": str(word_count),
+                "input_type": "text",
+            }
             collected_content = types.Content(
                 role="user",
                 parts=[
@@ -183,6 +190,7 @@ def generate_protocols(query: str) -> dict:
             "protocol": response.text,
             "usage_metadata": response.usage_metadata,
             "protocol_generation_time": protocol_generation_time,
+            "metadata": metadata,
         }
 
 
@@ -190,8 +198,10 @@ protocol_generator_agent = LlmAgent(
     name="protocol_generator_agent",
     model=config.model,
     description="Agent converts text input or video files into protocols.",
-    instruction="""Path A: If the user provides you with a path or notes analyse the user query by invoking the tool 'generate_protocols' and reply the generated response.
-    Path B: If the user or model ask you to make corrections to already generated protocols then apply them without invoking the tool 'generate_protocols'.""",
+    instruction="""
+    Path A: If the user provides you with a path or notes, analyze the user query by invoking the tool 'generate_protocols' and reply with the generated response.
+    Path B: If the user or model asks you to make corrections to already generated protocols, then apply them without invoking the tool 'generate_protocols'.
+    """,
     tools=[generate_protocols],
     output_key="protocol_result",
 )
