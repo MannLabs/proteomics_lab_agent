@@ -94,9 +94,7 @@ class ProtocolTitleExtractor:
                 return protocol_titles_obj.protocol_titles
 
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            logger.info(
-                f"Could not extract valid titles from parsed response - caused Exception in LLM extraction: {e}"
-            )
+            logger.info(f"Error in LLM extraction: {e}")
             logger.info("Falling back to regex extraction")
             return self._enhanced_regex_extraction(response_text)
 
@@ -132,7 +130,7 @@ class ProtocolTitleRougeEvaluator(Evaluator):
         ----------
         eval_metric : EvalMetric
             Evaluation metric configuration is extracted from test_config.json file and contains judge model options
-            and other evaluation parameters
+            and other evaluation parameters.
             Example test_config.json file:
             {
             "criteria": {
