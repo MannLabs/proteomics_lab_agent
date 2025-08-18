@@ -138,20 +138,34 @@ EXTRACTION_PROMPT = """\
     """
 
 EVAL_SET_CONVERTER_PROMPT = """\
-You are an expert data extractor analyzing a conversation log between a user and an AI assistant.
-The log details the AI generating lab notes from a video based on a scientific protocol.
+    You are a verbatim expert data extractor. Your job is to copy text EXACTLY as it appears, character-for-character, including all formatting, typos, and special characters.
 
-From the complete conversation log provided below, you must extract two specific pieces of information:
+    CRITICAL: Extract ONLY from the conversation provided below. Do not use any external knowledge or unrelated protocols.
 
-1.  **The full 'ground truth' scientific protocol**: This is the reference protocol the AI uses. It is often presented early in the conversation. If available choose the one labeled 'Ground Truth Written Protocol'. Allternative look at a large text block. Find the most complete version.
+    From the conversation below, extract these two text blocks VERBATIM:
 
-2.  **The final, corrected 'ground truth' lab notes**: This is the version of the lab notes AFTER all user corrections have been applied. It is usually the last complete version of the lab notes shown or mentioned before the conversation ends. It might be in the assistant's final response or in a command to save the notes.
+    1. **The full 'ground truth' scientific protocol**:
+    - Look for sections labeled "Ground Truth Written Protocol" or "STEP 1: Ground Truth Written Protocol"
+    - This typically appears in the assistant's first or second response
+    - It should be a complete protocol with Materials, Procedure, Expected Results sections
+    - Continue copying until you reach the enxt section such as "### **STEP 2:" (do not include STEP 2)
+    - Include ALL text in between: Abstract, Materials, Procedure, Expected Results, Figures, Tables, References
 
-Return your findings as a single JSON object matching the provided schema. Do not include any other text or explanation.
+    2. **The final, corrected 'ground truth' lab notes**:
+    - Look for the LAST complete version of lab notes AFTER user corrections
+    - Search from the BOTTOM of the conversation upward
+    - Look for sections starting with "# [Name]" followed by "## Aim", "## Materials", "## Procedure", "## Results"
+    - This often appears after phrases like "updated lab notes", "revised lab notes", or "Here are the revised lab notes"
+    - May be found in a request to save to Confluence or in the final assistant response
 
-CONVERSATION LOG:
----
----
-{full_conversation_text}
----
-"""
+    Return as JSON:
+    {{
+    "protocol": "[verbatim text]",
+    "ground_truth_lab_notes": "[verbatim text]"
+    }}
+
+    CONVERSATION LOG:
+    ---
+    {full_conversation_text}
+    ---
+    """

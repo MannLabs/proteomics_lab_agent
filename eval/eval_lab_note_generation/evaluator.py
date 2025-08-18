@@ -283,7 +283,6 @@ def remove_zeros(d: T) -> T:
 
 def _process_errors_dataframes(row: Series, error_response: Any) -> pd.DataFrame:  # noqa: ANN401
     """Helper function to merge benchmark and AI error data into a DataFrame."""
-    # Parsing error dictionary
     error_dict = ast.literal_eval(row["error_dict"])
 
     df_error_ai = pd.DataFrame([step.model_dump() for step in error_response.steps])
@@ -331,17 +330,9 @@ def _run_single_evaluation(
 
     try:
         logger.info("Step 3: Generating lab notes ...")
-        protocol_display = (
-            f"Protocol: {row['protocol'][:PROTOCOL_DISPLAY_MAX_LENGTH]}..."
-            if len(str(row["protocol"])) > PROTOCOL_DISPLAY_MAX_LENGTH
-            else f"Protocol: {row['protocol']}"
-        )
         logger.info(f"Video path: {row['video_path']}")
-        logger.info(protocol_display)
 
         start_time = time.time()
-        logger.info(f"video_path: {row['video_path']}")
-        logger.info(f"protocol: {row['protocol']}")
 
         generated_lab_note = agent.generate_lab_notes(
             row["video_path"],
@@ -375,6 +366,7 @@ def _run_single_evaluation(
             "df_errors": df_errors.to_dict("records"),
             "filtered_dict": filtered_dict,
             "summary_dict": summary_dict,
+            "metadata": generated_lab_note["metadata"],
         }
         logger.info(
             f"Run {run_number} for eval set {eval_set_name} completed successfully"

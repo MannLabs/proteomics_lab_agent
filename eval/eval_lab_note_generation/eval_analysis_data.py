@@ -401,12 +401,12 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
 
     for item in json_data:
         usage_metadata = parse_usage_metadata_string(item["usage_metadata_generation"])
-        if item["model"] is not None:
+        if item.get("model") is not None:
             cost = calculate_gemini_cost(usage_metadata, item["model"])
         else:
             cost = calculate_gemini_cost(usage_metadata)
 
-        if item["protocol_type"] is not None:
+        if item.get("protocol_type") is not None:
             timing_data.append(
                 {
                     "experiment_name": item["eval_set"] + str(item["run"]),
