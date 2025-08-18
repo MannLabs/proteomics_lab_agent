@@ -25,9 +25,9 @@ def create_protocol_evaluation_prompt(gt_protocol: str, generated_protocol: str)
 
     Parameters
     ----------
-    gt_protocol : List[str]
+    gt_protocol : str
         The ground truth protocols (benchmark) represented as a list of strings
-    generated_protocol : List[str]
+    generated_protocol : str
         The AI-generated protocols to evaluate represented as a list of strings
 
     Returns
@@ -64,7 +64,7 @@ def create_protocol_evaluation_prompt(gt_protocol: str, generated_protocol: str)
 
     | Section | Ground Truth Protocol | AI-Generated Protocol | Completeness Rating (1-5) | Completeness Explanation | Technical Accuracy Rating (1-5) | Technical Accuracy Explanation | Logical Flow Rating (1-5) | Logical Flow Explanation | Safety Rating (1-5) | Safety Explanation | Formatting Rating (1-5) | Formatting Explanation | Notes |
     |-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-    | Title | [Text from ground truth] | [Text from AI protocol] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [Additional observations or comments] |Misaligned/Not applicable] | [Explanation] |
+    | Title | [Text from ground truth] | [Text from AI protocol] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [Additional observations or comments] |
     | Abstract | [Text from ground truth] | [Text from AI protocol] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [Additional observations or comments] |
     | Materials - e.g. Equipment | [Text from ground truth] | [Text from AI protocol] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [Additional observations or comments] |
     | Materials - e.g. Reagents | [Text from ground truth] | [Text from AI protocol] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [Additional observations or comments] |
@@ -93,4 +93,71 @@ def create_protocol_evaluation_prompt(gt_protocol: str, generated_protocol: str)
     {generated_protocol}
 
     # Evaluation table of step 4
+    """
+
+
+EVAL_SET_CONVERTER_PROMPT = """\
+    You are a verbatim expert data extractor. Your job is to copy text EXACTLY as it appears, character-for-character, including all formatting, typos, and special characters.
+
+    CRITICAL: Extract ONLY from the conversation provided below. Do not use any external knowledge or unrelated protocols.
+
+    From the conversation below, extract these two text blocks VERBATIM:
+
+    1. **The ai_protocol**:
+    - Look for sections where the assistant is suggestiong a protocol
+    - This typically appears in the assistant's first or second response
+    - Include ALL text: Abstract, Materials, Procedure, Expected Results, Figures, Tables, References
+
+    2. **The final, corrected ground_truth_protocol**:
+    - Look for the LAST complete version of protocol after user corrections
+    - Search from the BOTTOM of the conversation upward
+    - This often appears after phrases like "updated protocol", "revised protocol", or "Here is the revised protocol"
+    - May be found in a request to save to Confluence or in the final assistant response
+
+    Additionally, find and extract the following information:
+
+    3. **The initial 'user_prompt'**:
+    - This is the very first text from the user in the conversation.
+    - It often begins with "Generate a protocol based on..."
+
+    4. **The final 'user_protocol_rating'**:
+    - This is the very last user response in the conversation that contains a JSON object.
+    - It's a numerical rating for completeness, technical accuracy, logical flow, safety, and formatting.
+    - Some users might use the german writting style for floats. e.g. 4,2 instead of 4.2. Convert it to a regular float. All numbers should be between 1-5.
+
+    5. **The final 'comments'**:
+    - This is the string associated with the 'comments' field in the final user rating JSON.
+    - It contains a brief explanation of the rating.
+
+    6. **The 'protocol_type' and 'activity_type'**:
+    - Check if "input_type", "protocol_type", "activity_type" was defined by the user next to "user_protocol_rating".
+    - If these values are NOT in the conversation text itself: You must determine them based on the content of 'user_prompt' or the 'ground_truth_protocol'.
+    - 'input_type' can be either "video" (if the prompt mentions a video file like "MP4") or "text" (if the prompt mentions "notes").
+    - 'protocol_type' can be: [regular_wetlab | specialized_equipment | specialized_software]
+    - 'activity_type' is a short, descriptive phrase of the action or task described in the protocol. Already excisting categories are: [liquid_handling | column_handling | ion_source_operation | sample_preparation | starting_measurement | calibration | sample_enrichment | a descriptive name for the actual content]
+
+    Return ALL of this information in a single JSON object. Do not include any other text or explanation in your response.
+
+    Return as JSON:
+    {{
+    "ai_protocol": "[verbatim text]",
+    "ground_truth_protocol": "[verbatim text]",
+    "user_prompt": "[verbatim text]",
+    "user_protocol_rating": {{
+        "Completeness": [number as float],
+        "Technical Accuracy": [number as float],
+        "Logical Flow": [number as float],
+        "Safety": [number as float],
+        "Formatting": [number as float]
+    }},
+    "comments": "[verbatim text]",
+    "input_type": [video | text],
+    "protocol_type": [regular_wetlab | specialized_equipment | specialized_software],
+    "activity_type": [liquid_handling | column_handling | ion_source_operation | sample_preparation | starting_measurement | calibration | sample_enrichment | a descriptive name for the actual content]
+    }}
+
+    CONVERSATION LOG:
+    ---
+    {full_conversation_text}
+    ---
     """
