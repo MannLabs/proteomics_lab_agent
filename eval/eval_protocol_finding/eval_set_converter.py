@@ -475,8 +475,7 @@ def main() -> None:
     """
     input_file = BASE_DIR / "proteomics_specialist/protocol_finder.evalset.json"
     output_file = (
-        BASE_DIR
-        / "eval/eval_video_analyzer_agent/protocol_finder_converted.evalset.json"
+        BASE_DIR / "eval/eval_protocol_finding/protocol_finder_converted.evalset.json"
     )
 
     converter = ProtocolFinderConverter()

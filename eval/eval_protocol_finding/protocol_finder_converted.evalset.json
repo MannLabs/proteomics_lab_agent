@@ -21,7 +21,7 @@
                 "executable_code": null,
                 "function_call": null,
                 "function_response": null,
-                "text": "Analyse this video: \"gs://ai-proteomics-advisor/input_video/ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4\"."
+                "text": "Analyse this video: \"gs://ai-proteomics-advisor/input_for_lab_note/ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4\"."
               }
             ],
             "role": "user"
@@ -70,7 +70,7 @@
                 "executable_code": null,
                 "function_call": null,
                 "function_response": null,
-                "text": "Analyse this video: \"gs://ai-proteomics-advisor/input_video/DisconnectingColumn_docuCorrect.MP4\"."
+                "text": "Analyse this video: \"gs://ai-proteomics-advisor/input_for_lab_note/DisconnectingColumn_docuCorrect.MP4\"."
               }
             ],
             "role": "user"
