@@ -137,7 +137,7 @@ def generate_part_from_path(
     ----------
     path : str
         Local path to the file to upload
-    bucket : str
+    bucket : storage.Bucket
         GCS bucket name to upload to
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "knowledge")
@@ -182,7 +182,7 @@ def generate_part_from_path(
 
 def generate_parts_from_folder(
     folder_path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None = None,
     file_extensions: list[str] | None = None,
 ) -> dict:
@@ -192,7 +192,7 @@ def generate_parts_from_folder(
     ----------
     folder_path : str
         Path to the folder to process
-    bucket : str
+    bucket : storage.Bucket
         GCS bucket name
     subfolder_in_bucket : str, optional
         Optional subfolder in the bucket
@@ -283,7 +283,7 @@ def _process_single_file(
 def _process_file_paths(
     file_paths: list[str],
     original_folder_path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None,
 ) -> dict:
     """Process a list of file paths and generate parts."""

@@ -93,7 +93,7 @@ def analyze_proteomics_video(
             parts=[
                 types.Part.from_text(text=prompt.SYSTEM_PROMPT),
                 *background_knowledge["parts"],
-                types.Part.from_text(text=prompt.INSTRUCTIONS_VIDEO_ANALYSIS_PROMP),
+                types.Part.from_text(text=prompt.INSTRUCTIONS_VIDEO_ANALYSIS_PROMPT),
                 video_results["part"],
                 types.Part.from_text(text="User message:"),
                 types.Part.from_text(text=message),

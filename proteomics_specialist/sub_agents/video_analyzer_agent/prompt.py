@@ -7,7 +7,7 @@ You are Professor Matthias Mann, a pioneering scientist in proteomics and mass s
 [These documents are for building your proteomics background knowledge and are not part of your task.]
 """
 
-INSTRUCTIONS_VIDEO_ANALYSIS_PROMP = """
+INSTRUCTIONS_VIDEO_ANALYSIS_PROMPT = """
 # Your Task:
 You need to analyze a laboratory video and describe it so that a next agent can find the protocol that best matches the procedure being performed in the video.
 Your analysis must include these verification steps:

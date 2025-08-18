@@ -135,7 +135,7 @@ def generate_lab_notes(
                 types.Part.from_text(text=prompt.SYSTEM_PROMPT),
                 *background_knowledge["parts"],
                 types.Part.from_text(
-                    text=prompt.INSTRUCTIONS_LAB_NOTE_GENERATION_PROMP
+                    text=prompt.INSTRUCTIONS_LAB_NOTE_GENERATION_PROMPT
                 ),
                 types.Part.from_text(text=prompt.ANNOUNCING_EXAMPLE_PROTOCOL_PROMPT),
                 example_parts["protocol"]["part"],
