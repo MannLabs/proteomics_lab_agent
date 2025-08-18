@@ -33,7 +33,10 @@ Compare the 'Ground truth written protocol' with the 'Video to evaluate', and cr
 * STEP 1: Read the 'Ground truth written protocol' thoroughly and write it down again word-by-word. Make sure to maintain the original content truthfully, including the numbering of procedure steps.
 
 * STEP 2: Go through the 'Video to evaluate' completely from beginning to end.
-    - Document all observed actions with timestamps
+    - adopt the video's perspective, which is filmed from the researcher's eye level
+    - first identify all visible objects and equipment in the workspace
+    - then establish their spatial positions and orientations relative to the researcher (left/right, near/far, angles)
+    - document all observed actions with timestamps, tracking how objects move through the workspace:
 
 Table 1:
 | Timestamp | Visual/Audio Action |\n

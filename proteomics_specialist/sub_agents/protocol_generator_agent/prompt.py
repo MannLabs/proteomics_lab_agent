@@ -50,6 +50,7 @@ WRITING_GUIDELINES = """
     - Language: Use direct, action-oriented language with commonly used vocabularies
     - Estimated timing: Use the video legth
 """
+
 SIMPLE_INSTRUCTIONS_PROTOCOL_GENERATION_FROM_VIDEO_PROMP = """
 # Instruction
 
@@ -68,8 +69,11 @@ Your task is to analyze the provided video and to convert it into a Nature-style
 ## Follow this structured approach:
 * Step 1: Go through the 'Video' completely from beginning to end.
 * Step 2: Document all observations:
+    - adopt the video's perspective, which is filmed from the researcher's eye level
+    - first identify all visible objects and equipment in the workspace
+    - then establish their spatial positions and orientations relative to the researcher (left/right, near/far, angles)
     - write down what you can hear with timestamps
-    - write down all actions you can see with timestamps
+    - write down all actions you can see with timestamps, tracking how objects move through the workspace
     - note down the equipment you can identify
 * Step 3: Convert your observations into a Nature-style protocol:
 {WRITING_GUIDELINES}
