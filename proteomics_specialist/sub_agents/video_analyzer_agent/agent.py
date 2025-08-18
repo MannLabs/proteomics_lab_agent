@@ -4,17 +4,17 @@
 from __future__ import annotations
 
 import logging
-import os
 
-from dotenv import load_dotenv
-from google import genai
 from google.adk.agents import LlmAgent
-from google.cloud import storage
 from google.genai import types
 
 # from google.adk.planners import BuiltInPlanner
 from proteomics_specialist.config import config
 from proteomics_specialist.sub_agents import utils
+from proteomics_specialist.sub_agents.enviroment_handling import (
+    CloudResourceError,
+    EnvironmentValidator,
+)
 
 from . import prompt
 
@@ -34,35 +34,22 @@ def analyze_proteomics_video(
 
     """
     try:
-        load_dotenv()
-        bucket_name = os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
-        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
-        knowledge_base_path = os.getenv("KNOWLEDGE_BASE_PATH")
+        try:
+            env_vars = EnvironmentValidator.load_environment(
+                agent_type="video_analyzer", config=config
+            )
+        except ValueError as e:
+            return {"status": "error", "error_message": str(e)}
 
-        model = config.analysis_model
-        temperature = config.temperature
-
-        if not all([bucket_name, project_id, knowledge_base_path]):
-            missing_vars = []
-            if not bucket_name:
-                missing_vars.append("GOOGLE_CLOUD_STORAGE_BUCKET")
-            if not project_id:
-                missing_vars.append("GOOGLE_CLOUD_PROJECT")
-            if not knowledge_base_path:
-                missing_vars.append("KNOWLEDGE_BASE_PATH")
-            if not model or not temperature:
-                missing_vars.append("model or temperature configuration")
-            return {
-                "status": "error",
-                "error_message": f"Missing required environment variables: {', '.join(missing_vars)}",
-            }
-
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        client = genai.Client(vertexai=True, project=project_id, location="us-central1")
+        try:
+            storage_client, bucket, client = (
+                EnvironmentValidator.initialize_cloud_resources(env_vars)
+            )
+        except CloudResourceError as e:
+            return {"status": "error", "error_message": str(e)}
 
         background_knowledge = utils.generate_parts_from_folder(
-            folder_path=knowledge_base_path,
+            folder_path=env_vars["knowledge_base_path"],
             bucket=bucket,
             subfolder_in_bucket="background_knowledge",
             file_extensions=["pdf"],
@@ -104,9 +91,9 @@ def analyze_proteomics_video(
         )
 
         response = client.models.generate_content(
-            model=model,
+            model=env_vars["model"],
             contents=collected_content,
-            config=types.GenerateContentConfig(temperature=temperature),
+            config=types.GenerateContentConfig(temperature=env_vars["temperature"]),
         )
 
         return {

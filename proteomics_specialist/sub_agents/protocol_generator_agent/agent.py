@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import logging
-import os
 import time
 
-from dotenv import load_dotenv
-from google import genai
 from google.adk.agents import LlmAgent
-from google.cloud import storage
 from google.genai import types
 
 from proteomics_specialist.config import config
 from proteomics_specialist.sub_agents import utils
+from proteomics_specialist.sub_agents.enviroment_handling import (
+    CloudResourceError,
+    EnvironmentValidator,
+)
 
 from . import prompt
 
@@ -36,41 +36,22 @@ def generate_protocols(query: str) -> dict:
     """
     try:
         start_time = time.time()
-        load_dotenv()
+        try:
+            env_vars = EnvironmentValidator.load_environment(
+                agent_type="protocol_generator", config=config
+            )
+        except ValueError as e:
+            return {"status": "error", "error_message": str(e)}
 
-        bucket_name = os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
-        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
-        knowledge_base_path = os.getenv("KNOWLEDGE_BASE_PATH")
-        example_protocol1_path = os.getenv("EXAMPLE_PROTOCOL1_PATH")
-        example_video1_path = os.getenv("EXAMPLE_VIDEO1_PATH")
-        example_protocol2_path = os.getenv("EXAMPLE_PROTOCOL2_PATH")
-        example_video2_path = os.getenv("EXAMPLE_VIDEO2_PATH")
-
-        model = config.analysis_model
-        temperature = config.temperature
-
-        if (
-            not bucket_name
-            or not project_id
-            or not model
-            or not temperature
-            or not knowledge_base_path
-            or not example_protocol1_path
-            or not example_video1_path
-            or not example_protocol2_path
-            or not example_video2_path
-        ):
-            return {
-                "status": "error",
-                "error_message": "Missing required environment variables: GOOGLE_CLOUD_STORAGE_BUCKET, GOOGLE_CLOUD_PROJECT, KNOWLEDGE_BASE_PATH, EXAMPLE_PROTOCOL1_PATH, EXAMPLE_VIDEO1_PATH,EXAMPLE_PROTOCOL2_PATH, EXAMPLE_VIDEO2_PATH, config.model, config.temperature",
-            }
-
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        client = genai.Client(vertexai=True, project=project_id, location="us-central1")
+        try:
+            storage_client, bucket, client = (
+                EnvironmentValidator.initialize_cloud_resources(env_vars)
+            )
+        except CloudResourceError as e:
+            return {"status": "error", "error_message": str(e)}
 
         background_knowledge = utils.generate_parts_from_folder(
-            folder_path=knowledge_base_path,
+            folder_path=env_vars["knowledge_base_path"],
             bucket=bucket,
             subfolder_in_bucket="background_knowledge",
             file_extensions=["pdf"],
@@ -82,10 +63,10 @@ def generate_protocols(query: str) -> dict:
             f"file_path: {file_path}, filename: {filename}, message: {message}"
         )
         examples = {
-            "protocol1": example_protocol1_path,
-            "video1": example_video1_path,
-            "protocol2": example_protocol2_path,
-            "video2": example_video2_path,
+            "protocol1": env_vars["example_protocol1_path"],
+            "video1": env_vars["example_video1_path"],
+            "protocol2": env_vars["example_protocol2_path"],
+            "video2": env_vars["example_video2_path"],
         }
         example_parts = {}
         for name, path in examples.items():
@@ -169,9 +150,9 @@ def generate_protocols(query: str) -> dict:
 
         logging.info("Preparing response...")
         response = client.models.generate_content(
-            model=model,
+            model=env_vars["model"],
             contents=collected_content,
-            config=types.GenerateContentConfig(temperature=temperature),
+            config=types.GenerateContentConfig(temperature=env_vars["temperature"]),
         )
 
         end_time = time.time()
