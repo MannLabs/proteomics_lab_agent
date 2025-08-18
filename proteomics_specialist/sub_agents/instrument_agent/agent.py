@@ -10,8 +10,8 @@ from google.adk.tools.mcp_tool.mcp_toolset import (
 )
 
 from proteomics_specialist.config import config
+from proteomics_specialist.sub_agents import utils
 
-from .. import utils  # noqa: TID252
 from . import prompt
 
 logger = logging.getLogger(__name__)

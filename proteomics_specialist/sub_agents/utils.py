@@ -14,7 +14,7 @@ import ffmpeg
 from google.genai import types
 
 if TYPE_CHECKING:
-    from google.cloud.storage import Bucket
+    from google.cloud.storage import Blob, Bucket
 
 logger = logging.getLogger(__name__)
 config = configparser.ConfigParser()
@@ -91,7 +91,7 @@ def upload_file_from_path_to_gcs(
     bucket: Bucket,
     subfolder_in_bucket: str | None = None,
     custom_blob_name: str | None = None,
-) -> tuple[Path, str, str]:
+) -> tuple[Path, str, str, Blob]:
     """Upload a file to Google Cloud Storage and return its URI.
 
     Uses the original filename as the blob name by default.
@@ -111,15 +111,13 @@ def upload_file_from_path_to_gcs(
 
     Returns
     -------
-    tuple[Path, str, str]
-        Tuple containing (path_obj, gcs_uri, filename)
+    tuple[Path, str, str, Blob]
+        Tuple containing (path_obj, gcs_uri, filename, blob)
 
     """
     path_obj = Path(path)
     filename = path_obj.name if custom_blob_name is None else custom_blob_name
-
     blob_name = f"{subfolder_in_bucket}/{filename}" if subfolder_in_bucket else filename
-
     blob = bucket.blob(blob_name)
 
     try:
@@ -134,12 +132,14 @@ def upload_file_from_path_to_gcs(
         }
         blob.metadata = custom_metadata
         logging.info(f"custom_metadata: {custom_metadata}")
-
     except ffmpeg.Error as e:
-        logging.warning(f"Could not extract video metadata: {e}")
+        logging.warning(f"Could not extract video metadata via ffmpeg: {e}")
+    except (KeyError, ValueError, TypeError) as e:
+        logging.warning(f"Could not parse video metadata: {e}")
+    except OSError as e:
+        logging.warning(f"Could not access file for metadata extraction: {e}")
 
     blob.upload_from_filename(path)
-
     return path_obj, f"gs://{bucket.name}/{blob_name}", filename, blob
 
 

@@ -17,6 +17,7 @@ def get_db_connection() -> sqlite3.Connection:
     """Get a database connection with row factory set to sqlite3.Row."""
     conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
     return conn
 
 
@@ -186,7 +187,6 @@ def _get_or_create_raw_file(
     own_connection = conn is None
     if own_connection:
         conn = get_db_connection()
-        conn.execute("PRAGMA foreign_keys = ON")
         cursor = conn.cursor()
     elif cursor is None:
         cursor = conn.cursor()
@@ -554,7 +554,6 @@ def insert_performance_session(session_data: dict) -> dict:
 
     _normalize_file_instruments(session_data["raw_files"])
     conn = get_db_connection()
-    conn.execute("PRAGMA foreign_keys = ON")
     cursor = conn.cursor()
 
     try:
@@ -656,7 +655,10 @@ def _build_filter_condition(
 
 
 def query_performance_data(filters: dict) -> dict:
-    """Queries performance data with optional filters across joined tables.
+    """Queries the performance data with optional filters.
+
+    Performs an inner join between performance_data and raw_files tables
+    to retrieve both performance information and file details.
 
     Parameters
     ----------
