@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 LABEL_LENGTH = 20
 SHORTEN_LABEL_LENGTH = 50
+MAX_RATING = 5.0
 
 
 class TimingVisualizer:
@@ -131,7 +132,7 @@ class TimingVisualizer:
                 ax.scatter(
                     self.df_filtered.loc[mask, "generate_time"],
                     self.df_filtered.loc[mask, "generate_cost"],
-                    c=self.colors[i],
+                    color=self.colors[i],
                     label=group,
                     alpha=0.8,
                     s=60,
@@ -266,11 +267,14 @@ def plot_line_with_error_bars(
     ax.grid(visible=True, alpha=0.3)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.set_ylim(
-        1,
-    )
+
+    max_with_error = max([m + s for m, s in zip(means, stds)]) if stds else max(means)
+    if max_with_error <= MAX_RATING:
+        ax.set_ylim(0, MAX_RATING + 0.1)
+    else:
+        ax.set_ylim(bottom=0)
     logging.info(
-        f"Summary Statistics for {column_value}: {df.groupby('tested_function_name')[column_value].describe()[['count', 'mean', 'std']]}"
+        f"Summary Statistics for {column_value}: {df.groupby('tested_function_name', observed=True)[column_value].describe()[['count', 'mean', 'std']]}"
     )
 
     plt.tight_layout()
@@ -299,6 +303,7 @@ def plot_seaborn_individual(
         List of metrics to plot. If None, uses default metrics.
 
     """
+    logging.info(f"here: {df['tested_function_name']}")
     if metrics is None:
         metrics = [
             "Overall",
@@ -328,7 +333,7 @@ def plot_seaborn_individual(
         metric_data = df_melted[df_melted["metric"] == metric]
 
         # Create a categorical x-axis mapping
-        unique_functions = sorted(metric_data["tested_function_name"].unique())
+        unique_functions = df["tested_function_name"].cat.categories.tolist()
         function_mapping = {func: i for i, func in enumerate(unique_functions)}
         metric_data = metric_data.copy()
         metric_data["function_index"] = metric_data["tested_function_name"].map(
@@ -357,7 +362,7 @@ def plot_seaborn_individual(
         ax.set_ylabel(f"{metric} Score", fontsize=14)
         ax.set_xticks(range(len(unique_functions)))
         ax.set_xticklabels(unique_functions, rotation=45, ha="right", fontsize=12)
-        ax.set_ylim(0, 5)
+        ax.set_ylim(0, MAX_RATING + 0.1)
         ax.grid(visible=True, alpha=0.3)
 
         ax.legend(bbox_to_anchor=(1.05, 1), loc="upper left", fontsize=12)
@@ -461,8 +466,8 @@ def create_stacked_bar_chart(
     }
 
     hatch_patterns = ["", "///", "\\\\\\", "...", "+++", "xxx", "ooo"]
+    labeled_combinations = set()
 
-    labeled_activities = set()
     for i, category in enumerate(categories):
         left = 0
         category_data = data_counts.loc[category]
@@ -470,10 +475,12 @@ def create_stacked_bar_chart(
         for j, activity in enumerate(activities):
             value = category_data[activity]
             if value > 0:
-                # Only label if this activity hasn't been labeled yet
-                label = activity if activity not in labeled_activities else ""
-                if activity not in labeled_activities:
-                    labeled_activities.add(activity)
+                # Fix: Define label before using it
+                if (category, activity) not in labeled_combinations:
+                    label = activity
+                    labeled_combinations.add((category, activity))
+                else:
+                    label = ""
 
                 ax.barh(
                     i,
@@ -491,17 +498,23 @@ def create_stacked_bar_chart(
     ax.set_yticks(range(len(categories)))
     ax.set_yticklabels(categories)
     ax.set_xlabel("Count")
+
     max_count = data_counts.sum(axis=1).max()
     ax.set_xlim(0, max_count * 1.1)
     ax.set_xticks(range(int(max_count) + 1))
 
     handles, labels = ax.get_legend_handles_labels()
-    if handles:
-        by_label = dict(zip(labels, handles))
-        reversed_items = list(reversed(list(by_label.items())))
+    unique_handles = []
+    unique_labels = []
+    for handle, label in zip(handles, labels):  # More descriptive variable names
+        if label:
+            unique_handles.append(handle)
+            unique_labels.append(label)
+
+    if unique_handles:
         ax.legend(
-            [item[1] for item in reversed_items],
-            [item[0] for item in reversed_items],
+            unique_handles[::-1],
+            unique_labels[::-1],
             bbox_to_anchor=(1.05, 1),
             loc="upper left",
             title="Activities",

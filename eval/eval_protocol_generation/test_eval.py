@@ -16,6 +16,14 @@ from dotenv import load_dotenv
 from google import genai
 from google.cloud import storage
 from google.genai import types
+from google.genai.errors import APIError, ClientError, ServerError
+from tenacity import (
+    RetryCallState,
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -23,7 +31,7 @@ sys.path.insert(0, str(project_root))
 from eval.eval_lab_note_generation.test_eval import setup_logging
 from proteomics_specialist.config import config
 from proteomics_specialist.sub_agents import utils
-from proteomics_specialist.sub_agents.protocol_generator_agent import prompt
+from proteomics_specialist.sub_agents.protocol_generator_agent import agent, prompt
 
 from .eval_analysis_run import EvaluationAnalyzer
 from .evaluator import evaluate_protocols
@@ -44,6 +52,41 @@ class InstructionType(str, Enum):
     SIMPLE = "simple"
     EXTENDED = "extended"
     NONE = "none"
+
+
+def log_retry_attempt(retry_state: RetryCallState) -> None:
+    """Log a message with details about the retry attempt."""
+    try:
+        attempt_number = retry_state.attempt_number
+        if retry_state.outcome is not None and retry_state.outcome.failed:
+            exception = retry_state.outcome.exception()
+            logging.info(
+                f"Attempt {attempt_number} failed with exception: {exception}. Retry."
+            )
+    except AttributeError:
+        logging.warning("Retry state object missing expected attributes")
+    except TypeError:
+        logging.warning("Error accessing retry state outcome")
+
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=3, min=60, max=300),
+    retry=retry_if_exception_type((ServerError, ClientError, APIError)),
+    after=log_retry_attempt,
+)
+def _generate_content_with_retry(
+    client: genai.Client,
+    model: str,
+    contents: list[types.Part],
+    config: types.GenerateContentConfig,
+) -> genai.types.GenerateContentResponse:
+    """Generate content with automatic retry for server errors."""
+    return client.models.generate_content(
+        model=model,
+        contents=contents,
+        config=config,
+    )
 
 
 def _load_environment_variables(
@@ -316,9 +359,11 @@ def _build_content_parts(
     if builder_config["include_examples"]:
         content_parts.extend(_get_example_parts(example_parts, file_path))
 
-    gcs_file_path, filename = _add_input_parts(content_parts, file_path, query, bucket)
+    gcs_file_path, filename, metadata = _add_input_parts(
+        content_parts, file_path, query, bucket
+    )
 
-    return content_parts, gcs_file_path, filename
+    return content_parts, gcs_file_path, filename, metadata
 
 
 def _get_instruction_parts(instruction_type: str, file_path: str | None) -> list:
@@ -433,6 +478,7 @@ def _add_input_parts(
             bucket=bucket,
             subfolder_in_bucket="input_for_protocol",
         )
+        metadata = video["metadata"]
         logging.info(f"Video uploaded and converted successfully: {video['gcs_uri']}")
 
         content_parts.extend(
@@ -443,13 +489,18 @@ def _add_input_parts(
             ]
         )
 
-        return video["gcs_uri"], utils.extract_file_path_and_message(query)[1]
+        return video["gcs_uri"], utils.extract_file_path_and_message(query)[1], metadata
     logging.info("Could not extract valid file path from query")
     custom_text_input_prompt = prompt.ANNOUNCING_INPUT_TEXT_PROMPT.format(
         text_input=query,
     )
     content_parts.append(types.Part.from_text(text=custom_text_input_prompt))
-    return None, None
+    word_count = len(query.split())
+    metadata = {
+        "word_count": str(word_count),
+        "input_type": "text",
+    }
+    return None, None, metadata
 
 
 @dataclass
@@ -520,18 +571,21 @@ def generate_protocols(
             background_knowledge=background_knowledge,
         )
 
-        content_parts, gcs_file_path, extracted_filename = _build_content_parts(
-            builder_config, example_parts, file_path, query, bucket
+        content_parts, gcs_file_path, extracted_filename, metadata = (
+            _build_content_parts(
+                builder_config, example_parts, file_path, query, bucket
+            )
         )
 
         collected_content = types.Content(role="user", parts=content_parts)
         logging.info(f"Prompt: {collected_content}")
 
         logging.info("Preparing response...")
-        response = client.models.generate_content(
-            model=protocol_config.model,
-            contents=collected_content,
-            config=types.GenerateContentConfig(temperature=config.temperature),
+        response = _generate_content_with_retry(
+            client,
+            protocol_config.model,
+            collected_content,
+            types.GenerateContentConfig(temperature=config.temperature),
         )
 
         end_time = time.time()
@@ -551,6 +605,7 @@ def generate_protocols(
             "protocol": response.text,
             "usage_metadata": response.usage_metadata,
             "protocol_generation_time": protocol_generation_time,
+            "metadata": metadata,
         }
 
 
@@ -559,7 +614,7 @@ def generate_protocols_regular(query: str) -> dict:
 
     This is a function with extended instructions, selected background knowledge and examples.
     """
-    return generate_protocols(query)
+    return agent.generate_protocols(query)
 
 
 def generate_protocols_with_gemini2_5flash(query: str) -> dict:
@@ -628,14 +683,8 @@ async def test_protocol_evaluation() -> None:
     logger.info(f"Starting standalone lab note evaluation. Logs: {log_file}")
 
     try:
-        # output_dir = "./eval_protocol_results/result_20250808_155036"
+        output_dir = "./eval_protocol_results/result_20250817_151404"
         function_configs = [
-            {"name": "regular", "function": generate_protocols_regular},
-            {
-                "name": "with_gemini2_5flash",
-                "function": generate_protocols_with_gemini2_5flash,
-                "model": "gemini-2.5-flash",
-            },
             {
                 "name": "with_gemini2_0flash",
                 "function": generate_protocols_with_gemini2_0flash,
@@ -657,6 +706,12 @@ async def test_protocol_evaluation() -> None:
                 "name": "with_extended_knowledge",
                 "function": generate_protocols_with_ext_know,
             },
+            {"name": "regular", "function": generate_protocols_regular},
+            {
+                "name": "with_gemini2_5flash",
+                "function": generate_protocols_with_gemini2_5flash,
+                "model": "gemini-2.5-flash",
+            },
             {
                 "name": "without_persona",
                 "function": generate_protocols_without_persona,
@@ -668,7 +723,7 @@ async def test_protocol_evaluation() -> None:
         results = await evaluate_protocols(
             csv_file="benchmark_data.csv",
             function_list=function_configs,
-            num_runs=3,
+            num_runs=1,
             output_dir=output_dir,
         )
 
@@ -677,7 +732,7 @@ async def test_protocol_evaluation() -> None:
         )
 
         analyzer = EvaluationAnalyzer(output_dir)
-        metrics = analyzer.run_complete_analysis(Path(output_dir))
+        metrics = analyzer.run_complete_analysis(Path(output_dir), function_configs)
 
         assert metrics >= TEST_THRESHOLD, (
             f"Metrics {metrics:.3f} is below minimum threshold of {TEST_THRESHOLD}"

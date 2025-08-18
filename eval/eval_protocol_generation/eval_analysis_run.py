@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -48,7 +49,9 @@ class EvaluationAnalyzer:
         mpl.rcParams["pdf.fonttype"] = 42
         plt.rcParams.update({"font.size": 14})
 
-    def run_complete_analysis(self, json_file_folder: str | Path) -> dict[str, float]:
+    def run_complete_analysis(
+        self, json_file_folder: str | Path, function_configs: list[dict[str, Callable]]
+    ) -> dict[str, float]:
         """Runs the complete analysis pipeline for a given JSON file.
 
         This method orchestrates the entire workflow, from loading data to generating
@@ -58,6 +61,8 @@ class EvaluationAnalyzer:
         ----------
         json_file_folder : str | Path
             Path to the JSON file folder containing JSON files with the evaluation results.
+        function_configs : List[dict[str, Callable]]
+            List of experiment names and functions to evaluate
 
         Returns
         -------
@@ -79,7 +84,9 @@ class EvaluationAnalyzer:
 
         combined_df = pd.concat(all_dataframes, ignore_index=True)
 
-        self._analysis_plot(combined_df)
+        filtered_df = self._filter_and_order_by_config(combined_df, function_configs)
+
+        self._analysis_plot(filtered_df)
 
         self._analyze_timing_and_costs(all_json_data)
 
@@ -116,6 +123,39 @@ class EvaluationAnalyzer:
         logging.info(f"Saved dataframe for {function_name} function.")
         return df_without_summary, json_data
 
+    def _filter_and_order_by_config(
+        self,
+        df: pd.DataFrame,
+        config_list: list(dict(str, Callable)),
+        column_name: str = "tested_function_name",
+    ) -> pd.DataFrame:
+        """Filter and order a DataFrame based on names from a configuration list.
+
+        Parameters
+        ----------
+        df : pd.DataFrame
+            The DataFrame to filter and order.
+        config_list : list of dict
+            List of configuration dictionaries, each containing a 'name' key.
+            Example: [{'name': 'regular', 'function': <function>}, ...]
+        column_name : str, optional
+            Name of the column to filter on, by default 'tested_function_name'.
+
+        Returns
+        -------
+        pd.DataFrame
+            Filtered and ordered DataFrame with reset index.
+
+        """
+        names = [config["name"] for config in config_list]
+
+        filtered_df = df[df[column_name].isin(names)]
+        filtered_df[column_name] = pd.Categorical(
+            filtered_df[column_name], categories=names, ordered=True
+        )
+        filtered_df = filtered_df.sort_values(column_name)
+        return filtered_df.reset_index(drop=True)
+
     def _analyze_timing_and_costs(self, json_data: list[dict[str, Any]]) -> None:
         """Analyzes and visualizes timing and cost data.
 
@@ -151,7 +191,7 @@ class EvaluationAnalyzer:
                 df_copy, column_value, self.output_dir
             )
 
-        plot_generator.plot_seaborn_individual(df, self.output_dir)
+        plot_generator.plot_seaborn_individual(df_copy, self.output_dir)
 
         unique_functions = sorted(df["tested_function_name"].unique())
 

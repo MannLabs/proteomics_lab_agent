@@ -142,9 +142,9 @@ def generate_protocols_evaluation(
 
     Parameters
     ----------
-    protocol_gt : List[str]
+    protocol_gt : str
         The ground truth protocols (benchmark) represented as a list of strings
-    protocol_ai : List[str]
+    protocol_ai : str
         The AI-generated protocols to evaluate represented as a list of strings
 
     Returns
@@ -156,18 +156,23 @@ def generate_protocols_evaluation(
     custom_prompt = create_protocol_evaluation_prompt(
         gt_protocol=protocol_gt, generated_protocol=protocol_ai
     )
-
     client = genai.Client()
-    response = client.models.generate_content(
-        model=EXTRACTION_MODEL,
-        contents=custom_prompt,
-        config={
-            "response_mime_type": "application/json",
-            "response_schema": ProtocolRating,
-        },
-    )
 
-    return response.parsed, response.usage_metadata
+    try:
+        response = client.models.generate_content(
+            model=EXTRACTION_MODEL,
+            contents=custom_prompt,
+            config={
+                "response_mime_type": "application/json",
+                "response_schema": ProtocolRating,
+            },
+        )
+    except Exception:
+        logger.exception("Error in protocol evaluation")
+        return None, None
+    else:
+        logger.info("Protocol evaluation completed successfully")
+        return response.parsed, response.usage_metadata
 
 
 def _run_single_evaluation(
@@ -237,7 +242,9 @@ def _run_single_evaluation(
             "complete_rating": df_rating.to_dict("records"),
             "protocol_type": row["protocol_type"],
             "input_type": row["input_type"],
+            "activity_type": row["activity_type"],
             "model": selected_function.get("model", "gemini-2.5-pro"),
+            "metadata": generated_protocol["metadata"],
         }
         logger.info(
             f"Run {run_number} for eval set {eval_set_name} completed successfully"
