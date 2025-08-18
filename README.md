@@ -199,6 +199,10 @@ adk run proteomics_specialist
 ```bash
 adk web
 ```
+or to make a web server accessible from other devices on your network, not just locally:
+```bash
+adk web --host 0.0.0.0
+```
 Then select the `proteomics_specialist` from the dropdown.
 
 This will:
@@ -214,18 +218,16 @@ This will:
 
 The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on using proteomics_specialist as a Python package. The following notebooks have a dual purpose: they function as tutorials and provide the basis for paper figures.
 
-#### Workflow for converting videos to protocols
-- Experimenting with various prompting techniques to supply a LLM with the required background information to convert lab videos into protocols.
-    File: 1_videoToProtocol_Evaluation.ipynb
-- Analyzing the evaluaiton results to generate statistics which techniques work well
-    File: 2_videoToProtocol_results.ipynb
-
 #### Debugging MCP functionalities of agnets
 - Notebook for developing / debugging database functions:
     File: database_test.ipynb
 
+#### Workflow for converting videos or text to protocols
+- Notebook for developing / debugging the protocol generation pipeline within the ADK workflow
+    File: protocolGeneration.ipynb
+
 #### Workflow for generatig laboratory notes from videos:
-- Debugging notebook for video analysis within the ADK workflow
+- Notebook for developing / debugging the lab note generation pipeline within the ADK workflow
     File: videoToLabNotes_adk_workflow.ipynb
 
 ---
