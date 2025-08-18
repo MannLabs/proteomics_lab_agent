@@ -80,11 +80,39 @@ git clone https://github.com/MannLabs/proteomics_specialist.git
 ### 1. Prerequisites
 - Python 3.12+
 - Access to a terminal or command prompt
-- Google Cloud Project
+
+#### Google Cloud Infrastructure
+- **Component**: Google Cloud Project with Cloud Storage Bucket
+- **Purpose**:
+    - Generate LLM responses via API calls
+    - Store and serve video content for prompt processing
+- **Text Setup Instructions**: [Creating Projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) & [Creating Cloud Storage Buckets](https://cloud.google.com/storage/docs/creating-buckets)
+- **Video Setup Instructions**: [Video with guide: Step 2 & 3 beginning at 10:14](https://www.youtube.com/watch?v=bPtKnDIVEsg)
+- **Required Services**:
+    - Billing enabled
+    - Cloud Storage API
+    - Vertex AI
+
+#### Knowledge Management System
+- **Component**: Confluence with lab_knowledge_agent
+- **Purpose**: Retrieve and save laboratory information
+- **Setup Instructions**: [Getting Started with Confluence Spaces](https://www.atlassian.com/software/confluence/resources/guides/get-started/set-up#learn-about-spaces)
+- **Configuration Notes**:
+    1. Create a dedicated Confluence space for lab_knowledge_agent
+    2. Create two parent pages:
+        - "Protocols" page
+        - "Lab Notes" page
+    3. Record the following for configuration: Space Key, Protocols Page ID, Lab Notes Page ID
+
+#### Proteomics Analysis Platform
+- **Component**: Alphakraken
+- **Purpose**: Provides fully automated data processing and analysis system for mass spectrometry experiments
+- **Setup Instructions**: [Alphakraken Quick Start Guide](https://github.com/MannLabs/alphakraken?tab=readme-ov-file#quick-start)
 
 Once you have created your project, [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/install). Then run the following command to authenticate:
 ```bash
 gcloud auth login
+gcloud init
 ```
 This allows the ADK agent in this project to use a Gemini model.
 
