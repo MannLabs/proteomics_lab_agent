@@ -16,11 +16,14 @@ from pathlib import Path
 from typing import Any
 
 import prompt
+from dotenv import load_dotenv
 from google.genai import Client
 from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+load_dotenv()
 
 GCS_BUCKET_PATH = os.getenv("GCS_BUCKET_PATH")
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -184,13 +187,13 @@ class ProtocolFinderConverter:
                 },
             )
             parsed_information: Information = response.parsed
-            logger.info("Extracted uri: %s", parsed_information.video_uri)
+            logger.info("Extracted URI: %s", parsed_information.video_uri)
             logger.info(
                 "Extracted protocol title: %s", parsed_information.protocol_title
             )
             logger.info("Reasoning: %s", parsed_information.selection_reasoning)
         except (ValueError, TypeError, AttributeError) as e:
-            logging.exception("Error extracting protocol titles")
+            logger.exception("Error extracting protocol titles")
             raise RuntimeError(f"Failed to extract information: {e}") from e
         else:
             return parsed_information
