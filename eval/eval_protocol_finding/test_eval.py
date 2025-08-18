@@ -43,7 +43,7 @@ async def test_eval_agent() -> None:
         force=True,  # Override any existing configuration
     )
     logger = logging.getLogger(__name__)
-    print(f"Evaluation logs saved to: {log_file}")  # noqa: T201 (must show up in terminal)
+    print(f"Evaluation logs saved to: {log_file}")  # noqa: T201 (Console output for user visibility)
 
     base_dir = Path(__file__).parent.parent.parent
     try:

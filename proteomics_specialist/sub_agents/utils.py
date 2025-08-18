@@ -8,9 +8,13 @@ import mimetypes
 import os
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import ffmpeg
 from google.genai import types
+
+if TYPE_CHECKING:
+    from google.cloud.storage import Bucket
 
 logger = logging.getLogger(__name__)
 config = configparser.ConfigParser()
@@ -40,7 +44,7 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
 
     Returns
     -------
-    tuple
+    tuple[str | None, str | None, str]
         Tuple of (file_path, filename, remaining_message).
 
     """
@@ -79,16 +83,15 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
         remaining_message = query.replace(file_path, "").strip()
         return file_path, filename, remaining_message
 
-    # No file found
     return None, None, query.strip()
 
 
 def upload_file_from_path_to_gcs(
     path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None = None,
     custom_blob_name: str | None = None,
-) -> str:
+) -> tuple[Path, str, str]:
     """Upload a file to Google Cloud Storage and return its URI.
 
     Uses the original filename as the blob name by default.
@@ -97,8 +100,8 @@ def upload_file_from_path_to_gcs(
     ----------
     path : str
         Local path to the file
-    bucket : str
-        GCS bucket object to upload to
+    bucket : storage.Bucket
+        GCS bucket object for upload
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "video_files")
     custom_blob_name : str, optional
@@ -108,8 +111,8 @@ def upload_file_from_path_to_gcs(
 
     Returns
     -------
-    str
-        Cloud Storage URI for the uploaded file
+    tuple[Path, str, str]
+        Tuple containing (path_obj, gcs_uri, filename)
 
     """
     path_obj = Path(path)
@@ -165,9 +168,9 @@ def get_blob_name_from_gcs_path(gcs_path: str) -> str:
 
 def generate_part_from_path(
     path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None = None,
-) -> dict:
+) -> dict[str, str | Any]:
     """Generate a Part (google genai object) from a file uploaded to GCS.
 
     Uploads a local file to Google Cloud Storage and creates a Part object
@@ -177,8 +180,8 @@ def generate_part_from_path(
     ----------
     path : str
         Local path to the file to upload
-    bucket : str
-        GCS bucket name to upload to
+    bucket : storage.Bucket
+        GCS bucket object for upload
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "knowledge")
 
@@ -195,7 +198,7 @@ def generate_part_from_path(
 
     """
     if path.startswith("gs://"):
-        logging.info(f"Path is already a GCS URI, skipping upload: {path}")
+        logging.info("Path is already a GCS URI, skipping upload: %s", path)
 
         path_obj = Path(path)
         filename = path_obj.name
@@ -228,7 +231,7 @@ def generate_part_from_path(
 
 def generate_parts_from_folder(
     folder_path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None = None,
     file_extensions: list[str] | None = None,
 ) -> dict:
@@ -238,7 +241,7 @@ def generate_parts_from_folder(
     ----------
     folder_path : str
         Path to the folder to process
-    bucket : str
+    bucket : storage.Bucket
         GCS bucket name
     subfolder_in_bucket : str, optional
         Optional subfolder in the bucket
@@ -329,7 +332,7 @@ def _process_single_file(
 def _process_file_paths(
     file_paths: list[str],
     original_folder_path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None,
 ) -> dict:
     """Process a list of file paths and generate parts."""
@@ -354,5 +357,3 @@ def _process_file_paths(
         "files_info": files_info,
         "summary": summary,
     }
-
-    # config.model

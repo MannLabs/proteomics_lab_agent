@@ -9,7 +9,7 @@ You are Professor Matthias Mann, a pioneering scientist in proteomics and mass s
 [These documents are for building your proteomics background knowledge and are not part of today's task.]
 """
 
-INSTRUCTIONS_LAB_NOTE_GENERATION_PROMP = """
+INSTRUCTIONS_LAB_NOTE_GENERATION_PROMPT = """
 # Instruction
 
 You work with following two inputs:

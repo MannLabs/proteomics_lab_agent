@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 
 def analyze_proteomics_video(
     query: str,
-) -> dict:
+) -> dict[str, str | dict]:
     """Analyze a proteomics laboratory video.
 
     Args:
@@ -42,16 +42,19 @@ def analyze_proteomics_video(
         model = config.analysis_model
         temperature = config.temperature
 
-        if (
-            not bucket_name
-            or not project_id
-            or not model
-            or not temperature
-            or not knowledge_base_path
-        ):
+        if not all([bucket_name, project_id, knowledge_base_path]):
+            missing_vars = []
+            if not bucket_name:
+                missing_vars.append("GOOGLE_CLOUD_STORAGE_BUCKET")
+            if not project_id:
+                missing_vars.append("GOOGLE_CLOUD_PROJECT")
+            if not knowledge_base_path:
+                missing_vars.append("KNOWLEDGE_BASE_PATH")
+            if not model or not temperature:
+                missing_vars.append("model or temperature configuration")
             return {
                 "status": "error",
-                "error_message": "Missing required environment variables: GOOGLE_CLOUD_STORAGE_BUCKET, GOOGLE_CLOUD_PROJECT, KNOWLEDGE_BASE_PATH, config.model, config.temperature",
+                "error_message": f"Missing required environment variables: {', '.join(missing_vars)}",
             }
 
         storage_client = storage.Client()
@@ -92,7 +95,7 @@ def analyze_proteomics_video(
             parts=[
                 types.Part.from_text(text=prompt.SYSTEM_PROMPT),
                 *background_knowledge["parts"],
-                types.Part.from_text(text=prompt.INSTRUCTIONS_VIDEO_ANALYSIS_PROMP),
+                types.Part.from_text(text=prompt.INSTRUCTIONS_VIDEO_ANALYSIS_PROMPT),
                 video_results["part"],
                 types.Part.from_text(text="User message:"),
                 types.Part.from_text(text=message),

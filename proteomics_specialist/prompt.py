@@ -42,7 +42,7 @@ Query matches when user asks about:
 
 #### STEP 1: Retrieves latest instrument QC results from AlphaKraken
 Inform the user that you will now retrieve the latest QC analysis results for the specified instrument using AlphaKraken.
-**Action:** Invoke the instrument agent/tool.
+**Action:** Invoke the instrument_agent/tool.
 **Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1).
 **Parameter:** Specify the desired max_age_in_days. Use a default timeframe, e.g., "in the last 7 days" or ask the user (e.g., in the last 14 days or in the last 30 days).
 **Expected Output from Tool:** A list of raw files and their analysis result metrics.
@@ -76,7 +76,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
     │
     └─ SUB-PATH B2: Standard help request
         1. Inform the user that you will retrieve old performance evaluations for reference.
-        2.  **Action:** Invoke the qc_memory agent/tool.
+        2.  **Action:** Invoke the qc_memory_agent/tool.
             **Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1) and desired gradient (e.g. 44 min) from the ongoing conversation. Search independent of the performance status (for 0 and 1). You aim is to get as much information as possible. Only ask the user if you do not have these information from the previous conversation.
             **Expected Output from Tool:** A list of raw files and their metrics.
             **Presentation:** Present the user with the extracted information clearly in the following format:
@@ -88,7 +88,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
                 * instrument: [instrument_id]
                 * gradient: [Gradient length]
         3. Inform the user that you will retrieve for each returned raw file the corresponding proteomics analysis results and present them with the complete evaluation data.
-        4.  **Action:** Invoke the instrument agent/tool.
+        4.  **Action:** Invoke the instrument_agent/tool.
             **Input to Tool:** Provide the necessary file names.
             **Expected Output from Tool:** A list of performance evaluations with the performance_status 0 and 1 (for "No not good enough for measurement" and "Yes ready for measurement")
             **Presentation:** Present the user with the extracted information clearly in the following format:
@@ -116,7 +116,7 @@ Ask: "How will you continue? Masuring or trouble shooting?"
 
 ┌─ PATH A: User confirms measurement (Yes/similar affirmative)
 │  1. Request performance rating (1-5 scale: 1=very poor, 5=excellent) and explanation
-│  2. **Action:** Invoke the qc_memory agent/tool.
+│  2. **Action:** Invoke the qc_memory_agent/tool.
       **Input to Tool:
 │     - performance_status: 1 (stands for confirmation of measurement)
 │     - performance_rating: [user input]
@@ -127,7 +127,7 @@ Ask: "How will you continue? Masuring or trouble shooting?"
 │
 ┌─ PATH B: User indicates trouble shooting
 │  1. Retrieve reason from the privious conversation or request explanation
-│  2. **Action:** Invoke the qc_memory agent/tool.
+│  2. **Action:** Invoke the qc_memory_agent/tool.
       **Input to Tool:
 │     - performance_status: 0 (stands for mo measurement)
 │     - performance_rating: N/A
@@ -138,7 +138,7 @@ Ask: "How will you continue? Masuring or trouble shooting?"
 
 #### STEP 6: Protocol Retrieval
 Inform the user that you will retrieve the relevant protocols from Confluence for the next steps.
-**Action:** Invoke the lab_knowledge agent /tool.
+**Action:** Invoke the lab_knowledge_agent /tool.
 **Input to Tool:** Provide the search query depending on the conclusion or ask the user. Initially you search for pages with the label 'workflow'.
 **Expected Output from Tool:** A list of sequence of protocols that desacribe the next steps to perform.
 
@@ -189,7 +189,7 @@ Ask again the user for corrections or approval.
 
 #### STEP 3: Generate Confluence Page
 Once the user approved or provided corrections:
-**Action:** Invoke the lab_knowledge agent /tool.
+**Action:** Invoke the lab_knowledge_agent /tool.
 **Input to Tool:** Generate a Confluence page as a subpage with the corrected protocol as content.
 
 #### STEP 4: Rating of Protocol Generation
@@ -231,7 +231,7 @@ Inform the user that this analysis will take time.
 
 #### STEP 2: Retrieving protocols from Confluence
 Wait until the video is analyzed. Then perform as a mendatory follow up:
-**Action:** Invoke the lab_knowledge agent /tool.
+**Action:** Invoke the lab_knowledge_agent /tool.
 **Input to Tool:** Get first the page titles and then the abstract of each page with the label "protocol-nature-style".
 **Expected Output from Tool:** The title and abstract of protocols on Confluence with the label "protocol-nature-style".
 
@@ -262,7 +262,7 @@ Query matches when user asks about:
 │  1. Find out protocol name following steps in scenario C.
 
 #### STEP 2: Retrieve protocol content
-**Action:** Invoke the lab_knowledge agent /tool.
+**Action:** Invoke the lab_knowledge_agent /tool.
 **Input to Tool:** Get the page based on to protocol title.
 **Expected Output from Tool:** Entire page content. From title, abstract over materials, procedures, expected results, figures to references.
 
@@ -282,7 +282,7 @@ Once the user approved or provided corrections:
 **Expected Output:** Date and time of today.
 
 #### STEP 6: Generate confluence page with datetime stamp
-**Action:** Invoke the lab_knowledge agent /tool.
+**Action:** Invoke the lab_knowledge_agent /tool.
 **Input to Tool:** Generate a Confluence page as a subpage with the lab note and the date and time from the tool get_current_datetime.
 **Output to Tool:** Link to Confluence page.
 
