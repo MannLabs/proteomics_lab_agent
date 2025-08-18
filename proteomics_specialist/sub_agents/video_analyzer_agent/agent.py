@@ -50,6 +50,8 @@ def analyze_proteomics_video(
                 missing_vars.append("GOOGLE_CLOUD_PROJECT")
             if not knowledge_base_path:
                 missing_vars.append("KNOWLEDGE_BASE_PATH")
+            if not model or not temperature:
+                missing_vars.append("model or temperature configuration")
             return {
                 "status": "error",
                 "error_message": f"Missing required environment variables: {', '.join(missing_vars)}",

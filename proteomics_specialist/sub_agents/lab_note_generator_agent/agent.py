@@ -24,6 +24,78 @@ if TYPE_CHECKING:
 logging.basicConfig(level=logging.INFO)
 
 
+def load_lab_notes_environment() -> dict[str, str | None]:
+    """Load and validate environment variables for lab notes generation.
+
+    Returns
+    -------
+    dict[str, str | None]
+        Dictionary containing all required environment variables and config values
+
+    Raises
+    ------
+    ValueError
+        If required environment variables are missing
+
+    """
+    load_dotenv()
+
+    env_vars = {
+        "bucket_name": os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"),
+        "project_id": os.getenv("GOOGLE_CLOUD_PROJECT"),
+        "knowledge_base_path": os.getenv("KNOWLEDGE_BASE_PATH"),
+        "example_protocol_path": os.getenv("EXAMPLE_PROTOCOL_PATH"),
+        "example_video_path": os.getenv("EXAMPLE_VIDEO_PATH"),
+        "example_lab_note_path": os.getenv("EXAMPLE_LAB_NOTE_PATH"),
+        "model": config.analysis_model,
+        "temperature": config.temperature,
+    }
+
+    missing_vars = validate_lab_notes_env(env_vars)
+
+    if missing_vars:
+        raise ValueError(
+            f"Missing required environment variables: {', '.join(missing_vars)}"
+        )
+
+    return env_vars
+
+
+def validate_lab_notes_env(env_vars: dict[str, str | None]) -> list[str]:
+    """Validate lab notes environment variables and return missing ones.
+
+    Parameters
+    ----------
+    env_vars : dict[str, str | None]
+        Dictionary of environment variables to validate
+
+    Returns
+    -------
+    list[str]
+        List of missing environment variable names
+
+    """
+    missing_vars = []
+
+    required_vars = {
+        "bucket_name": "GOOGLE_CLOUD_STORAGE_BUCKET",
+        "project_id": "GOOGLE_CLOUD_PROJECT",
+        "knowledge_base_path": "KNOWLEDGE_BASE_PATH",
+        "example_protocol_path": "EXAMPLE_PROTOCOL_PATH",
+        "example_video_path": "EXAMPLE_VIDEO_PATH",
+        "example_lab_note_path": "EXAMPLE_LAB_NOTE_PATH",
+    }
+
+    for key, env_name in required_vars.items():
+        if not env_vars.get(key):
+            missing_vars.append(env_name)
+
+    if not env_vars.get("model") or not env_vars.get("temperature"):
+        missing_vars.append("model or temperature configuration")
+
+    return missing_vars
+
+
 def generate_lab_notes(
     query: str,
     tool_context: ToolContext | None,
@@ -56,48 +128,31 @@ def generate_lab_notes(
             protocol = protocol_input
             logging.info("Protocol as str input: %s", protocol)
 
-        load_dotenv()
-
-        bucket_name = os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
-        project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
-        knowledge_base_path = os.getenv("KNOWLEDGE_BASE_PATH")
-        example_protocol_path = os.getenv("EXAMPLE_PROTOCOL_PATH")
-        example_video_path = os.getenv("EXAMPLE_VIDEO_PATH")
-        example_lab_note_path = os.getenv("EXAMPLE_LAB_NOTE_PATH")
-
-        model = config.analysis_model
-        temperature = config.temperature
-
-        if (
-            not bucket_name
-            or not project_id
-            or not model
-            or not temperature
-            or not knowledge_base_path
-            or not example_protocol_path
-            or not example_video_path
-            or not example_lab_note_path
-        ):
+        try:
+            env_vars = load_lab_notes_environment()
+        except ValueError as e:
             return {
                 "status": "error",
-                "error_message": "Missing required environment variables: GOOGLE_CLOUD_STORAGE_BUCKET, GOOGLE_CLOUD_PROJECT, KNOWLEDGE_BASE_PATH, EXAMPLE_PROTOCOL_PATH, EXAMPLE_VIDEO_PATH, EXAMPLE_LAB_NOTE_PATH, config.model, config.temperature",
+                "error_message": str(e),
             }
 
         storage_client = storage.Client()
-        bucket = storage_client.bucket(bucket_name)
-        client = genai.Client(vertexai=True, project=project_id, location="us-central1")
+        bucket = storage_client.bucket(env_vars["bucket_name"])
+        client = genai.Client(
+            vertexai=True, project=env_vars["project_id"], location="us-central1"
+        )
 
         background_knowledge = utils.generate_parts_from_folder(
-            folder_path=knowledge_base_path,
+            folder_path=env_vars["knowledge_base_path"],
             bucket=bucket,
             subfolder_in_bucket="background_knowledge",
             file_extensions=[".pdf"],
         )
 
         examples = {
-            "protocol": example_protocol_path,
-            "video": example_video_path,
-            "lab_note": example_lab_note_path,
+            "protocol": env_vars["example_protocol_path"],
+            "video": env_vars["example_video_path"],
+            "lab_note": env_vars["example_lab_note_path"],
         }
         example_parts = {}
         for name, path in examples.items():
@@ -152,9 +207,9 @@ def generate_lab_notes(
 
         logging.info("Preparing response...")
         response = client.models.generate_content(
-            model=model,
+            model=env_vars["model"],
             contents=collected_content,
-            config=types.GenerateContentConfig(temperature=temperature),
+            config=types.GenerateContentConfig(temperature=env_vars["temperature"]),
         )
 
         return {

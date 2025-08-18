@@ -8,7 +8,7 @@ import mimetypes
 import os
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from google.genai import types
 
@@ -43,7 +43,7 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
 
     Returns
     -------
-    tuple
+    tuple[str | None, str | None, str]
         Tuple of (file_path, filename, remaining_message).
 
     """
@@ -100,7 +100,7 @@ def upload_file_from_path_to_gcs(
     path : str
         Local path to the file
     bucket : storage.Bucket
-        GCS bucket object to upload to
+        GCS bucket object for upload
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "video_files")
     custom_blob_name : str, optional
@@ -127,7 +127,7 @@ def generate_part_from_path(
     path: str,
     bucket: Bucket,
     subfolder_in_bucket: str | None = None,
-) -> dict[str, any]:
+) -> dict[str, str | Any]:
     """Generate a Part (google genai object) from a file uploaded to GCS.
 
     Uploads a local file to Google Cloud Storage and creates a Part object
@@ -138,7 +138,7 @@ def generate_part_from_path(
     path : str
         Local path to the file to upload
     bucket : storage.Bucket
-        GCS bucket name to upload to
+        GCS bucket object for upload
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "knowledge")
 
