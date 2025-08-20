@@ -47,6 +47,8 @@ WRITING_GUIDELINES = """
             4. In ...
             5. Verified ...
             6. In ...'
+        - do not include product or cataloge numbers in the protocol
+        - add safty instructions for chemicals
     - Language: Use direct, action-oriented language with commonly used vocabularies
     - Estimated timing: Use the video legth
 """
