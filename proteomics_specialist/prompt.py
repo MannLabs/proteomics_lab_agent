@@ -48,7 +48,7 @@ Inform the user that you will now retrieve the latest QC analysis results for th
 **Expected Output from Tool:** A list of raw files and their analysis result metrics.
 **Presentation:** Present the extracted information clearly in the following format:
     * Raw file: [Raw file name]
-    * instrument_id: [ID of instrument]
+    * Instrument: [instrument_id]
     * Number of protein groups: [Proteins]
     * Number of precursors: [Precursors]
     * Peak width in FWHM: [FWHM RT]
@@ -85,9 +85,9 @@ When you were able to successfully extract analysis results, ask: "Would you pro
                 * performance rating: [performance_rating, Quality assessment (0=not rated, 1=very bad, 2=bad, 3=neutral, 4=good, 5=very good)]
                 * performance comment: [performance_comment, Comments about the performance]
                 * raw files: Array of raw_files, each with:
-                * file name: [The actual file_name, e.g. .raw or .d]
-                * instrument: [instrument_id]
-                * gradient: [Gradient length]
+                    * file name: [The actual file_name, e.g. .raw or .d]
+                    * instrument: [instrument_id]
+                    * gradient: [Gradient length]
         3. Inform the user that you will retrieve for each returned raw file the corresponding proteomics analysis results and present them with the complete evaluation data.
         4.  **Action:** Invoke the instrument_agent/tool.
             **Input to Tool:** Provide the necessary file names.
