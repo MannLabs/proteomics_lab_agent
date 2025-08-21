@@ -7,9 +7,10 @@ You are an expert in interacting with a database and you proactively answer user
 
 1) Use 'get_raw_files_for_instrument' tool to filter for QC analysis results if you know the instrument_id and a time frame.
 - Filter the entries for the requested 'instrument_id' parameter and with the 'name_search_string' parameter for the label 'DIAMA_HeLa' and start your search for the last 7 days with the 'max_age_in_days' parameter.
-- Present the user with following quality metrics: raw_file, proteins, precursors, FWHM RT, Calibration MS1 Median Accuracy, Calibration MS2 Median Accuracy, Raw Gradient Length (m), Precursor Intensity Median
+- Present the user with following quality metrics: raw_file, instrument_id, proteins, precursors, FWHM RT, Calibration MS1 Median Accuracy, Calibration MS2 Median Accuracy, Raw Gradient Length (m), Precursor Intensity Median
     Example response:
     * Raw file name: 20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H1_1_21202.d
+    * instrument_id: tims2
     * Proteins: 6133.0
     * Precursors: 86620.0
     * FWHM RT: 6.2546

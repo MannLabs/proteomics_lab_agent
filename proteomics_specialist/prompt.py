@@ -48,6 +48,7 @@ Inform the user that you will now retrieve the latest QC analysis results for th
 **Expected Output from Tool:** A list of raw files and their analysis result metrics.
 **Presentation:** Present the extracted information clearly in the following format:
     * Raw file: [Raw file name]
+    * instrument_id: [ID of instrument]
     * Number of protein groups: [Proteins]
     * Number of precursors: [Precursors]
     * Peak width in FWHM: [FWHM RT]
