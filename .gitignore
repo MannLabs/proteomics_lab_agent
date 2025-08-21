@@ -23,6 +23,11 @@ secrets.ini
 .adk
 eval_lab_note_results/
 eval_protocol_results/
+proteomics_specialist/lab_note_generator.evalset.json
+proteomics_specialist/protocol_finder.evalset.json
+proteomics_specialist/protocol_generator.evalset.json
+proteomics_specialist/question_agent.evalset.json
+proteomics_specialist/sub_agents/qc_memory_agent/database.db
 
 # Github defaults are below
 # TODO: sort through them
