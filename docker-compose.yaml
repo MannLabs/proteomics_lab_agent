@@ -13,6 +13,8 @@ services:
       - ./deployment_data/evalset/protocol_generator.evalset.json:/app/proteomics_specialist/protocol_generator.evalset.json
       - ./deployment_data/evalset/question_agent.evalset.json:/app/proteomics_specialist/question_agent.evalset.json
       - ./deployment_data/database.db:/app/proteomics_specialist/sub_agents/qc_memory_agent/database.db
+      - ${LOCAL_FOLDER_PATH}:${LOCAL_FOLDER_PATH}:ro # This is a workaround since the videos are uploaded to the cloud with str path. Once ADK integrated video upload this can be changed.
+
     ports:
       - 8000:8000
     env_file:
@@ -20,17 +22,11 @@ services:
       - ./.env.secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/env/service_account.json
-    # command: apt-get update && apt-get install bash
+
     depends_on:
       - confluence_mcp
       - alphakraken_mcp
 
-
-    # workdir: /usr/src/app
-    # cp: ./requirements/requirements.txt ./requirements
-    # command: pip install -r ./requirements/requirements.txt
-    # volumes:
-      # - ${LOCAL_FOLDER_PATH}:${LOCAL_FOLDER_PATH} # This is a workaround since the videos are uploaded to the cloud with str path. Once ADK integrated video upload this can be changed.
   confluence_mcp:
       container_name: confluence_mcp
       image: ghcr.io/sooperset/mcp-atlassian:latest
