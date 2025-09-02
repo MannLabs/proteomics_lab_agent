@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import configparser
 import logging
 import mimetypes
 import os
@@ -17,21 +16,6 @@ if TYPE_CHECKING:
     from google.cloud.storage import Blob, Bucket
 
 logger = logging.getLogger(__name__)
-config = configparser.ConfigParser()
-
-current_file = Path(__file__).resolve()
-project_root = current_file.parent.parent.parent
-secrets_path = project_root / "secrets.ini"
-
-config.read(secrets_path)
-
-
-def get_required_env(var_name: str) -> str:
-    """Get required environment variable or raise error."""
-    value = config["DEFAULT"][var_name]
-    if value is None:
-        raise ValueError(f"Required environment variable {var_name} is not set")
-    return value
 
 
 def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, str]:
