@@ -76,42 +76,39 @@ async def list_mcp_tools() -> list[mcp_types.Tool]:
 @app.call_tool()
 async def call_mcp_tool(name: str, arguments: dict) -> list[mcp_types.TextContent]:
     """MCP handler to execute a tool call requested by an MCP client."""
-    logging.info(f"=== TOOL CALL START: {name} ===")
-    logging.info(f"Arguments: {arguments}")
-    logging.info(f"Current working directory: {Path.cwd()}")
-    logging.info(f"Database path: {database_utils.DATABASE_PATH}")
-    logging.info(f"Database exists: {database_utils.DATABASE_PATH.exists()}")
+    logging.info(
+        f"MCP Server: Received call_tool request for '{name}' with args: {arguments}"
+    )
 
     if name in ADK_DB_TOOLS:
         adk_tool_instance = ADK_DB_TOOLS[name]
         try:
-            logging.info(f"About to execute ADK tool: {name}")
-
-            # Wrap the async call with timeout and better error handling
-            adk_tool_response = await asyncio.wait_for(
-                adk_tool_instance.run_async(args=arguments, tool_context=None),
-                timeout=30.0,  # 30 second timeout
+            adk_tool_response = await adk_tool_instance.run_async(
+                args=arguments,
+                tool_context=None,
             )
-
-            logging.info(f"ADK tool completed successfully: {name}")
-            logging.info(f"Response: {adk_tool_response}")
-
+            logging.info(
+                f"MCP Server: ADK tool '{name}' executed. Response: {adk_tool_response}"
+            )
             response_text = json.dumps(adk_tool_response, indent=2)
             return [mcp_types.TextContent(type="text", text=response_text)]
 
-        except asyncio.TimeoutError:
-            logging.exception(f"Tool '{name}' timed out after 30 seconds")
-            error_payload = {"success": False, "message": f"Tool '{name}' timed out"}
-            return [mcp_types.TextContent(type="text", text=json.dumps(error_payload))]
-
         except Exception as e:
-            logging.exception(f"Exception in tool '{name}': {type(e).__name__}")
-            error_payload = {"success": False, "message": f"Tool error: {e}"}
-            return [mcp_types.TextContent(type="text", text=json.dumps(error_payload))]
+            logging.exception(f"MCP Server: Error executing ADK tool '{name}'")
+            error_payload = {
+                "success": False,
+                "message": f"Failed to execute tool '{name}': {e!s}",
+            }
+            error_text = json.dumps(error_payload)
+            return [mcp_types.TextContent(type="text", text=error_text)]
     else:
-        logging.warning(f"Tool '{name}' not found")
-        error_payload = {"success": False, "message": f"Tool '{name}' not found"}
-        return [mcp_types.TextContent(type="text", text=json.dumps(error_payload))]
+        logging.warning(f"MCP Server: Tool '{name}' not found/exposed by this server.")
+        error_payload = {
+            "success": False,
+            "message": f"Tool '{name}' not implemented by this server.",
+        }
+        error_text = json.dumps(error_payload)
+        return [mcp_types.TextContent(type="text", text=error_text)]
 
 
 # --- MCP Server Runner ---
