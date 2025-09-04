@@ -159,7 +159,7 @@ lab_note_generator_agent = LlmAgent(
     name="lab_note_generator_agent",
     model=config.model,
     description="Agent converts video files into lab notes.",
-    instruction="Always analyse the user query by invoking the tool 'generate_lab_notes' and reply the generated response.",
+    instruction=f"Always analyse the user query by invoking the tool '{generate_lab_notes.__name__}' and reply the generated response.",
     tools=[generate_lab_notes],
     output_key="lab_notes_result",
 )
