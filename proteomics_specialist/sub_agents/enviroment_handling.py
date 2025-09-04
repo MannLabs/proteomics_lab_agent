@@ -70,17 +70,18 @@ class EnvironmentValidator:
         load_dotenv()
 
         env_vars = {
-            key: os.getenv(env_name) for key, env_name in cls.COMMON_VARS.items()
+            "model": getattr(config, "analysis_model", None)
+            or getattr(config, "model", None),
+            "temperature": getattr(config, "temperature", None),
         }
+
+        env_vars.update(
+            {key: os.getenv(env_name) for key, env_name in cls.COMMON_VARS.items()}
+        )
 
         if agent_type in cls.AGENT_SPECIFIC_VARS:
             for key, env_name in cls.AGENT_SPECIFIC_VARS[agent_type].items():
                 env_vars[key] = os.getenv(env_name)
-
-        env_vars["model"] = getattr(config, "analysis_model", None) or getattr(
-            config, "model", None
-        )
-        env_vars["temperature"] = getattr(config, "temperature", None)
 
         missing_vars = cls.validate_env(env_vars, agent_type)
 

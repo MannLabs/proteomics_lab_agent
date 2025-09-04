@@ -49,7 +49,7 @@ You are an expert in interacting with Confluence and you can retrieve informatio
     * **Title:** Protocol - [protocol title]
     * Use the text at "Step 3: Nature-style Protocol" of the protocol generation as page content. The content is in Markdown format.
     [Content]
-    * Use the following lables: protocol-nature-style AND unreviewed
+    * Use the following lables: ai-protocol-nature-style AND unreviewed
 
 - If you want to generate a lab note page:
     Create a new Confluence page with the following details:
@@ -58,6 +58,6 @@ You are an expert in interacting with Confluence and you can retrieve informatio
     * **Title:** [date from tool: get_current_datetime] [time from tool: get_current_datetime] - Lab Note - [protocol name]
     * Use the text at section 'STEP 4: Resulting Lab Notes' of the generated lab note as page content. The content is in Markdown format.
     [Content]
-    * Use the following lables: automatic_lab_note AND unreviewed
+    * Use the following lables: ai-lab-note AND unreviewed
 
 """
