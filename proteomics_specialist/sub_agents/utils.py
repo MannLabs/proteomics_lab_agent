@@ -8,7 +8,7 @@ import mimetypes
 import os
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from google.genai import types
 
@@ -47,7 +47,7 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
 
     Returns
     -------
-    tuple
+    tuple[str | None, str | None, str]
         Tuple of (file_path, filename, remaining_message).
 
     """
@@ -104,7 +104,7 @@ def upload_file_from_path_to_gcs(
     path : str
         Local path to the file
     bucket : storage.Bucket
-        GCS bucket object to upload to
+        GCS bucket object for upload
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "video_files")
     custom_blob_name : str, optional
@@ -131,7 +131,7 @@ def generate_part_from_path(
     path: str,
     bucket: Bucket,
     subfolder_in_bucket: str | None = None,
-) -> dict[str, any]:
+) -> dict[str, str | Any]:
     """Generate a Part (google genai object) from a file uploaded to GCS.
 
     Uploads a local file to Google Cloud Storage and creates a Part object
@@ -141,8 +141,8 @@ def generate_part_from_path(
     ----------
     path : str
         Local path to the file to upload
-    bucket : str
-        GCS bucket name to upload to
+    bucket : storage.Bucket
+        GCS bucket object for upload
     subfolder_in_bucket : str, optional
         Optional subfolder path in the bucket (e.g., "knowledge")
 
@@ -167,7 +167,6 @@ def generate_part_from_path(
         file_path = path
 
     else:
-        # Upload local file to GCS
         logging.info(f"Uploading local file to GCS: {path}")
         file_path, file_uri, filename = upload_file_from_path_to_gcs(
             path, bucket, subfolder_in_bucket
@@ -187,17 +186,17 @@ def generate_part_from_path(
 
 def generate_parts_from_folder(
     folder_path: str,
-    bucket: str,
+    bucket: Bucket,
     subfolder_in_bucket: str | None = None,
     file_extensions: list[str] | None = None,
 ) -> dict:
-    """Process an entire folder and generate parts for all files.
+    """Process an entire folder (local or GCS) and generate parts for all files.
 
     Parameters
     ----------
     folder_path : str
         Path to the folder to process
-    bucket : str
+    bucket : storage.Bucket
         GCS bucket name
     subfolder_in_bucket : str, optional
         Optional subfolder in the bucket
@@ -213,15 +212,56 @@ def generate_parts_from_folder(
         - 'summary': Summary statistics
 
     """
+    if folder_path.startswith("gs://"):
+        file_paths = _get_gcs_file_paths(folder_path, file_extensions)
+    else:
+        file_paths = _get_local_file_paths(folder_path, file_extensions)
+
+    return _process_file_paths(file_paths, folder_path, bucket, subfolder_in_bucket)
+
+
+def _get_gcs_file_paths(
+    gcs_folder_path: str, file_extensions: list[str] | None
+) -> list[str]:
+    """Get list of GCS file URIs from a GCS folder."""
+    from google.cloud import storage
+
+    # Parse GCS URI: 'gs://bucket_name/prefix/objects' -> ['bucket_name', 'prefix/objects']
+    bucket_and_path = gcs_folder_path[len("gs://") :]
+    parts = bucket_and_path.split("/", 1)
+
+    gcs_bucket_name = parts[0]  # 'bucket_name'
+    folder_prefix = parts[1] if len(parts) > 1 else ""  # 'prefix/objects' or empty
+
+    client = storage.Client()
+    gcs_bucket = client.bucket(gcs_bucket_name)
+    blobs = gcs_bucket.list_blobs(prefix=folder_prefix)
+
+    file_paths = []
+    for blob in blobs:
+        if blob.name.endswith("/"):  # Skip folders
+            continue
+
+        if file_extensions:
+            file_ext = Path(blob.name).suffix.lower()
+            if file_ext not in file_extensions:
+                continue
+
+        file_paths.append(f"gs://{gcs_bucket_name}/{blob.name}")
+
+    return file_paths
+
+
+def _get_local_file_paths(
+    folder_path: str, file_extensions: list[str] | None
+) -> list[str]:
+    """Get list of local file paths from a local folder."""
     if not Path(folder_path).exists():
         raise ValueError(f"Folder path does not exist: {folder_path}")
-
     if not Path(folder_path).is_dir():
         raise ValueError(f"Path is not a directory: {folder_path}")
 
-    parts_list = []
-    files_info = []
-
+    file_paths = []
     for root, _dirs, files in os.walk(folder_path):
         for file in files:
             file_path = Path(root) / file
@@ -231,20 +271,40 @@ def generate_parts_from_folder(
                 if file_ext not in file_extensions:
                     continue
 
-            try:
-                file_result = generate_part_from_path(
-                    file_path, bucket, subfolder_in_bucket
-                )
+            file_paths.append(str(file_path))
 
-                parts_list.append(file_result["part"])
-                files_info.append(file_result)
+    return file_paths
 
-            except (OSError, ValueError, TypeError) as e:
-                logger.warning("Failed to process %s: %s", file_path, e)
-                continue
+
+def _process_single_file(
+    file_path: str, bucket: str, subfolder_in_bucket: str | None
+) -> dict | None:
+    """Process a single file and return result or None if failed."""
+    try:
+        return generate_part_from_path(file_path, bucket, subfolder_in_bucket)
+    except (OSError, ValueError, TypeError) as e:
+        logger.warning("Failed to process %s: %s", file_path, e)
+        return None
+
+
+def _process_file_paths(
+    file_paths: list[str],
+    original_folder_path: str,
+    bucket: Bucket,
+    subfolder_in_bucket: str | None,
+) -> dict:
+    """Process a list of file paths and generate parts."""
+    parts_list = []
+    files_info = []
+
+    for file_path in file_paths:
+        file_result = _process_single_file(file_path, bucket, subfolder_in_bucket)
+        if file_result is not None:
+            parts_list.append(file_result["part"])
+            files_info.append(file_result)
 
     summary = {
-        "folder_path": folder_path,
+        "folder_path": original_folder_path,
         "total_files": len(files_info),
         "successful_uploads": len(parts_list),
         "file_types": {info["mime_type"] for info in files_info if info["mime_type"]},
