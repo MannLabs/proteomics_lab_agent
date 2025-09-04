@@ -117,6 +117,6 @@ video_analyzer_agent = LlmAgent(
     # planner=BuiltInPlanner(
     #     thinking_config=types.ThinkingConfig(include_thoughts=True)
     # ),
-    instruction="""Always analyse the user query by invoking the tool 'analyze_proteomics_video' and reply the generated response.""",
+    instruction=f"""Always analyse the user query by invoking the tool '{analyze_proteomics_video.__name__}' and reply the generated response.""",
     tools=[analyze_proteomics_video],
 )
