@@ -14,6 +14,6 @@ COPY ./proteomics_specialist ./proteomics_specialist
 
 EXPOSE 8000
 
-# HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
+HEALTHCHECK CMD curl --fail http://localhost:8000/_stcore/health || exit 1
 
 ENTRYPOINT ["adk", "web", "--host=0.0.0.0"]

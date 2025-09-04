@@ -248,7 +248,7 @@ Inform the user that this analysis will take time.
 **Expected Output from Tool:** An analysis of the provide video content.
 
 #### STEP 2: Retrieving protocols from Confluence
-Wait until the video is analyzed. Then perform as a mendatory follow up:
+Wait until the video is analyzed. Then perform as a mandatory follow up:
 **Action:** Invoke the lab_knowledge_agent/tool.
 **Input to Tool:** Get first the page titles and then the abstract of each page with the label "ai-protocol-nature-style" or "protocol-nature-style".
 **Expected Output from Tool:** The title and abstract of protocols on Confluence.

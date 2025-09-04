@@ -1,7 +1,6 @@
 """instrument agent can retrieve proteomics analysis results."""
 
 import logging
-import os
 
 from dotenv import load_dotenv
 from google.adk import Agent
@@ -9,6 +8,7 @@ from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerPa
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
 from proteomics_specialist.config import config
+from proteomics_specialist.sub_agents.enviroment_handling import validate_env_var
 
 from . import prompt
 
@@ -17,8 +17,7 @@ load_dotenv(".env.secrets")
 logger = logging.getLogger(__name__)
 
 try:
-    ALPHAKRAKEN_MCP_URL = os.getenv("ALPHAKRAKEN_MCP_URL")
-
+    ALPHAKRAKEN_MCP_URL = validate_env_var("ALPHAKRAKEN_MCP_URL")
 except ValueError:
     logger.exception("Configuration error occurred")
 

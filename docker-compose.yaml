@@ -8,7 +8,7 @@ services:
     volumes:
       - ${SERVICE_ACCOUNT_FILE}:/env/service_account.json:ro # Service account auth file
       # Mount all the persistent data stores to dedicated host files
-      - ./deployment_data/evalset/lab_note_generator.evalset.json:/app/proteomics_specialist /lab_note_generator.evalset.json
+      - ./deployment_data/evalset/lab_note_generator.evalset.json:/app/proteomics_specialist/lab_note_generator.evalset.json
       - ./deployment_data/evalset/protocol_finder.evalset.json:/app/proteomics_specialist/protocol_finder.evalset.json
       - ./deployment_data/evalset/protocol_generator.evalset.json:/app/proteomics_specialist/protocol_generator.evalset.json
       - ./deployment_data/evalset/question_agent.evalset.json:/app/proteomics_specialist/question_agent.evalset.json
