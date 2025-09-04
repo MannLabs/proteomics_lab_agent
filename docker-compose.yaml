@@ -34,10 +34,10 @@ services:
         - CONFLUENCE_URL=${CONFLUENCE_URL}
         - CONFLUENCE_USERNAME=${CONFLUENCE_USERNAME}
         - CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN}
-        - MCP_VERBOSE="true"
-        - MCP_LOGGING_STDOUT="true"
-        - ENABLED_TOOLS="confluence_search,confluence_get_page,confluence_get_page_children,confluence_get_labels,confluence_create_page,confluence_update_page,confluence_add_label"
-        - CONFLUENCE_SPACES_FILTER="ProtocolMCP"
+        - MCP_VERBOSE=true
+        - MCP_LOGGING_STDOUT=true
+        - ENABLED_TOOLS=confluence_search,confluence_get_page,confluence_get_page_children,confluence_get_labels,confluence_create_page,confluence_update_page,confluence_add_label
+        - CONFLUENCE_SPACES_FILTER=ProtocolMCP
       command: "--transport streamable-http --port 9000 -v"
       ports:
         - 9000:9000
