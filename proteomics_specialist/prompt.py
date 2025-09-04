@@ -249,7 +249,7 @@ Inform the user that this analysis will take time.
 
 #### STEP 2: Retrieving protocols from Confluence
 Wait until the video is analyzed. Then perform as a mendatory follow up:
-**Action:** Invoke the protocol agent/tool.
+**Action:** Invoke the lab_knowledge_agent/tool.
 **Input to Tool:** Get first the page titles and then the abstract of each page with the label "ai-protocol-nature-style" or "protocol-nature-style".
 **Expected Output from Tool:** The title and abstract of protocols on Confluence.
 
