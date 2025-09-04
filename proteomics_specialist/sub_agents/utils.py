@@ -226,9 +226,12 @@ def _get_gcs_file_paths(
     """Get list of GCS file URIs from a GCS folder."""
     from google.cloud import storage
 
-    path_parts = gcs_folder_path[5:].split("/", 1)  # Remove gs://
-    gcs_bucket_name = path_parts[0]
-    folder_prefix = path_parts[1] if len(path_parts) > 1 else ""
+    # Parse GCS URI: 'gs://bucket_name/prefix/objects' -> ['bucket_name', 'prefix/objects']
+    bucket_and_path = gcs_folder_path[len("gs://") :]
+    parts = bucket_and_path.split("/", 1)
+
+    gcs_bucket_name = parts[0]  # 'bucket_name'
+    folder_prefix = parts[1] if len(parts) > 1 else ""  # 'prefix/objects' or empty
 
     client = storage.Client()
     gcs_bucket = client.bucket(gcs_bucket_name)
