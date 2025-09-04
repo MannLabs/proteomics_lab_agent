@@ -5,6 +5,8 @@ from pathlib import Path
 from google.adk import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 
+from proteomics_specialist.config import config
+
 from . import prompt
 
 PATH_TO_YOUR_MCP_SERVER_SCRIPT = str((Path(__file__).parent / "server.py").resolve())
@@ -13,7 +15,7 @@ MODEL = "gemini-2.5-flash"
 
 database_agent = Agent(
     name="database_agent",
-    model=MODEL,
+    model=config.model,
     description="An agent that can store and retrieve past evaluations of proteomics analysis results.",
     instruction=prompt.DB_MCP_PROMPT,
     tools=[

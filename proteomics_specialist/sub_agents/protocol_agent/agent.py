@@ -10,6 +10,8 @@ from google.adk.tools.mcp_tool.mcp_toolset import (
     StdioServerParameters,
 )
 
+from proteomics_specialist.config import config
+
 from .. import utils  # noqa: TID252
 from . import prompt
 
@@ -26,7 +28,7 @@ except ValueError:
 
 protocol_agent = Agent(
     name="protocol_agent",
-    model=MODEL,
+    model=config.model,
     description="Agent to search and create protocols in our Confluence database.",
     instruction=prompt.PROTOCOL_PROMPT,
     tools=[
@@ -49,7 +51,7 @@ protocol_agent = Agent(
                         "-e",
                         "MCP_LOGGING_STDOUT",
                         "-e",
-                        "READ_ONLY_MODE",
+                        "ENABLED_TOOLS",
                         "-e",
                         "CONFLUENCE_SPACES_FILTER",
                         "ghcr.io/sooperset/mcp-atlassian:latest",
@@ -60,8 +62,9 @@ protocol_agent = Agent(
                         "CONFLUENCE_API_TOKEN": CONFLUENCE_API_TOKEN,
                         "MCP_VERBOSE": "true",
                         "MCP_LOGGING_STDOUT": "true",
-                        "READ_ONLY_MODE": "true",
+                        # "READ_ONLY_MODE": "true",
                         "CONFLUENCE_SPACES_FILTER": "ProtocolMCP",
+                        "ENABLED_TOOLS": "confluence_search,confluence_get_page,confluence_get_page_children,confluence_get_labels,confluence_create_page,confluence_update_page,confluence_add_label",
                     },
                 )
             )

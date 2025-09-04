@@ -1,0 +1,7 @@
+{
+  "criteria": {
+    "protocol_title_rouge_evaluation": {
+      "threshold": 0.8
+    }
+  }
+}

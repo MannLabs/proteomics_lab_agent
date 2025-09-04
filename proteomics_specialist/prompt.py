@@ -114,8 +114,23 @@ Continue with Step 4.
 Step 4:
 Next, inform the user that you will search for the next steps to perform based on the protocols in the Confluence database.
 **Action:** Invoke the protocol agent/tool.
-**Input to Tool:** Provide the search query depending on the conclusion or ask the user.
+**Input to Tool:** Provide the search query depending on the conclusion or ask the user. Initially you search for pages that have 'workflow' in their title as they show a sequence of protocols to perform.
 **Expected Output from Tool:** A list of next steps to perform.
+
+Step 5:
+If someone is saying 'Analyse this video: "[local path]".'
+Inform the user that this analysis will take time.
+**Action:** Invoke the video_analyzer_agent/tool.
+**Input to Tool:** Provide the entire user query.
+**Expected Output from Tool:** An analysis of the provide video content.
+
+Wait until the video is analyzed. Then perform as a mendatory follow up:
+**Action:** Invoke the protocol agent/tool.
+**Input to Tool:** Get first the page titles and then the abstract of each page with the label "ai-protocol-nature-style".
+**Expected Output from Tool:** The title and abstract of protocols on Confluence with the label "ai-protocol-nature-style".
+
+Compare now the video analysis with the page contents and find the protocol that has a content that is similar to the video analysis. If there are multiple options than rank them according to alignment.
+Tell the user the name and content of the matching protocol.
 
 # Conclusion:
 Briefly conclude the interaction, perhaps asking if the user wants to explore any area further and how satisfied they were with the response in the categories (scale 1-5: 1 - very bad, 5 - very good): Completeness, Technical accuracy, Logical flow, Safety, Formatting.

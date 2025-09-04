@@ -30,6 +30,8 @@ def upload_file_to_gcs(
     subfolder_in_bucket: str | None = None,
     custom_blob_name: str | None = None,
 ) -> str:
+    # Lives now at proteomics_specialist/sub_agents/utils.py as upload_file_from_path_to_gcs() unsing google.genai instead of vertexai.generative_models
+    # This function is depricated soon
     """Upload a file to Google Cloud Storage and return its URI.
 
     Uses the original filename as the blob name by default.
