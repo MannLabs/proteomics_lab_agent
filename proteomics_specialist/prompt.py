@@ -62,7 +62,6 @@ Query matches when user asks about:
 Inform the user that you will now retrieve the latest QC analysis results for the specified instrument using AlphaKraken.
 **Action:** Invoke the instrument_agent/tool.
 **Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1).
-**Parameter:** Specify the desired max_age_in_days. Use a default timeframe, e.g., "in the last 7 days" or ask the user (e.g., in the last 14 days or in the last 30 days).
 **Expected Output from Tool:** A list of raw files and their analysis result metrics.
 **Presentation:** Present the extracted information clearly in the following format:
     * Raw file: [Raw file name]
@@ -88,7 +87,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
 │  - "I need help with the decision."
 │  - "What was a [good/bad] performance on [instrument id]?
     │
-    ├─ SUB-PATH B1: If the alphakraken query in step 1 required more than 7 days (e.g., 'Here are the QC runs for tims2 with the label 'DIAMA_HeLa' in the last 21 days')
+    ├─ SUB-PATH B1: If the alphakraken query in step 1 required more than 7 days (e.g., 'Here are the QC runs for tims2 with the label 'DIAMA_HeLa' in the last 14 days')
     │   1. Present the user with the QC analysis results of step 1.
     │   2. Proactively recommend to perform maintenance on this instrument.
     │   3. Continue with Step 4.
