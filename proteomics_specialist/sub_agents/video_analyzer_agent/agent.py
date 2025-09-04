@@ -34,13 +34,13 @@ def analyze_proteomics_video(
 
     """
     try:
+        model = config.analysis_model
+        temperature = config.temperature
+
         load_dotenv()
         bucket_name = os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
         project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
         knowledge_base_path = os.getenv("KNOWLEDGE_BASE_PATH")
-
-        model = config.analysis_model
-        temperature = config.temperature
 
         if not all([bucket_name, project_id, knowledge_base_path]):
             missing_vars = []
@@ -128,6 +128,6 @@ video_analyzer_agent = LlmAgent(
     # planner=BuiltInPlanner(
     #     thinking_config=types.ThinkingConfig(include_thoughts=True)
     # ),
-    instruction="""Always analyse the user query by invoking the tool 'analyze_proteomics_video' and reply the generated response.""",
+    instruction=f"""Always analyse the user query by invoking the tool '{analyze_proteomics_video.__name__}' and reply the generated response.""",
     tools=[analyze_proteomics_video],
 )

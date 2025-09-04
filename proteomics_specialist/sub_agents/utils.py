@@ -39,7 +39,11 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
     Parameters
     ----------
     query : str
-        Input string that may contain a file path.
+        Input string that may contain a file path. Examples:
+        - 'Video path: /Users/patriciaskowronek/Documents/documentation_agent_few_shot_examples/benchmark_dataset/documentation/DisconnectingColumn_docuCorrect.MP4. Analyze the video.'
+        - 'Analyse this video: "gs://ai-proteomics-advisor/input_video/ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4".'
+        - "gs://ai-proteomics-advisor/input_video/ConnectingColumnSampleLine_docuWithoutStandbyANDtimsControl.mp4"
+        - '""/Users/patriciaskowronek/Downloads/ultra_short.mp4"."', '"/Users/patriciaskowronek/Downloads/ultra_short.mp4".'
 
     Returns
     -------
@@ -79,7 +83,7 @@ def extract_file_path_and_message(query: str) -> tuple[str | None, str | None, s
     if match:
         file_path = match.group(1)
         filename = Path(file_path).name
-        remaining_message = query.replace(file_path, "").strip()
+        remaining_message = query.replace(file_path, "<removed_file_path>").strip()
         return file_path, filename, remaining_message
 
     return None, None, query.strip()
