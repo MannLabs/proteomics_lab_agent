@@ -197,7 +197,12 @@ pip install -r requirements/requirements_development.txt
 You can run the agent locally using the `adk` command in your terminal:
 
 * Run docker containers for mcp servers of alphakraken and confluence:
-- `docker compose --env-file ./.env.secrets --env-file ./.env up confluence_mcp alphakraken_mcp` you can add `-d` flag to detach the containers from the shell session
+- ```bash
+    ALPHAKRAKEN_MCP_URL="http://127.0.0.1:8089/mcp" \
+    CONFLUENCE_MCP_URL="http://127.0.0.1:9000/mcp" \
+    docker compose --env-file ./.env.secrets --env-file ./.env up confluence_mcp alphakraken_mcp
+    ```
+    you can add `-d` flag to detach the containers from the shell session
 
 * Open fresh terminal, ensure your virtual environment is active and you are in the root directory of the `proteomics_specialist` project.
 1.  To run the agent from the CLI:
@@ -237,7 +242,12 @@ docker compose --env-file ./.env.secrets --env-file ./.env build
 ```
 
 #### Start the application
-
+For local deployment:
+```bash
+ALPHAKRAKEN_MCP_URL="http://127.0.0.1:8089/mcp" \
+CONFLUENCE_MCP_URL="http://127.0.0.1:9000/mcp" \
+docker compose --env-file ./.env.secrets --env-file ./.env up
+```
 For troubleshooting (with logs visible):
 ```bash
 docker compose --env-file ./.env.secrets --env-file ./.env up
