@@ -217,6 +217,12 @@ or to make a web server accessible from other devices on your network, not just 
 ```bash
 adk web --host 0.0.0.0
 ```
+3. To run the agent via docker from the ADK web UI:
+```bash
+ALPHAKRAKEN_MCP_URL="http://127.0.0.1:8089/mcp" \
+CONFLUENCE_MCP_URL="http://127.0.0.1:9000/mcp" \
+docker compose --env-file ./.env.secrets --env-file ./.env up
+```
 Then select the `proteomics_specialist` from the dropdown.
 
 This will:
@@ -242,17 +248,11 @@ docker compose --env-file ./.env.secrets --env-file ./.env build
 ```
 
 #### Start the application
-For local deployment:
-```bash
-ALPHAKRAKEN_MCP_URL="http://127.0.0.1:8089/mcp" \
-CONFLUENCE_MCP_URL="http://127.0.0.1:9000/mcp" \
-docker compose --env-file ./.env.secrets --env-file ./.env up
-```
-For troubleshooting (with logs visible):
+1. for troubleshooting (with logs visible):
 ```bash
 docker compose --env-file ./.env.secrets --env-file ./.env up
 ```
-For production (detached mode):
+2. or for production (detached mode):
 ```bash
 docker compose --env-file ./.env.secrets --env-file ./.env up -d
 ```
