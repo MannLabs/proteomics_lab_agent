@@ -28,6 +28,11 @@ proteomics_specialist/protocol_finder.evalset.json
 proteomics_specialist/protocol_generator.evalset.json
 proteomics_specialist/question_agent.evalset.json
 proteomics_specialist/sub_agents/qc_memory_agent/database.db
+deployment_data/evalset/lab_note_generator.evalset.json
+deployment_data/evalset/protocol_finder.evalset.json
+deployment_data/evalset/protocol_generator.evalset.json
+deployment_data/evalset/question_agent.evalset.json
+deployment_data/database.db
 
 # Github defaults are below
 # TODO: sort through them
@@ -117,6 +122,7 @@ profile_default/
 ipython_config.py
 
 # Environments
+.env.secrets
 .env
 .venv
 env/
