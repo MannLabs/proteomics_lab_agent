@@ -61,7 +61,7 @@ Query matches when user asks about:
 #### STEP 1: Retrieves latest instrument QC results from AlphaKraken
 Inform the user that you will now retrieve the latest QC analysis results for the specified instrument using AlphaKraken.
 **Action:** Invoke the instrument_agent/tool.
-**Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1).
+**Input to Tool:** Provide the necessary instrument_id (e.g. astral1, tims1).
 **Expected Output from Tool:** A list of raw files and their analysis result metrics.
 **Presentation:** Present the extracted information clearly in the following format:
     * Raw file: [Raw file name]
@@ -73,6 +73,7 @@ Inform the user that you will now retrieve the latest QC analysis results for th
     * MS2 mass error: [Calibration MS2 Median Accuracy]
     * Gradient length: [Raw Gradient Length (m)]
     * Median precursor intensity: [Precursor Intensity Median]
+    * Evosep HP pump pressure: [msqc_evosep_pump_hp_pressure_max]
 
 #### STEP 2: Decision Point 1
 When you were able to successfully extract analysis results, ask: "Would you proceed with measuring? [Yes/No] Or should I help you with the decision?"
@@ -85,7 +86,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
 └─ PATH B: User needs help or information about past instrument performance evaluations.
 │  Query matches when user asks about:
 │  - "I need help with the decision."
-│  - "What was a [good/bad] performance on [instrument id]?
+│  - "What was a [good/bad] performance on [instrument_id]?
     │
     ├─ SUB-PATH B1: If the alphakraken query in step 1 required more than 7 days (e.g., 'Here are the QC runs for tims2 with the label 'DIAMA_HeLa' in the last 14 days')
     │   1. Present the user with the QC analysis results of step 1.
@@ -95,7 +96,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
     └─ SUB-PATH B2: Standard help request
         1. Inform the user that you will retrieve old performance evaluations for reference.
         2.  **Action:** Invoke the qc_memory_agent/tool.
-            **Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1) and desired gradient (e.g. 44 min) from the ongoing conversation. Search independent of the performance status (for 0 and 1). You aim is to get as much information as possible. Only ask the user if you do not have these information from the previous conversation.
+            **Input to Tool:** Provide the necessary instrument_id (e.g. astral1, tims1) and desired gradient (e.g. 44 min) from the ongoing conversation. Search independent of the performance status (for 0 and 1). You aim is to get as much information as possible. Only ask the user if you do not have these information from the previous conversation.
             **Expected Output from Tool:** A list of raw files and their metrics.
             **Presentation:** Present the user with the extracted information clearly in the following format:
                 * performance status: [performance_status, Decision flag - whether you'll proceed with measurement, 0: No, 1: Yes]
@@ -123,6 +124,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
                     * MS1 mass error: [Calibration MS1 Median Accuracy]
                     * MS2 mass error: [Calibration MS2 Median Accuracy]
                     * Median precursor intensity: [Precursor Intensity Median]
+                    * Evosep HP pump pressure: [msqc_evosep_pump_hp_pressure_max]
         5. Present comparison table with historical performance data.
         6. Inform the user about your recommendation based on the comparison of hostorical and current performance data.
         7. Continue to Step 4

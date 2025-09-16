@@ -23,7 +23,7 @@ Database Structure:
    - Fields:
      * id: Unique identifier (PRIMARY KEY)
      * file_name: Unique filename (UNIQUE constraint)
-     * instrument: Instrument used (e.g., 'tims2')
+     * instrument_id: Instrument used (e.g., 'tims2')
      * gradient: Gradient time in minutes
 
 3. raw_file_to_session (Junction Table)
@@ -73,7 +73,7 @@ def create_database() -> None:
             CREATE TABLE IF NOT EXISTS performance_data (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 performance_status BOOLEAN NOT NULL DEFAULT 0,
-                performance_rating INTEGER NOT NULL DEFAULT 0 CHECK (performance_rating >= 0 AND performance_rating <= 5),
+                performance_rating REAL NOT NULL DEFAULT 0 CHECK (performance_rating >= 0 AND performance_rating <= 5),
                 performance_comment TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -84,7 +84,7 @@ def create_database() -> None:
             CREATE TABLE IF NOT EXISTS raw_files (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 file_name TEXT UNIQUE NOT NULL,
-                instrument TEXT NOT NULL,
+                instrument_id TEXT NOT NULL,
                 gradient REAL NOT NULL
             )
         """)

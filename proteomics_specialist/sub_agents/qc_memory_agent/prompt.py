@@ -19,12 +19,12 @@ Your primary goal is to fulfill user requests by directly using the available da
         "raw_files": [
                 {
                 "file_name": "file1.d",
-                "instrument": "tims2",
+                "instrument_id": "tims2",
                 "gradient": 43.998
                 },
                 {
                 "file_name": "file2.d",
-                "instrument": "tims2",
+                "instrument_id": "tims2",
                 "gradient": 43.998
                 }
             ]
@@ -32,7 +32,7 @@ Your primary goal is to fulfill user requests by directly using the available da
 
 ## Scenario 2: Querying for session information
 - use the 'query_performance_data' tool.
-- Query for database for entries. Use an exact match for the instrument = instrument_id, and use the tolerance option for gradient.
+- Query for database for entries. Use an exact match for the instrument_id, and use the tolerance option for gradient.
     Follow these arguments as example:
     {
     'instrument': 'tims2',

@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import traceback
 from pathlib import Path
 
 import database_utils
@@ -18,37 +19,26 @@ from mcp.server.models import InitializationOptions
 
 load_dotenv()
 
-# --- Logging Setup ---
 LOG_FILE_PATH = Path(__file__).parent / "mcp_server_activity.log"
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(funcName)s - %(message)s",
     handlers=[
-        logging.FileHandler(LOG_FILE_PATH, mode="w"),
+        logging.FileHandler(LOG_FILE_PATH, mode="a"),
+        logging.StreamHandler(),
     ],
 )
-# # --- End Logging Setup ---
 
-# DATABASE_PATH = Path(__file__).parent / "database.db"
-
-# def get_db_connection() -> sqlite3.Connection:
-#     """Get a database connection with row factory set to sqlite3.Row."""
-#     conn = sqlite3.connect(DATABASE_PATH)
-#     conn.row_factory = sqlite3.Row
-#     return conn
-
+logger = logging.getLogger(__name__)
 
 # --- MCP Server Setup ---
-logging.info("Creating MCP Server instance for SQLite DB...")
+logger.info("Creating MCP Server instance for SQLite DB...")
 app = Server("sqlite-db-mcp-server")
 
 # Wrap database utility functions as ADK FunctionTools
 ADK_DB_TOOLS = {
     "list_db_tables": FunctionTool(func=database_utils.list_db_tables),
     "get_table_schema": FunctionTool(func=database_utils.get_table_schema),
-    # "query_db_table": FunctionTool(func=database_utils.query_db_table),
-    # "insert_data": FunctionTool(func=database_utils.insert_data),
-    # "delete_data": FunctionTool(func=database_utils.delete_data),
     "query_performance_data": FunctionTool(func=database_utils.query_performance_data),
     "insert_performance_session": FunctionTool(
         func=database_utils.insert_performance_session
@@ -59,87 +49,139 @@ ADK_DB_TOOLS = {
 @app.list_tools()
 async def list_mcp_tools() -> list[mcp_types.Tool]:
     """MCP handler to list tools this server exposes."""
-    logging.info("MCP Server: Received list_tools request.")
+    logger.info("MCP Server: Received list_tools request")
     mcp_tools_list = []
-    for tool_name, adk_tool_instance in ADK_DB_TOOLS.items():
-        if not adk_tool_instance.name:
-            adk_tool_instance.name = tool_name
 
-        mcp_tool_schema = adk_to_mcp_tool_type(adk_tool_instance)
-        logging.info(
-            f"MCP Server: Advertising tool: {mcp_tool_schema.name}, InputSchema: {mcp_tool_schema.inputSchema}"
-        )
-        mcp_tools_list.append(mcp_tool_schema)
-    return mcp_tools_list
+    try:
+        for tool_name, adk_tool_instance in ADK_DB_TOOLS.items():
+            if not adk_tool_instance.name:
+                adk_tool_instance.name = tool_name
+
+            mcp_tool_schema = adk_to_mcp_tool_type(adk_tool_instance)
+            logger.info(f"MCP Server: Advertising tool: {mcp_tool_schema.name}")
+            mcp_tools_list.append(mcp_tool_schema)
+
+    except Exception:
+        logger.exception("Error listing tools")
+        # Return empty list rather than failing completely
+        return []
+    else:
+        logger.info(f"MCP Server: Successfully listed {len(mcp_tools_list)} tools")
+        return mcp_tools_list
 
 
 @app.call_tool()
 async def call_mcp_tool(name: str, arguments: dict) -> list[mcp_types.TextContent]:
     """MCP handler to execute a tool call requested by an MCP client."""
-    logging.info(
-        f"MCP Server: Received call_tool request for '{name}' with args: {arguments}"
-    )
+    logger.info(f"MCP Server: Executing tool '{name}' with args: {arguments}")
 
-    if name in ADK_DB_TOOLS:
-        adk_tool_instance = ADK_DB_TOOLS[name]
-        try:
-            adk_tool_response = await adk_tool_instance.run_async(
-                args=arguments,
-                tool_context=None,
-            )
-            logging.info(
-                f"MCP Server: ADK tool '{name}' executed. Response: {adk_tool_response}"
-            )
-            response_text = json.dumps(adk_tool_response, indent=2)
-            return [mcp_types.TextContent(type="text", text=response_text)]
-
-        except Exception as e:
-            logging.exception(f"MCP Server: Error executing ADK tool '{name}'")
-            error_payload = {
-                "success": False,
-                "message": f"Failed to execute tool '{name}': {e!s}",
-            }
-            error_text = json.dumps(error_payload)
-            return [mcp_types.TextContent(type="text", text=error_text)]
-    else:
-        logging.warning(f"MCP Server: Tool '{name}' not found/exposed by this server.")
+    if name not in ADK_DB_TOOLS:
+        error_message = f"Tool '{name}' not implemented by this server. Available tools: {list(ADK_DB_TOOLS.keys())}"
+        logger.warning(error_message)
         error_payload = {
             "success": False,
-            "message": f"Tool '{name}' not implemented by this server.",
+            "message": error_message,
+            "error_code": "TOOL_NOT_FOUND",
+            "available_tools": list(ADK_DB_TOOLS.keys()),
         }
-        error_text = json.dumps(error_payload)
-        return [mcp_types.TextContent(type="text", text=error_text)]
+        return [
+            mcp_types.TextContent(type="text", text=json.dumps(error_payload, indent=2))
+        ]
+
+    try:
+        adk_tool_instance = ADK_DB_TOOLS[name]
+
+        # Execute the tool
+        adk_tool_response = await adk_tool_instance.run_async(
+            args=arguments,
+            tool_context=None,
+        )
+
+        # The response should already be properly formatted by safe_execute_db_function
+        if not isinstance(adk_tool_response, dict):
+            logger.error(
+                f"Tool '{name}' wrapper returned non-dict: {type(adk_tool_response)}"
+            )
+            error_payload = {
+                "success": False,
+                "message": f"Tool '{name}' returned invalid response type: {type(adk_tool_response)}",
+                "error_code": "INVALID_RESPONSE_TYPE",
+                "tool_name": name,
+            }
+            return [
+                mcp_types.TextContent(
+                    type="text", text=json.dumps(error_payload, indent=2)
+                )
+            ]
+
+        # Add metadata to response
+        adk_tool_response["tool_name"] = name
+        adk_tool_response["server_version"] = "0.2.0"
+
+        # Final success/failure logging
+        success = adk_tool_response.get("success", False)
+        if success:
+            logger.info(f"MCP Server: Tool '{name}' executed successfully")
+        else:
+            error_code = adk_tool_response.get("error_code", "UNKNOWN")
+            logger.error(f"MCP Server: Tool '{name}' failed with code {error_code}")
+
+        response_text = json.dumps(adk_tool_response, indent=2, default=str)
+        logger.debug(
+            f"MCP Server: Tool '{name}' response size: {len(response_text)} characters"
+        )
+
+        return [mcp_types.TextContent(type="text", text=response_text)]
+
+    except Exception as e:
+        logger.exception(f"MCP Server: Unexpected error executing tool '{name}'")
+        error_payload = {
+            "success": False,
+            "message": f"Unexpected error executing tool '{name}': {e!s}",
+            "error_code": "UNEXPECTED_ERROR",
+            "error_type": type(e).__name__,
+            "tool_name": name,
+            "traceback": traceback.format_exc(),
+        }
+        return [
+            mcp_types.TextContent(type="text", text=json.dumps(error_payload, indent=2))
+        ]
 
 
 # --- MCP Server Runner ---
 async def run_mcp_stdio_server() -> None:
     """Runs the MCP server, listening for connections over standard input/output."""
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        logging.info("MCP Stdio Server: Starting handshake with client...")
-        await app.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name=app.name,
-                server_version="0.1.0",
-                capabilities=app.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
+    try:
+        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+            logger.info("MCP Stdio Server: Starting handshake with client...")
+            await app.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name=app.name,
+                    server_version="0.2.0",
+                    capabilities=app.get_capabilities(
+                        notification_options=NotificationOptions(),
+                        experimental_capabilities={},
+                    ),
                 ),
-            ),
-        )
-        logging.info("MCP Stdio Server: Run loop finished or client disconnected.")
+            )
+            logger.info("MCP Stdio Server: Run loop finished or client disconnected")
+    except Exception:
+        logger.exception("Error in MCP stdio server")
+        raise
 
 
 if __name__ == "__main__":
-    logging.info("Launching SQLite DB MCP Server via stdio...")
+    logger.info("Launching SQLite DB MCP Server via stdio...")
     try:
         asyncio.run(run_mcp_stdio_server())
     except KeyboardInterrupt:
-        logging.info("\n MCP Server (stdio) stopped by user.")
+        logger.info("MCP Server (stdio) stopped by user")
     except (OSError, RuntimeError, ValueError) as e:
-        logging.critical(
-            f"MCP Server (stdio) encountered an unhandled error: {e}", exc_info=True
+        logger.critical(
+            f"MCP Server (stdio) encountered fatal error: {e}", exc_info=True
         )
+        raise
     finally:
-        logging.info("MCP Server (stdio) process exiting.")
+        logger.info("MCP Server (stdio) process exiting")

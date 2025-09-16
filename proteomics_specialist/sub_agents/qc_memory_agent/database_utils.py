@@ -2,288 +2,145 @@
 
 from __future__ import annotations
 
+import logging
 import re
 import sqlite3
 from pathlib import Path
 from typing import ClassVar
 
+logger = logging.getLogger(__name__)
+
 DATABASE_PATH = Path(__file__).parent / "database.db"
 GRADIENT_TOLERANCE = (
     0.001  # Tolerance for retrieving raw files based on gradient length
 )
+MAX_PERFORMANCE_RATING = 5
+
+
+class DatabaseError(Exception):
+    """Custom exception for database operations."""
+
+
+class ValidationError(DatabaseError):
+    """Exception for data validation errors."""
+
+
+class SessionError(DatabaseError):
+    """Exception for session processing errors."""
 
 
 def get_db_connection() -> sqlite3.Connection:
     """Get a database connection with row factory set to sqlite3.Row."""
-    conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
+    try:
+        conn = sqlite3.connect(DATABASE_PATH)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+    except sqlite3.Error as e:
+        logger.exception("Failed to connect to database.")
+        raise DatabaseError("Database connection failed.") from e
+    else:
+        return conn
 
 
 def list_db_tables() -> dict:
     """Lists all tables in the SQLite database.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
     dict
-        A dictionary with keys 'success' (bool), 'message' (str), and 'tables' (list[str]) containing the table names if successful.
+        A dictionary with keys 'success' (bool), 'message' (str), and 'data' containing the table names if successful.
 
     """
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = [row[0] for row in cursor.fetchall()]
-        conn.close()
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+            tables = [row[0] for row in cursor.fetchall()]
+
+    except DatabaseError as e:
+        logger.exception("Database error listing tables.")
+        return {
+            "success": False,
+            "message": f"Database error: {e!s}",
+            "error_code": "DATABASE_ERROR",
+            "data": {"tables": []},
+        }
     except sqlite3.Error as e:
-        return {"success": False, "message": f"Error listing tables: {e}", "tables": []}
+        logger.exception("Unexpected database error listing tables.")
+        return {
+            "success": False,
+            "message": f"Unexpected error: {e!s}",
+            "error_code": "UNEXPECTED_ERROR",
+            "data": {"tables": []},
+        }
     else:
+        logger.info(f"Successfully listed {len(tables)} tables")
         return {
             "success": True,
             "message": "Tables listed successfully.",
-            "tables": tables,
+            "data": {"tables": tables},
         }
 
 
 def get_table_schema(table_name: str) -> dict:
-    """Gets the schema (column names and types) of a specific table."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(f"PRAGMA table_info('{table_name}');")
-    schema_info = cursor.fetchall()
-    conn.close()
-    if not schema_info:
-        raise ValueError(f"Table '{table_name}' not found or no schema information.")
-
-    columns = [{"name": row["name"], "type": row["type"]} for row in schema_info]
-    return {"table_name": table_name, "columns": columns}
-
-
-def query_db_table(table_name: str, columns: str, condition: str) -> list[dict]:
-    """Queries a table with an optional condition.
+    """Gets the schema (column names and types) of a specific table.
 
     Parameters
     ----------
     table_name : str
-        The name of the table to query.
-    columns : str, optional
-        Comma-separated list of columns to retrieve (e.g., "id, name"), default is "*".
-    condition : str, optional
-        Optional SQL WHERE clause condition (e.g., "id = 1" or "completed = 0").
-
-    Returns
-    -------
-    list[dict]
-        A list of dictionaries, where each dictionary represents a row.
-
-    """
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    query = f"SELECT {columns} FROM {table_name}"
-    if condition:
-        query += f" WHERE {condition}"
-    query += ";"
-
-    try:
-        cursor.execute(query)
-        results = [dict(row) for row in cursor.fetchall()]
-    except sqlite3.Error as e:
-        conn.close()
-        raise ValueError(f"Error querying table '{table_name}': {e}") from None
-    conn.close()
-    return results
-
-
-def insert_data(table_name: str, data: dict) -> dict:
-    """Inserts a new row of data into the specified table.
-
-    Parameters
-    ----------
-    table_name : str
-        The name of the table to insert data into.
-    data : dict
-        A dictionary where keys are column names and values are the corresponding values for the new row.
+        The name of the table to get schema for.
 
     Returns
     -------
     dict
-        A dictionary with keys 'success' (bool) and 'message' (str). If successful, 'message' includes the ID of the newly inserted row.
+        Dictionary with success status and schema information.
 
     """
     if not table_name or not isinstance(table_name, str):
-        return {"success": False, "message": "Invalid table name provided."}
-
-    if not data or not isinstance(data, dict):
-        return {"success": False, "message": "No data provided for insertion."}
-
-    if not data:
-        return {"success": False, "message": "Data dictionary is empty."}
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    columns = ", ".join(data.keys())
-    placeholders = ", ".join(["?" for _ in data])
-    values = tuple(data.values())
-
-    query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-
-    try:
-        cursor.execute(query, values)
-        conn.commit()
-        last_row_id = cursor.lastrowid
-    except sqlite3.Error as e:
-        conn.rollback()
         return {
             "success": False,
-            "message": f"Error inserting data into table '{table_name}': {e}",
+            "message": "table_name must be a non-empty string",
+            "error_code": "VALIDATION_ERROR",
+        }
+
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"PRAGMA table_info('{table_name}');")
+            schema_info = cursor.fetchall()
+
+        if not schema_info:
+            return {
+                "success": False,
+                "message": f"Table '{table_name}' not found or no schema information.",
+                "error_code": "TABLE_NOT_FOUND",
+            }
+
+        columns = [{"name": row["name"], "type": row["type"]} for row in schema_info]
+
+    except DatabaseError as e:
+        logger.exception(f"Database error getting schema for '{table_name}'.")
+        return {
+            "success": False,
+            "message": f"Database error: {e!s}",
+            "error_code": "DATABASE_ERROR",
+        }
+    except sqlite3.Error as e:
+        logger.exception(f"Unexpected error getting schema for '{table_name}'.")
+        return {
+            "success": False,
+            "message": f"Unexpected error: {e!s}",
+            "error_code": "UNEXPECTED_ERROR",
         }
     else:
-        return {
-            "success": True,
-            "message": f"Data inserted successfully. Row ID: {last_row_id}",
-            "row_id": last_row_id,
-        }
-    finally:
-        conn.close()
-
-
-def _get_or_create_raw_file(
-    file_data: dict,
-    conn: sqlite3.Connection | None = None,
-    cursor: sqlite3.Cursor | None = None,
-) -> dict:
-    """Gets an existing raw file record or creates/updates one based on file data.
-
-    Implements upsert logic that works with any SQLite version without requiring specific table constraints. If a file with the same name exists:
-    - Returns the existing record if instrument and gradient match exactly
-    - Updates the existing record if instrument or gradient differ
-    - Creates a new record if no file with that name exists
-
-    Parameters
-    ----------
-    file_data : dict
-        Dictionary containing file information with required keys:
-        - 'file_name' (str): The name of the file
-        - 'instrument' (str): The instrument name
-        - 'gradient' (float): The gradient value
-    conn : Optional[sqlite3.Connection], optional
-        Existing database connection. If None, creates a new one.
-    cursor : Optional[sqlite3.Cursor], optional
-        Existing database cursor. If None, creates from conn.
-
-    Returns
-    -------
-    dict
-        Result with success status, file_id, action ('found_exact_match', 'updated', or 'created') and message.
-
-    """
-    # Use provided connection or create new one
-    own_connection = conn is None
-    if own_connection:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-    elif cursor is None:
-        cursor = conn.cursor()
-
-    try:
-        cursor.execute(
-            "SELECT id, instrument, gradient FROM raw_files WHERE file_name = ?",
-            (file_data["file_name"],),
+        logger.info(
+            f"Successfully retrieved schema for table '{table_name}' with {len(columns)} columns"
         )
-        existing = cursor.fetchone()
-
-        if existing:
-            return _handle_existing_file(
-                existing, file_data, cursor, conn, own_connection=own_connection
-            )
-        return _create_new_file(file_data, cursor, conn, own_connection=own_connection)
-
-    except sqlite3.Error as e:
-        if own_connection:
-            conn.rollback()
-        return {
-            "success": False,
-            "message": f"Error processing file '{file_data.get('file_name', 'unknown')}': {e}",
-        }
-    finally:
-        if own_connection:
-            conn.close()
-
-
-def _handle_existing_file(
-    existing: tuple,
-    file_data: dict,
-    cursor: sqlite3.Cursor,
-    conn: sqlite3.Connection,
-    *,
-    own_connection: bool,
-) -> dict:
-    """Handle logic for existing file."""
-    existing_id, existing_instrument, existing_gradient = existing
-
-    # Check if the existing file matches exactly
-    instrument_match = existing_instrument == file_data["instrument"]
-    gradient_diff = abs(existing_gradient - file_data["gradient"])
-    gradient_match = gradient_diff < GRADIENT_TOLERANCE
-
-    if instrument_match and gradient_match:
         return {
             "success": True,
-            "file_id": existing_id,
-            "action": "found_exact_match",
-            "message": f"Using existing file: {file_data['file_name']}",
+            "message": f"Schema retrieved for table '{table_name}'.",
+            "data": {"table_name": table_name, "columns": columns},
         }
-
-    # File exists but with different data - update it
-    cursor.execute(
-        "UPDATE raw_files SET instrument = ?, gradient = ? WHERE id = ?",
-        (file_data["instrument"], file_data["gradient"], existing_id),
-    )
-
-    if own_connection:
-        conn.commit()
-
-    return {
-        "success": True,
-        "file_id": existing_id,
-        "action": "updated",
-        "message": f"Updated existing file: {file_data['file_name']}",
-    }
-
-
-def _create_new_file(
-    file_data: dict,
-    cursor: sqlite3.Cursor,
-    conn: sqlite3.Connection,
-    *,
-    own_connection: bool,
-) -> dict:
-    """Create a new file record."""
-    cursor.execute(
-        "INSERT INTO raw_files (file_name, instrument, gradient) VALUES (?, ?, ?)",
-        (
-            file_data["file_name"],
-            file_data["instrument"],
-            file_data["gradient"],
-        ),
-    )
-    new_id = cursor.lastrowid
-
-    if own_connection:
-        conn.commit()
-
-    return {
-        "success": True,
-        "file_id": new_id,
-        "action": "created",
-        "message": f"Created new file: {file_data['file_name']}",
-    }
 
 
 class InstrumentNormalizer:
@@ -332,13 +189,25 @@ class InstrumentNormalizer:
 def _validate_session_data(session_data: dict) -> dict:
     """Validates the session data structure and required fields."""
     if not session_data or not isinstance(session_data, dict):
-        return {"success": False, "message": "Invalid session data provided"}
+        return {
+            "success": False,
+            "message": "Invalid session data provided - must be a dictionary",
+            "error_code": "VALIDATION_ERROR",
+        }
 
     if not session_data.get("raw_files"):
-        return {"success": False, "message": "No raw files provided in session data"}
+        return {
+            "success": False,
+            "message": "No raw files provided in session data",
+            "error_code": "VALIDATION_ERROR",
+        }
 
     if not isinstance(session_data["raw_files"], list):
-        return {"success": False, "message": "raw_files must be a list"}
+        return {
+            "success": False,
+            "message": "raw_files must be a list",
+            "error_code": "VALIDATION_ERROR",
+        }
 
     required_fields = [
         "performance_status",
@@ -350,6 +219,18 @@ def _validate_session_data(session_data: dict) -> dict:
         return {
             "success": False,
             "message": f"Missing required fields: {', '.join(missing_fields)}",
+            "error_code": "VALIDATION_ERROR",
+        }
+
+    # Validate performance_rating range
+    rating = session_data.get("performance_rating")
+    if not isinstance(rating, (int, float)) or not (
+        0 <= rating <= MAX_PERFORMANCE_RATING
+    ):
+        return {
+            "success": False,
+            "message": f"performance_rating must be an integer between 0 and {MAX_PERFORMANCE_RATING}",
+            "error_code": "VALIDATION_ERROR",
         }
 
     return {"success": True, "message": "Validation passed"}
@@ -358,28 +239,14 @@ def _validate_session_data(session_data: dict) -> dict:
 def _normalize_file_instruments(raw_files: list) -> None:
     """Normalizes instrument names in the raw files data."""
     for file_data in raw_files:
-        if "instrument" in file_data:
-            file_data["instrument"] = InstrumentNormalizer.normalize(
-                file_data["instrument"]
+        if "instrument_id" in file_data:
+            file_data["instrument_id"] = InstrumentNormalizer.normalize(
+                file_data["instrument_id"]
             )
 
 
 def _insert_performance_record(session_data: dict, cursor: sqlite3.Cursor) -> int:
-    """Inserts the performance data record and returns the performance ID.
-
-    Parameters
-    ----------
-    session_data : dict
-        Session data containing performance information
-    cursor : sqlite3.Cursor
-        Database cursor for executing queries
-
-    Returns
-    -------
-    int
-        The ID of the newly inserted performance record
-
-    """
+    """Inserts the performance data record and returns the performance ID."""
     perf_cols = [k for k in session_data if k != "raw_files"]
     perf_values = [session_data[k] for k in perf_cols]
 
@@ -389,7 +256,155 @@ def _insert_performance_record(session_data: dict, cursor: sqlite3.Cursor) -> in
     """
 
     cursor.execute(perf_query, perf_values)
-    return cursor.lastrowid
+    performance_id = cursor.lastrowid
+
+    if not performance_id:
+        raise DatabaseError("Failed to get performance_id after insert")
+
+    return performance_id
+
+
+def _get_or_create_raw_file(
+    file_data: dict,
+    conn: sqlite3.Connection | None = None,
+    cursor: sqlite3.Cursor | None = None,
+) -> dict:
+    """Gets an existing raw file record or creates/updates one based on file data.
+
+    Implements upsert logic that works with any SQLite version without requiring specific table constraints. If a file with the same name exists:
+    - Returns the existing record if instrument_id and gradient match exactly
+    - Updates the existing record if instrument_id or gradient differ
+    - Creates a new record if no file with that name exists
+
+    Parameters
+    ----------
+    file_data : dict
+        Dictionary containing file information with required keys:
+        - 'file_name' (str): The name of the file
+        - 'instrument_id' (str): The instrument name
+        - 'gradient' (float): The gradient value
+    conn : Optional[sqlite3.Connection], optional
+        Existing database connection. If None, creates a new one.
+    cursor : Optional[sqlite3.Cursor], optional
+        Existing database cursor. If None, creates from conn.
+
+    Returns
+    -------
+    dict
+        Result with success status, file_id, action ('found_exact_match', 'updated', or 'created') and message.
+
+    """
+    # Use provided connection or create new one
+    own_connection = conn is None
+    if own_connection:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+    elif cursor is None:
+        cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT id, instrument_id, gradient FROM raw_files WHERE file_name = ?",
+            (file_data["file_name"],),
+        )
+        existing = cursor.fetchone()
+
+        if existing:
+            return _handle_existing_file(
+                existing, file_data, cursor, conn, own_connection=own_connection
+            )
+        return _create_new_file(file_data, cursor, conn, own_connection=own_connection)
+
+    except sqlite3.Error as e:
+        if own_connection:
+            conn.rollback()
+        logger.exception(
+            f"Database error processing file '{file_data.get('file_name', 'unknown')}'."
+        )
+        raise DatabaseError(
+            f"Error processing file '{file_data.get('file_name', 'unknown')}': {e}"
+        ) from e
+    finally:
+        if own_connection:
+            conn.close()
+
+
+def _handle_existing_file(
+    existing: tuple,
+    file_data: dict,
+    cursor: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    *,
+    own_connection: bool,
+) -> dict:
+    """Handle logic for existing file."""
+    existing_id, existing_instrument, existing_gradient = existing
+
+    # Check if the existing file matches exactly
+    instrument_match = existing_instrument == file_data["instrument_id"]
+    gradient_diff = abs(existing_gradient - file_data["gradient"])
+    gradient_match = gradient_diff < GRADIENT_TOLERANCE
+
+    if instrument_match and gradient_match:
+        return {
+            "success": True,
+            "file_id": existing_id,
+            "action": "found_exact_match",
+            "message": f"Using existing file: {file_data['file_name']}",
+        }
+
+    # File exists but with different data - update it
+    cursor.execute(
+        "UPDATE raw_files SET instrument_id = ?, gradient = ? WHERE id = ?",
+        (file_data["instrument_id"], file_data["gradient"], existing_id),
+    )
+
+    if own_connection:
+        conn.commit()
+
+    return {
+        "success": True,
+        "file_id": existing_id,
+        "action": "updated",
+        "message": f"Updated existing file: {file_data['file_name']}",
+    }
+
+
+def _create_new_file(
+    file_data: dict,
+    cursor: sqlite3.Cursor,
+    conn: sqlite3.Connection,
+    *,
+    own_connection: bool,
+) -> dict:
+    """Create a new file record."""
+    cursor.execute(
+        "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
+        (
+            file_data["file_name"],
+            file_data["instrument_id"],
+            file_data["gradient"],
+        ),
+    )
+    new_id = cursor.lastrowid
+
+    if not new_id:
+        raise DatabaseError("Failed to get file_id after insert")
+
+    if own_connection:
+        conn.commit()
+
+    return {
+        "success": True,
+        "file_id": new_id,
+        "action": "created",
+        "message": f"Created new file: {file_data['file_name']}",
+    }
+
+
+def _raise_file_processing_error(message: str) -> None:
+    """Helper function to raise file processing errors."""
+    raise DatabaseError(message)
 
 
 def _process_raw_files(
@@ -417,18 +432,16 @@ def _process_raw_files(
     file_ids = []
     file_actions = []
 
+    # Process all files first to collect any errors
     for file_data in raw_files:
         file_result = _get_or_create_raw_file(file_data, conn, cursor)
         if file_result["success"]:
             file_ids.append(file_result["file_id"])
             file_actions.append(file_result["action"])
         else:
-            return {
-                "success": False,
-                "message": f"Failed to process file: {file_result['message']}",
-                "file_ids": [],
-                "file_actions": [],
-            }
+            _raise_file_processing_error(
+                f"Failed to process file: {file_result['message']}"
+            )
 
     return {
         "success": True,
@@ -502,8 +515,9 @@ def _generate_session_summary(
     }
 
 
-class SessionError(Exception):
-    """Exception raised for session processing errors."""
+def _raise_file_processing_failure(message: str) -> None:
+    """Helper function to raise file processing failure."""
+    raise DatabaseError(message)
 
 
 def insert_performance_session(session_data: dict) -> dict:
@@ -518,7 +532,7 @@ def insert_performance_session(session_data: dict) -> dict:
         - performance_comment (str): Performance comment
         - raw_files (list): List of file dictionaries, each with:
             - file_name (str): Filename
-            - instrument (str): Instrument name
+            - instrument_id (str): Instrument name
             - gradient (float): Gradient value
 
     Returns
@@ -535,12 +549,12 @@ def insert_performance_session(session_data: dict) -> dict:
         "raw_files": [
             {
                 "file_name": "20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21402.d",
-                "instrument": "tims2",
+                "instrument_id": "tims2",
                 "gradient": 43.998
             },
             {
                 "file_name": "20250623_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A4_1_21403.d",
-                "instrument": "tims2",
+                "instrument_id": "tims2",
                 "gradient": 43.998
             }
         ]
@@ -548,52 +562,84 @@ def insert_performance_session(session_data: dict) -> dict:
     result = insert_performance_session(session_data)
 
     """
-    validation_result = _validate_session_data(session_data)
-    if not validation_result["success"]:
-        return validation_result
-
-    _normalize_file_instruments(session_data["raw_files"])
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
     try:
-        conn.execute("BEGIN IMMEDIATE")
-        performance_id = _insert_performance_record(session_data, cursor)
+        validation_result = _validate_session_data(session_data)
+        if not validation_result["success"]:
+            logger.error(
+                f"Session data validation failed: {validation_result['message']}"
+            )
+            return validation_result
 
-        file_result = _process_raw_files(session_data["raw_files"], conn, cursor)
-        if not file_result["success"]:
-            raise SessionError(f"File processing failed: {file_result['message']}")  # noqa: TRY301
+        _normalize_file_instruments(session_data["raw_files"])
 
-        links_created = _link_files_to_session(
-            performance_id, file_result["file_ids"], cursor
-        )
+        with get_db_connection() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            cursor = conn.cursor()
 
-        conn.commit()
+            try:
+                performance_id = _insert_performance_record(session_data, cursor)
+                file_result = _process_raw_files(
+                    session_data["raw_files"], conn, cursor
+                )
+                if not file_result["success"]:
+                    _raise_file_processing_failure(
+                        f"File processing failed: {file_result['message']}"
+                    )
 
-        summary = _generate_session_summary(
-            file_result["file_ids"], file_result["file_actions"], links_created
-        )
+                links_created = _link_files_to_session(
+                    performance_id, file_result["file_ids"], cursor
+                )
 
-        return {
-            "success": True,
-            "message": summary["summary_message"],
-            "performance_id": performance_id,
-            "raw_file_ids": file_result["file_ids"],
-            "files_created": summary["files_created"],
-            "files_updated": summary["files_updated"],
-            "files_reused": summary["files_reused"],
-            "links_created": summary["links_created"],
-        }
+                conn.commit()
 
-    except (sqlite3.Error, SessionError) as e:
-        conn.rollback()
-        error_type = "Database" if isinstance(e, sqlite3.Error) else "Session"
+                summary = _generate_session_summary(
+                    file_result["file_ids"], file_result["file_actions"], links_created
+                )
+
+                result = {
+                    "success": True,
+                    "message": summary["summary_message"],
+                    "data": {
+                        "performance_id": performance_id,
+                        "raw_file_ids": file_result["file_ids"],
+                        "files_created": summary["files_created"],
+                        "files_updated": summary["files_updated"],
+                        "files_reused": summary["files_reused"],
+                        "links_created": summary["links_created"],
+                    },
+                }
+
+                logger.info(
+                    f"Successfully created performance session {performance_id} with {len(file_result['file_ids'])} files"
+                )
+
+            except Exception:
+                conn.rollback()
+                raise
+
+    except ValidationError as e:
+        logger.exception("Validation error in insert_performance_session.")
         return {
             "success": False,
-            "message": f"{error_type} error during session creation: {e}",
+            "message": f"Validation error: {e!s}",
+            "error_code": "VALIDATION_ERROR",
         }
-    finally:
-        conn.close()
+    except DatabaseError as e:
+        logger.exception("Database error in insert_performance_session.")
+        return {
+            "success": False,
+            "message": f"Database error: {e!s}",
+            "error_code": "DATABASE_ERROR",
+        }
+    except sqlite3.Error as e:
+        logger.exception("Unexpected database error in insert_performance_session.")
+        return {
+            "success": False,
+            "message": f"Unexpected error during session creation: {e!s}",
+            "error_code": "UNEXPECTED_ERROR",
+        }
+    else:
+        return result
 
 
 def _validate_filters(filters: dict, filter_mappings: dict) -> dict:
@@ -601,12 +647,19 @@ def _validate_filters(filters: dict, filter_mappings: dict) -> dict:
     if not filters:
         return {"success": True}
 
+    if not isinstance(filters, dict):
+        return {
+            "success": False,
+            "message": "Filters must be a dictionary",
+            "error_code": "VALIDATION_ERROR",
+        }
+
     invalid_filters = [key for key in filters if key not in filter_mappings]
     if invalid_filters:
         return {
             "success": False,
             "message": f"Invalid filter field(s): {invalid_filters}. Valid fields: {list(filter_mappings.keys())}",
-            "data": [],
+            "error_code": "VALIDATION_ERROR",
         }
     return {"success": True}
 
@@ -643,7 +696,7 @@ def _build_filter_condition(
         if isinstance(value, dict):
             condition, params = _build_gradient_condition(value, db_column)
             if condition is None:
-                raise ValueError(
+                raise ValidationError(
                     "Invalid gradient filter format. Use 'min'/'max', 'tolerance'/'value', or numeric value."
                 )
             return condition, params
@@ -684,120 +737,89 @@ def query_performance_data(filters: dict) -> dict:
         A dictionary with keys 'success' (bool), 'message' (str), and 'data' (list). If successful, 'data' contains a list of dictionaries with performance info.
 
     """
-    filter_mappings = {
-        "performance_status": "pd.performance_status",
-        "performance_rating": "pd.performance_rating",
-        "performance_comment": "pd.performance_comment",
-        "instrument": "rf.instrument",
-        "gradient": "rf.gradient",
-        "file_name": "rf.file_name",
-    }
-
-    validation_result = _validate_filters(filters, filter_mappings)
-    if not validation_result["success"]:
-        return validation_result
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    base_query = """
-    SELECT
-        rf.id,
-        rf.file_name,
-        rf.instrument,
-        rf.gradient,
-        pd.performance_status,
-        pd.performance_rating,
-        pd.performance_comment
-    FROM raw_files rf
-    JOIN raw_file_to_session rfts ON rf.id = rfts.raw_file_id
-    JOIN performance_data pd ON rfts.performance_id = pd.id
-    """
-
-    conditions = []
-    params = []
-
     try:
-        for field, value in filters.items():
-            db_column = filter_mappings[field]
-            condition, condition_params = _build_filter_condition(
-                field, value, db_column
+        filter_mappings = {
+            "performance_status": "pd.performance_status",
+            "performance_rating": "pd.performance_rating",
+            "performance_comment": "pd.performance_comment",
+            "instrument_id": "rf.instrument_id",
+            "gradient": "rf.gradient",
+            "file_name": "rf.file_name",
+        }
+
+        # Validate filters
+        validation_result = _validate_filters(filters, filter_mappings)
+        if not validation_result["success"]:
+            logger.error(f"Filter validation failed: {validation_result['message']}")
+            return validation_result
+
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            base_query = """
+            SELECT
+                rf.id,
+                rf.file_name,
+                rf.instrument_id,
+                rf.gradient,
+                pd.performance_status,
+                pd.performance_rating,
+                pd.performance_comment
+            FROM raw_files rf
+            JOIN raw_file_to_session rfts ON rf.id = rfts.raw_file_id
+            JOIN performance_data pd ON rfts.performance_id = pd.id
+            """
+
+            conditions = []
+            params = []
+
+            for field, value in filters.items():
+                db_column = filter_mappings[field]
+                condition, condition_params = _build_filter_condition(
+                    field, value, db_column
+                )
+                conditions.append(condition)
+                params.extend(condition_params)
+
+            query = base_query
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+            query += " ORDER BY pd.id, rf.id"
+
+            cursor.execute(query, params)
+            results = [dict(row) for row in cursor.fetchall()]
+
+            logger.info(
+                f"Query returned {len(results)} records with filters: {filters}"
             )
-            conditions.append(condition)
-            params.extend(condition_params)
 
-        query = base_query
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
-        query += " ORDER BY pd.id, rf.id"
-
-        cursor.execute(query, params)
-        results = [dict(row) for row in cursor.fetchall()]
-
-        return {
-            "success": True,
-            "message": f"Query executed successfully. Found {len(results)} record(s).",
-            "data": results,
-        }
-
-    except ValueError as e:
+    except ValidationError as e:
+        logger.exception("Validation error in query_performance_data.")
         return {
             "success": False,
-            "message": str(e),
-            "data": [],
+            "message": f"Validation error: {e!s}",
+            "error_code": "VALIDATION_ERROR",
+            "data": {"results": [], "count": 0},
+        }
+    except DatabaseError as e:
+        logger.exception("Database error in query_performance_data.")
+        return {
+            "success": False,
+            "message": f"Database error: {e!s}",
+            "error_code": "DATABASE_ERROR",
+            "data": {"results": [], "count": 0},
         }
     except sqlite3.Error as e:
+        logger.exception("Unexpected database error in query_performance_data.")
         return {
             "success": False,
-            "message": f"Error querying performance data: {e}",
-            "data": [],
-        }
-    finally:
-        conn.close()
-
-
-def delete_data(table_name: str, condition: str) -> dict:
-    """Deletes rows from a table based on a given SQL WHERE clause condition.
-
-    Parameters
-    ----------
-    table_name : str
-        The name of the table to delete data from.
-    condition : str
-        The SQL WHERE clause condition to specify which rows to delete. This condition MUST NOT be empty to prevent accidental mass deletion.
-
-    Returns
-    -------
-    dict
-        A dictionary with keys 'success' (bool) and 'message' (str). If successful, 'message' includes the count of deleted rows.
-
-    """
-    if not condition or not condition.strip():
-        return {
-            "success": False,
-            "message": "Deletion condition cannot be empty. This is a safety measure to prevent accidental deletion of all rows.",
-        }
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    query = f"DELETE FROM {table_name} WHERE {condition}"
-
-    try:
-        cursor.execute(query)
-        rows_deleted = cursor.rowcount
-        conn.commit()
-    except sqlite3.Error as e:
-        conn.rollback()
-        return {
-            "success": False,
-            "message": f"Error deleting data from table '{table_name}': {e}",
+            "message": f"Unexpected error querying performance data: {e!s}",
+            "error_code": "UNEXPECTED_ERROR",
+            "data": {"results": [], "count": 0},
         }
     else:
         return {
             "success": True,
-            "message": f"{rows_deleted} row(s) deleted successfully from table '{table_name}'.",
-            "rows_deleted": rows_deleted,
+            "message": f"Query executed successfully. Found {len(results)} record(s).",
+            "data": {"results": results, "count": len(results)},
         }
-    finally:
-        conn.close()
