@@ -219,8 +219,6 @@ adk web --host 0.0.0.0
 ```
 3. To run the agent via docker from the ADK web UI:
 ```bash
-ALPHAKRAKEN_MCP_URL="http://127.0.0.1:8089/mcp" \
-CONFLUENCE_MCP_URL="http://127.0.0.1:9000/mcp" \
 docker compose --env-file ./.env.secrets --env-file ./.env up
 ```
 Then select the `proteomics_specialist` from the dropdown.
