@@ -40,8 +40,8 @@ ADK_DB_TOOLS = {
     "list_db_tables": FunctionTool(func=database_utils.list_db_tables),
     "get_table_schema": FunctionTool(func=database_utils.get_table_schema),
     "query_performance_data": FunctionTool(func=database_utils.query_performance_data),
-    "insert_performance_session": FunctionTool(
-        func=database_utils.insert_performance_session
+    "insert_performance_and_raw_file_info": FunctionTool(
+        func=database_utils.insert_performance_and_raw_file_info
     ),
 }
 
@@ -60,13 +60,15 @@ async def list_mcp_tools() -> list[mcp_types.Tool]:
             mcp_tool_schema = adk_to_mcp_tool_type(adk_tool_instance)
             logger.info(f"MCP Server: Advertising tool: {mcp_tool_schema.name}")
             mcp_tools_list.append(mcp_tool_schema)
-
+        logger.info(f"MCP Server: Successfully listed {len(mcp_tools_list)} tools")
     except Exception:
         logger.exception("Error listing tools")
-        # Return empty list rather than failing completely
-        return []
+        return {
+            "success": False,
+            "message": "Empty list of MCP tools",
+            "error_code": "LIST_MCP_ERROR",
+        }
     else:
-        logger.info(f"MCP Server: Successfully listed {len(mcp_tools_list)} tools")
         return mcp_tools_list
 
 
@@ -151,6 +153,7 @@ async def call_mcp_tool(name: str, arguments: dict) -> list[mcp_types.TextConten
 # --- MCP Server Runner ---
 async def run_mcp_stdio_server() -> None:
     """Runs the MCP server, listening for connections over standard input/output."""
+    logger.info("Starting database interaction")
     try:
         async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
             logger.info("MCP Stdio Server: Starting handshake with client...")
@@ -167,6 +170,7 @@ async def run_mcp_stdio_server() -> None:
                 ),
             )
             logger.info("MCP Stdio Server: Run loop finished or client disconnected")
+
     except Exception:
         logger.exception("Error in MCP stdio server")
         raise
@@ -179,9 +183,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("MCP Server (stdio) stopped by user")
     except (OSError, RuntimeError, ValueError) as e:
-        logger.critical(
-            f"MCP Server (stdio) encountered fatal error: {e}", exc_info=True
-        )
+        logger.info(f"MCP Server (stdio) encountered fatal error: {e}.", exc_info=True)
         raise
     finally:
         logger.info("MCP Server (stdio) process exiting")
