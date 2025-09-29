@@ -206,14 +206,22 @@ def generate_error_summary(df: pd.DataFrame) -> dict[str, Any]:
 
     """
     total_evaluated_steps = len(df)
-    addition_by_model = len(df[df["Identification"] == "Addition by model"])
-    steps_evaluated_minus_added_by_ai = total_evaluated_steps - addition_by_model
+    steps_evaluated_minus_added_by_ai = len(
+        df[(df["Benchmark"] == "No Error") | (df["Benchmark"] == "Error")]
+    )
 
     tp = len(df[df["Identification"] == "Error (Correctly Identified)"])
     tn = len(df[df["Identification"] == "No Error (Correctly Identified)"])
     fp = len(df[df["Identification"] == "False Positive"])
-    fn = len(df[df["Identification"] == "False Negative"])
+    fn = len(df[df["Identification"] == "False Negative"]) + len(
+        df[(df["Benchmark"] == "Error") & (df["Identification"] == "Unknown")]
+    )
 
+    logging.info(f"tp: {df[df['Identification'] == 'Error (Correctly Identified)']}")
+    logging.info(f"fn+: {df[df['Identification'] == 'False Negative']}")
+    logging.info(
+        f"un: {df[(df['Benchmark'] == 'Error') & (df['Identification'] == 'Unknown')]}"
+    )
     total_errors_analyzed = tp + fn
     correctly_classified_errors = len(df[df["Classification"] == "correct"])
 
@@ -236,7 +244,6 @@ def generate_error_summary(df: pd.DataFrame) -> dict[str, Any]:
         "False Negatives (fn)": fn,
         "Total steps evaluated": total_evaluated_steps,
         "Steps evaluated minus added by AI": steps_evaluated_minus_added_by_ai,
-        "Addition by model": addition_by_model,
         "Errors evaluated": total_errors_analyzed,
         "Classification Accuracy": classification_accuracy,
         "Accuracy": accuracy,

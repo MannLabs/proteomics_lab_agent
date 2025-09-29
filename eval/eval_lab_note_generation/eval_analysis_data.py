@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 logging.basicConfig(
@@ -454,3 +455,136 @@ def generate_timing_statistics(df_timing: pd.DataFrame) -> dict[str, dict[str, f
             "max": df_timing["generate_time"].max(),
         },
     }
+
+
+def _calculate_cv_series(x: pd.Series) -> float:
+    """Calculate the coefficient of variation for a given series."""
+    x_numeric: pd.Series = pd.to_numeric(x, errors="coerce")
+    if x_numeric.isna().all():
+        return np.nan
+    return np.nanstd(x_numeric, ddof=1) / np.nanmean(x_numeric)
+
+
+def calculate_cv_for_metrics(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates the Coefficient of Variation (CV) for key performance metrics.
+
+    This function groups the data by experiment name, calculates the CV for
+    Accuracy, Precision, and Recall, and then reshapes the resulting
+    DataFrame into a long format suitable for plotting.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame containing performance metrics per experiment run.
+
+    Returns
+    -------
+    pd.DataFrame
+        A long-format DataFrame with columns 'Metric' and 'CV'.
+
+    """
+    df_filtered = df[df["inputs_experiment_name"] != "Summary"].copy()
+
+    cv_results = (
+        df_filtered.groupby("inputs_experiment_name")
+        .agg(
+            Accuracy_CV=pd.NamedAgg(column="Accuracy", aggfunc=_calculate_cv_series),
+            Precision_CV=pd.NamedAgg(
+                column="Precision (Positive Predictive Value)",
+                aggfunc=_calculate_cv_series,
+            ),
+            Recall_CV=pd.NamedAgg(
+                column="Recall (Sensitivity, True Positive Rate)",
+                aggfunc=_calculate_cv_series,
+            ),
+        )
+        .reset_index()
+    )
+
+    cv_results_long = pd.melt(
+        cv_results,
+        id_vars="inputs_experiment_name",
+        value_vars=["Accuracy_CV", "Precision_CV", "Recall_CV"],
+        var_name="Metric",
+        value_name="CV",
+    )
+
+    cv_results_long["Metric"] = (
+        cv_results_long["Metric"]
+        .str.replace("_CV", "")
+        .str.replace(r"\s\(.*\)", "", regex=True)
+    )
+
+    return cv_results_long
+
+
+def calculate_stats_per_experiment(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates the mean and standard deviation for key metrics per experiment.
+
+    This function filters out the summary row, groups the data by the
+    experiment name, and calculates the mean and standard deviation for
+    Accuracy, Precision, and Recall across all replicates.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame containing performance metrics for each replicate.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame where each row is an experiment and columns contain the
+        mean and standard deviation for the specified metrics.
+
+    """
+    df_filtered = df[df["inputs_experiment_name"] != "Summary"].copy()
+
+    metrics_to_analyze = {
+        "Accuracy": ["mean", "std"],
+        "Precision (Positive Predictive Value)": ["mean", "std"],
+        "Recall (Sensitivity, True Positive Rate)": ["mean", "std"],
+    }
+
+    experiment_stats = df_filtered.groupby("inputs_experiment_name").agg(
+        metrics_to_analyze
+    )
+    experiment_stats.columns = [
+        "_".join(col).strip() for col in experiment_stats.columns.to_numpy()
+    ]
+
+    return experiment_stats
+
+
+def calculate_replicate_performance(df: pd.DataFrame) -> pd.DataFrame:
+    """Calculates the mean performance metrics for each replicate.
+
+    This function groups the data by the 'replicate_num' and calculates the
+    mean score for Accuracy, Precision, and Recall for each replicate run.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame containing performance metrics for each replicate.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame where each row is a replicate and columns are the
+        mean scores for the key performance metrics.
+
+    """
+    df_filtered = df[df["inputs_experiment_name"] != "Summary"].copy()
+
+    metric_cols = [
+        "Accuracy",
+        "Precision (Positive Predictive Value)",
+        "Recall (Sensitivity, True Positive Rate)",
+    ]
+
+    replicate_means = df_filtered.groupby("replicate_num")[metric_cols].mean()
+
+    replicate_means.columns = [
+        re.sub(r"\s\(.*\)", "", col) for col in replicate_means.columns
+    ]
+
+    return replicate_means
