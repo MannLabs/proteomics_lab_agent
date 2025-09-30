@@ -217,25 +217,8 @@ def generate_error_summary(df: pd.DataFrame) -> dict[str, Any]:
         df[(df["Benchmark"] == "Error") & (df["Identification"] == "Unknown")]
     )
 
-    logging.info(f"tp: {df[df['Identification'] == 'Error (Correctly Identified)']}")
-    logging.info(f"fn+: {df[df['Identification'] == 'False Negative']}")
-    logging.info(
-        f"un: {df[(df['Benchmark'] == 'Error') & (df['Identification'] == 'Unknown')]}"
-    )
     total_errors_analyzed = tp + fn
     correctly_classified_errors = len(df[df["Classification"] == "correct"])
-
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0
-    accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else 0
-    f1_score = (
-        2 * (precision * recall) / (precision + recall)
-        if (precision + recall) > 0
-        else 0
-    )
-    balanced_accuracy = (recall + specificity) / 2
-    classification_accuracy = correctly_classified_errors / tp if tp > 0 else 0
 
     summary_dict = {
         "True Positives (TP) = Correct error identifications": tp,
@@ -245,19 +228,6 @@ def generate_error_summary(df: pd.DataFrame) -> dict[str, Any]:
         "Total steps evaluated": total_evaluated_steps,
         "Steps evaluated minus added by AI": steps_evaluated_minus_added_by_ai,
         "Errors evaluated": total_errors_analyzed,
-        "Classification Accuracy": classification_accuracy,
-        "Accuracy": accuracy,
-        "Precision (Positive Predictive Value)": precision,
-        "Recall (Sensitivity, True Positive Rate)": recall,
-        "Specificity (True Negative Rate)": specificity,
-        "F1 Score": f1_score,
-        "Balanced Accuracy": balanced_accuracy,
-        "False Positive Rate": fp / (fp + tn) if (fp + tn) > 0 else 0,
-        "False Negative Rate": fn / (tp + fn) if (tp + fn) > 0 else 0,
-        "False Discovery Rate": fp / (tp + fp) if (tp + fp) > 0 else 0,
-        "False Omission Rate": fn / (tn + fn) if (tn + fn) > 0 else 0,
-        "Positive Predictive Value": precision,
-        "Negative Predictive Value": tn / (tn + fn) if (tn + fn) > 0 else 0,
         "Total errors analyzed": total_errors_analyzed,
         "Correctly classified errors": correctly_classified_errors,
     }
@@ -349,7 +319,6 @@ def _run_single_evaluation(
         end_time = time.time()
         lab_note_generation_time = end_time - start_time
 
-        # Parsing error dictionary
         error_dict = ast.literal_eval(row["error_dict"])
         steps_list = [item["Step"] for item in error_dict]
 
@@ -367,9 +336,9 @@ def _run_single_evaluation(
             "eval_set": eval_set_name,
             "eval_set_index": row.name + 1,
             "run": run_number,
-            "lab_notes": generated_lab_note["lab_notes"],
+            "lab_notes": str(generated_lab_note["lab_notes"]),
             "generation_time_seconds": lab_note_generation_time,
-            "usage_metadata_generation": generated_lab_note["usage_metadata"],
+            "usage_metadata_generation": str(generated_lab_note["usage_metadata"]),
             "df_errors": df_errors.to_dict("records"),
             "filtered_dict": filtered_dict,
             "summary_dict": summary_dict,
@@ -481,7 +450,7 @@ async def evaluate_lab_notes(
                     Path(output_dir) / f"eval_set_{eval_set_name}_all_runs.json"
                 )
                 with Path.open(eval_set_output_file, "w") as f:
-                    json.dump(eval_set_results, f, indent=2, default=str)
+                    json.dump(eval_set_results, f, indent=2)
                 logger.info(
                     f"Eval set {eval_set_name} results saved to {eval_set_output_file}"
                 )

@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 
 from .eval_analysis_run import EvaluationAnalyzer
-from .evaluator import evaluate_lab_notes
 
 logger = logging.getLogger(__name__)
 
@@ -39,15 +38,15 @@ async def test_lab_note_standalone_evaluation() -> None:
     logger.info(f"Starting standalone lab note evaluation. Logs: {log_file}")
 
     try:
-        # output_dir = "./eval_lab_note_results/result_20250925_091822"
-        output_dir = f"./eval_lab_note_results/result_{timestamp}"
-        results = await evaluate_lab_notes(
-            csv_file="benchmark_data.csv", num_runs=3, output_dir=output_dir
-        )
+        output_dir = "./eval_lab_note_results/result_20250929_214414"
+        # output_dir = f"./eval_lab_note_results/result_{timestamp}"
+        # results = await evaluate_lab_notes(
+        #     csv_file="benchmark_data.csv", num_runs=3, output_dir=output_dir
+        # )
 
-        logger.info(
-            f"Standalone evaluation completed. Processed {len(results)} total cases"
-        )
+        # logger.info(
+        #     f"Standalone evaluation completed. Processed {len(results)} total cases"
+        # )
 
         analyzer = EvaluationAnalyzer(output_dir=output_dir)
         metrics_dict = analyzer.run_complete_analysis(

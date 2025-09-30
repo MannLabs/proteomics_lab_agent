@@ -14,7 +14,7 @@ INSTRUCTIONS_LAB_NOTE_GENERATION_PROMPT = """
 
 You work with following two inputs:
 - Ground truth written protocol: The official procedure description
-- Video to evaluate: The actual implementation by a researcher in a routine setting. Be aware that researchers tend to make mistakes in routine tasks.
+- Video to evaluate: The actual implementation by a researcher in a routine setting.
 
 Compare the 'Ground truth written protocol' with the 'Video to evaluate', and create a "resulting lab notes" that reflects what actually happened in the 'video to evaluate'.
 
@@ -59,14 +59,25 @@ Table 1:
         * For example, if an addition appears after step 8, label it as step 8.1
         * If multiple additions appear after the same step, number them sequentially (8.1, 8.2, etc.)
 
-
 Table 2:
 | Step number as in 'ground truth written protocol'| Step Description | Timestamp in 'Video to evaluate' | Comparison Result | Notes |\n
 |---|---|---|---|---|\n
 | 1 | [Description of step in 'Ground truth written protocol'] | [hh:mm:ss] | [Aligned/Partially/Misaligned] | [Explanation] |\n
 | 2 | [Description of step in 'Ground truth written protocol'] | [hh:mm:ss], [hh:mm:ss] | [Aligned/Partially/Misaligned] | [Explanation] |\n|
 
-* STEP 4: Create a "resulting lab notes" that accurately reflects what occurred in the 'Video to evaluate':
+* STEP 4: Skeptical Review & Falsification
+Treat every potential discrepancy identified in Table 2 (i.e., any step rated with Omitted, Error, Added or Deviation) as a hypothesis, not a conclusion. Your goal in this step is to actively try to disprove your own finding.
+
+For each flagged item:
+- Isolate the Clip: Review the video footage starting 10 seconds before the timestamp and ending 10 seconds after.
+- Challenge the Observation: Re-watch the clip with the specific goal of finding evidence that the protocol was, in fact, followed correctly. Ask yourself:
+    - Could the action have been obscured from view?
+    - Was it performed very quickly?
+    - Is there an alternative interpretation of what I saw?
+    - Did I recognize the equipment correctly?
+Confirm or Correct: Based on this review, either confirm the discrepancy in your notes or correct the entry in Table 2 if you find evidence that the protocol was followed.
+
+* STEP 5: Create a "resulting lab notes" that accurately reflects what occurred in the 'Video to evaluate':
 - Rename sections as specified (Abstract to Aim, Expected Results to Results, Estimated timing to Timing)
 - Use past tense to describe actual observations
 - Include exact timing from the lab video

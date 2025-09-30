@@ -6,6 +6,7 @@ based on the evaluation data from lab note generation experiments.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -13,8 +14,11 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 from matplotlib.lines import Line2D
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 FIGURE_SIZE = (10, 6)
 BAR_HEIGHT = 0.8
@@ -432,145 +436,78 @@ def create_timing_visualization(df_timing: pd.DataFrame, output_dir: Path) -> No
         plt.close(fig)
 
 
-def create_cv_boxplot(cv_data: pd.DataFrame, output_dir: Path) -> None:
-    """Creates and saves a box plot of the Coefficient of Variation (CV) by metric.
+def plot_metrics(dict_all_metric: dict, output_dir: Path) -> None:
+    """Generates and saves a bar plot summarizing key classification metrics.
+
+    This function aggregates metric scores across multiple experiments by
+    calculating the mean and standard deviation for Accuracy, Recall, and
+    Precision. It then visualizes these statistics in a bar chart with
+    error bars and saves the plot to the specified directory as both PNG
+    and PDF files.
 
     Parameters
     ----------
-    cv_data : pd.DataFrame
-        A long-format DataFrame containing the CV values for each metric.
-        Must include 'Metric' and 'CV' columns.
+    dict_all_metric : dict
+        A nested dictionary of metric scores. Outer keys should be experiment
+        identifiers (e.g., 'replicate_1'), and the inner dictionaries should
+        map metric names to their scores. A key named 'All' will be ignored.
     output_dir : Path
-        The directory where the plot images will be saved.
+        The directory where the plot images ('experiment_metrics_with_error_bars.png'
+        and '.pdf') will be saved.
+
+    Returns
+    -------
+    None
+        This function saves the plot to disk and does not return any value.
 
     """
-    sns.set_theme(style="whitegrid")
-    plt.figure(figsize=(10, 6))
-
-    ax = sns.boxplot(data=cv_data, x="Metric", y="CV")
-    ax.set_xlabel("performance metric")
-    ax.set_ylabel("coefficient of variation (CV)")
-
-    plt.tight_layout()
-    plt.savefig(output_dir / "CV_box_plot.png", dpi=300)
-    plt.savefig(output_dir / "CV_box_plot.pdf", dpi=300)
-    plt.close()
-
-
-def plot_metrics_with_error_bars(
-    experiment_stats: pd.DataFrame, output_dir: Path
-) -> None:
-    """Creates a bar plot of mean metric scores with error bars for each experiment.
-
-    Parameters
-    ----------
-    experiment_stats : pd.DataFrame
-        A DataFrame with experiments as rows and mean/std metrics as columns,
-        as produced by `calculate_descriptive_stats_per_experiment`.
-    output_dir : Path
-        The directory where the plot images will be saved.
-
-    """
-    metrics = [
-        col.replace("_mean", "") for col in experiment_stats.columns if "_mean" in col
+    filtered_data = {k: v for k, v in dict_all_metric.items() if k != "All"}
+    df_filtered_for_replicate = pd.DataFrame(filtered_data).T
+    df_subset_columns = df_filtered_for_replicate[
+        [
+            "Accuracy",
+            "Recall (Sensitivity, True Positive Rate)",
+            "Precision (Positive Predictive Value)",
+        ]
     ]
-    experiment_names = experiment_stats.index.tolist()
 
-    x = np.arange(len(experiment_names))
-    width = 0.25
+    means = df_subset_columns.mean()
+    std_errors = df_subset_columns.std()
 
-    fig, ax = plt.subplots(figsize=(14, 7))
+    fig, ax = plt.subplots(figsize=(15, 8))
+    x_pos = np.arange(len(means))
+    bars = ax.bar(
+        x_pos,
+        means,
+        yerr=std_errors,
+        capsize=5,
+        alpha=0.7,
+        color="steelblue",
+        edgecolor="black",
+        linewidth=1.2,
+    )
 
-    colors = ["#43215B", "#1A948E", "#3D4F8C"]
+    ax.set_xlabel("Metrics", fontsize=12, fontweight="bold")
+    ax.set_ylabel("Values", fontsize=12, fontweight="bold")
 
-    for i, metric in enumerate(metrics):
-        mean_col = f"{metric}_mean"
-        std_col = f"{metric}_std"
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(means.index, rotation=45, ha="right", fontsize=10)
 
-        means = experiment_stats[mean_col]
-        stds = experiment_stats[std_col]
+    ax.grid(visible=True, alpha=0.3, linestyle="--")
 
-        offset = width * i
-        rects = ax.bar(
-            x + offset,
-            means,
-            width,
-            label=metric,
-            yerr=stds,
-            capsize=5,
-            color=colors[i % len(colors)],
+    for bar, mean_val, std_val in zip(bars, means, std_errors):
+        height = bar.get_height()
+        error_offset = std_val if pd.notna(std_val) else 0
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            height + error_offset + 0.01,
+            f"{mean_val:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=8,
         )
-        ax.bar_label(rects, padding=3, fmt="%.2f")
-
-    ax.set_ylabel("Score")
-    ax.set_title("Mean Performance Metrics by Experiment (with Std. Dev. Error Bars)")
-    ax.set_xticks(x + width, experiment_names, rotation=45, ha="right")
-    ax.legend(loc="upper left", ncols=len(metrics))
-    ax.set_ylim(0, 1.1)
-    ax.grid(axis="y", alpha=0.3)
 
     plt.tight_layout()
     plt.savefig(output_dir / "experiment_metrics_with_error_bars.png", dpi=300)
     plt.savefig(output_dir / "experiment_metrics_with_error_bars.pdf", dpi=300)
-    plt.close(fig)
-
-
-def plot_replicate_performance(replicate_data: pd.DataFrame, output_dir: Path) -> None:
-    """Creates a bar plot of mean performance across replicates with error bars.
-
-    This function also overlays a strip plot to show the individual data point
-    for each replicate.
-
-    Parameters
-    ----------
-    replicate_data : pd.DataFrame
-        A DataFrame with replicates as rows and mean metric scores as columns,
-        as produced by `calculate_replicate_performance`.
-    output_dir : Path
-        The directory where the plot images will be saved.
-
-    """
-    means = replicate_data.mean()
-    stds = replicate_data.std()
-    metrics = replicate_data.columns.tolist()
-    colors = ["#43215B", "#1A948E", "#3D4F8C"]
-
-    fig, ax = plt.subplots(figsize=(6, 6))
-
-    ax.bar(metrics, means, yerr=stds, color=colors, capsize=5, alpha=0.8)
-
-    replicate_data_long = replicate_data.melt(var_name="Metric", value_name="Score")
-    sns.stripplot(
-        data=replicate_data_long,
-        x="Metric",
-        y="Score",
-        ax=ax,
-        color="black",
-        jitter=0.1,
-        size=8,
-        edgecolor="gray",
-        linewidth=1,
-    )
-
-    ax.set_ylabel("Score")
-    ax.set_ylim(0, 1.05)
-    plt.xticks(rotation=45, ha="right")
-    ax.tick_params(axis="y", labelsize=12)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    for i, mean_val in enumerate(means):
-        ax.text(
-            i,
-            mean_val + stds[i] + 0.05,
-            f"{mean_val:.2f}",
-            ha="center",
-            va="bottom",
-            fontsize=12,
-            color="black",
-        )
-
-    plt.tight_layout()
-    plt.savefig(output_dir / "replicate_performance_summary.png", dpi=300)
-    plt.savefig(output_dir / "replicate_performance_summary.pdf", dpi=300)
     plt.close(fig)

@@ -74,33 +74,21 @@ class EvaluationAnalyzer:
         """
         logging.info(f"Starting analysis of {json_file_path}")
 
-        df_with_summary, json_data = self._load_and_process_data(json_file_path)
+        (
+            df_with_summary,
+            json_data,
+            dict_metrics,
+        ) = self._load_and_process_data(json_file_path)
         logging.info(f"Starting analysis of {json_file_path}")
 
         self._generate_error_and_skill_charts(df_with_summary)
 
         self._analyze_timing_and_costs(json_data)
 
-        cv_df = data_manager.calculate_cv_for_metrics(df_with_summary)
-        plot_generator.create_cv_boxplot(cv_df, self.output_dir)
+        plot_generator.plot_metrics(dict_metrics, self.output_dir)
 
-        experiment_statistics = data_manager.calculate_stats_per_experiment(
-            df_with_summary
-        )
-        plot_generator.plot_metrics_with_error_bars(
-            experiment_statistics, self.output_dir
-        )
-
-        replicate_performance = data_manager.calculate_replicate_performance(
-            df_with_summary
-        )
-        plot_generator.plot_replicate_performance(
-            replicate_performance, self.output_dir
-        )
-
-        final_metrics = self._get_final_metrics(df_with_summary)
         logging.info("Analysis complete. Results saved to %s", self.output_dir)
-        return final_metrics
+        return dict_metrics["All"]
 
     def _load_and_process_data(
         self, json_file_path: str | Path
@@ -122,8 +110,11 @@ class EvaluationAnalyzer:
         logging.info("Loaded %d evaluation records", len(json_data))
 
         df_with_summary = data_manager.process_evaluation_data(json_data)
+
+        dict_metrics = data_manager.calculate_metrics_per_replicate(df_with_summary)
+
         data_manager.save_dataframe(df_with_summary, self.output_dir)
-        return df_with_summary, json_data
+        return df_with_summary, json_data, dict_metrics
 
     def _get_available_columns(
         self, df: pd.DataFrame, base_names: list[str], prefix: str
@@ -224,34 +215,3 @@ class EvaluationAnalyzer:
         df_timing.to_csv(self.output_dir / "timing_and_costs.csv", index=False)
         data_manager.generate_timing_statistics(df_timing)
         plot_generator.create_timing_visualization(df_timing, self.output_dir)
-
-    def _get_final_metrics(self, df_with_summary: pd.DataFrame) -> dict[str, float]:
-        """Extracts and returns the final evaluation metrics from the summary DataFrame.
-
-        Parameters
-        ----------
-        df_with_summary : pd.DataFrame
-            The processed DataFrame containing the summary data.
-
-        Returns
-        -------
-        dict[str, float]
-            A dictionary of key metrics from the last row of the DataFrame.
-            Returns an empty dictionary if the metrics are not found.
-
-        """
-        metrics_cols = [
-            "Accuracy",
-            "Precision (Positive Predictive Value)",
-            "Recall (Sensitivity, True Positive Rate)",
-        ]
-
-        available_metrics = [
-            col for col in metrics_cols if col in df_with_summary.columns
-        ]
-
-        if not available_metrics:
-            logging.warning("Required metrics not found in summary DataFrame.")
-            return {}
-
-        return df_with_summary[available_metrics].iloc[-1].to_dict()

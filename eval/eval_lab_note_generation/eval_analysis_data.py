@@ -16,22 +16,6 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-MEAN_COLS = [
-    "Classification Accuracy",
-    "Accuracy",
-    "Precision (Positive Predictive Value)",
-    "Recall (Sensitivity, True Positive Rate)",
-    "Specificity (True Negative Rate)",
-    "F1 Score",
-    "Balanced Accuracy",
-    "False Positive Rate",
-    "False Negative Rate",
-    "False Discovery Rate",
-    "False Omission Rate",
-    "Positive Predictive Value",
-    "Negative Predictive Value",
-]
-
 PERFORMANCE_COLS = [
     "inputs_experiment_name",
     "replicate_num",
@@ -43,7 +27,6 @@ PERFORMANCE_COLS = [
     "Errors evaluated",
     "Total errors analyzed",
     "Correctly classified errors",
-    *MEAN_COLS,
 ]
 
 SKILL_TYPES = [
@@ -168,15 +151,12 @@ def process_evaluation_data(json_data: list[dict[str, Any]]) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     num_rep = len(df["replicate_num"].unique())
 
-    sum_cols = [col for col in df.columns if col not in MEAN_COLS]
-    sum_cols.remove("inputs_experiment_name")
-    sum_cols.remove("replicate_num")
+    sum_cols = df.columns.drop(["inputs_experiment_name", "replicate_num"])
 
     summary_row_data = {
         "inputs_experiment_name": ["Summary"],
         "replicate_num": ["All"],
         **{col: [df[col].sum() / num_rep] for col in sum_cols},
-        **{col: [df[col].mean()] for col in MEAN_COLS},
     }
 
     summary_row = pd.DataFrame(summary_row_data)
@@ -457,134 +437,95 @@ def generate_timing_statistics(df_timing: pd.DataFrame) -> dict[str, dict[str, f
     }
 
 
-def _calculate_cv_series(x: pd.Series) -> float:
-    """Calculate the coefficient of variation for a given series."""
-    x_numeric: pd.Series = pd.to_numeric(x, errors="coerce")
-    if x_numeric.isna().all():
-        return np.nan
-    return np.nanstd(x_numeric, ddof=1) / np.nanmean(x_numeric)
+def calculate_metrics(df: pd.DataFrame) -> dict[str, float]:
+    """Computes a set of binary classification metrics from evaluation results.
 
-
-def calculate_cv_for_metrics(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates the Coefficient of Variation (CV) for key performance metrics.
-
-    This function groups the data by experiment name, calculates the CV for
-    Accuracy, Precision, and Recall, and then reshapes the resulting
-    DataFrame into a long format suitable for plotting.
+    This function calculates various performance metrics based on the fundamental
+    counts of true/false positives and negatives. It requires a DataFrame
+    containing specific columns for these counts.
 
     Parameters
     ----------
     df : pd.DataFrame
-        The input DataFrame containing performance metrics per experiment run.
+        A DataFrame containing evaluation results. It must include the
+        following columns with summed counts:
+        - 'True Positives (TP) = Correct error identifications'
+        - 'True Negatives (TN) = Correct no error identifications'
+        - 'False Positives (fp)'
+        - 'False Negatives (fn)'
+        - 'Correctly classified errors'
 
     Returns
     -------
-    pd.DataFrame
-        A long-format DataFrame with columns 'Metric' and 'CV'.
+    dict[str, float]
+        A dictionary where keys are the names of metrics (e.g., 'Accuracy',
+        'F1 Score') and values are their calculated scores. If a metric cannot
+        be calculated (e.g., due to division by zero), its value will be `np.nan`.
 
     """
-    df_filtered = df[df["inputs_experiment_name"] != "Summary"].copy()
+    tp = df["True Positives (TP) = Correct error identifications"].sum()
+    tn = df["True Negatives (TN) = Correct no error identifications"].sum()
+    fp = df["False Positives (fp)"].sum()
+    fn = df["False Negatives (fn)"].sum()
 
-    cv_results = (
-        df_filtered.groupby("inputs_experiment_name")
-        .agg(
-            Accuracy_CV=pd.NamedAgg(column="Accuracy", aggfunc=_calculate_cv_series),
-            Precision_CV=pd.NamedAgg(
-                column="Precision (Positive Predictive Value)",
-                aggfunc=_calculate_cv_series,
-            ),
-            Recall_CV=pd.NamedAgg(
-                column="Recall (Sensitivity, True Positive Rate)",
-                aggfunc=_calculate_cv_series,
-            ),
-        )
-        .reset_index()
+    precision = tp / (tp + fp) if (tp + fp) > 0 else np.nan
+    recall = tp / (tp + fn) if (tp + fn) > 0 else np.nan
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else np.nan
+    accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else np.nan
+    f1_score = (
+        2 * (precision * recall) / (precision + recall)
+        if (precision + recall) > 0
+        else np.nan
+    )
+    balanced_accuracy = (recall + specificity) / 2
+    classification_accuracy = (
+        df["Correctly classified errors"].sum() / tp if tp > 0 else np.nan
     )
 
-    cv_results_long = pd.melt(
-        cv_results,
-        id_vars="inputs_experiment_name",
-        value_vars=["Accuracy_CV", "Precision_CV", "Recall_CV"],
-        var_name="Metric",
-        value_name="CV",
-    )
-
-    cv_results_long["Metric"] = (
-        cv_results_long["Metric"]
-        .str.replace("_CV", "")
-        .str.replace(r"\s\(.*\)", "", regex=True)
-    )
-
-    return cv_results_long
-
-
-def calculate_stats_per_experiment(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates the mean and standard deviation for key metrics per experiment.
-
-    This function filters out the summary row, groups the data by the
-    experiment name, and calculates the mean and standard deviation for
-    Accuracy, Precision, and Recall across all replicates.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        The input DataFrame containing performance metrics for each replicate.
-
-    Returns
-    -------
-    pd.DataFrame
-        A DataFrame where each row is an experiment and columns contain the
-        mean and standard deviation for the specified metrics.
-
-    """
-    df_filtered = df[df["inputs_experiment_name"] != "Summary"].copy()
-
-    metrics_to_analyze = {
-        "Accuracy": ["mean", "std"],
-        "Precision (Positive Predictive Value)": ["mean", "std"],
-        "Recall (Sensitivity, True Positive Rate)": ["mean", "std"],
+    return {
+        "Classification Accuracy": classification_accuracy,
+        "Accuracy": accuracy,
+        "Precision (Positive Predictive Value)": precision,
+        "Recall (Sensitivity, True Positive Rate)": recall,
+        "Specificity (True Negative Rate)": specificity,
+        "F1 Score": f1_score,
+        "Balanced Accuracy": balanced_accuracy,
+        "False Positive Rate": fp / (fp + tn) if (fp + tn) > 0 else np.nan,
+        "False Negative Rate": fn / (tp + fn) if (tp + fn) > 0 else np.nan,
+        "False Discovery Rate": fp / (tp + fp) if (tp + fp) > 0 else np.nan,
+        "False Omission Rate": fn / (tn + fn) if (tn + fn) > 0 else np.nan,
+        "Positive Predictive Value": precision,
+        "Negative Predictive Value": tn / (tn + fn) if (tn + fn) > 0 else np.nan,
     }
 
-    experiment_stats = df_filtered.groupby("inputs_experiment_name").agg(
-        metrics_to_analyze
-    )
-    experiment_stats.columns = [
-        "_".join(col).strip() for col in experiment_stats.columns.to_numpy()
-    ]
 
-    return experiment_stats
+def calculate_metrics_per_replicate(df: pd.DataFrame) -> dict[str, dict[str, float]]:
+    """Calculates classification metrics for each experimental replicate.
 
-
-def calculate_replicate_performance(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates the mean performance metrics for each replicate.
-
-    This function groups the data by the 'replicate_num' and calculates the
-    mean score for Accuracy, Precision, and Recall for each replicate run.
+    This function iterates through a DataFrame, groups data by the 'replicate_num'
+    column, and applies the `calculate_metrics` function to each group. The result
+    is a nested dictionary containing the full set of metrics for each replicate.
 
     Parameters
     ----------
     df : pd.DataFrame
-        The input DataFrame containing performance metrics for each replicate.
+        The DataFrame containing results for all replicates. It must include a
+        'replicate_num' column to distinguish between experiments, as well as
+        all columns required by the `calculate_metrics` function.
 
     Returns
     -------
-    pd.DataFrame
-        A DataFrame where each row is a replicate and columns are the
-        mean scores for the key performance metrics.
+    dict[str, dict[str, float]]
+        A nested dictionary where outer keys are the replicate numbers from the
+        'replicate_num' column. The corresponding values are the metric
+        dictionaries produced by `calculate_metrics` for that replicate.
 
     """
-    df_filtered = df[df["inputs_experiment_name"] != "Summary"].copy()
+    dict_all_metric = {}
+    replicates = [str(r) for r in df["replicate_num"].unique()]
 
-    metric_cols = [
-        "Accuracy",
-        "Precision (Positive Predictive Value)",
-        "Recall (Sensitivity, True Positive Rate)",
-    ]
-
-    replicate_means = df_filtered.groupby("replicate_num")[metric_cols].mean()
-
-    replicate_means.columns = [
-        re.sub(r"\s\(.*\)", "", col) for col in replicate_means.columns
-    ]
-
-    return replicate_means
+    for replicate in sorted(replicates):
+        df_subset_replicate = df[df["replicate_num"].astype(str) == replicate]
+        dict_metric = calculate_metrics(df_subset_replicate)
+        dict_all_metric[replicate] = dict_metric
+    return dict_all_metric
