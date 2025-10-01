@@ -387,6 +387,12 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
         else:
             cost = calculate_gemini_cost(usage_metadata)
 
+        duration_value = item.get("metadata", {}).get("duration")
+        try:
+            video_duration = float(duration_value)
+        except (ValueError, TypeError):
+            video_duration = None
+
         if item.get("protocol_type") is not None:
             timing_data.append(
                 {
@@ -396,6 +402,7 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
                     "input_type": item["input_type"],
                     "model": item["model"],
                     "generate_time": item["generation_time_seconds"],
+                    "video_duration": video_duration,
                     "generate_cost": cost["total_cost"],
                 }
             )
@@ -404,6 +411,7 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
                 {
                     "experiment_name": item["eval_set"] + str(item["run"]),
                     "generate_time": item["generation_time_seconds"],
+                    "video_duration": video_duration,
                     "generate_cost": cost["total_cost"],
                 }
             )

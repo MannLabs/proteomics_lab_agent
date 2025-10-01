@@ -685,45 +685,46 @@ async def test_protocol_evaluation() -> None:
     try:
         output_dir = "./eval_protocol_results/result_20250817_151404"
         function_configs = [
-            {
-                "name": "with_gemini2_0flash",
-                "function": generate_protocols_with_gemini2_0flash,
-                "model": "gemini-2.0-flash-001",
-            },
-            {
-                "name": "with_simple_instructions",
-                "function": generate_protocols_with_simple_inst,
-            },
-            {
-                "name": "with_examples",
-                "function": generate_protocols_with_examples,
-            },
-            {
-                "name": "with_extended_instructions",
-                "function": generate_protocols_with_ext_inst,
-            },
-            {
-                "name": "with_extended_knowledge",
-                "function": generate_protocols_with_ext_know,
-            },
+            # {
+            #     "name": "with_gemini2_0flash",
+            #     "function": generate_protocols_with_gemini2_0flash,
+            #     "model": "gemini-2.0-flash-001",
+            # },
+            # {
+            #     "name": "with_simple_instructions",
+            #     "function": generate_protocols_with_simple_inst,
+            # },
+            # {
+            #     "name": "with_examples",
+            #     "function": generate_protocols_with_examples,
+            # },
+            # {
+            #     "name": "with_extended_instructions",
+            #     "function": generate_protocols_with_ext_inst,
+            # },
+            # {
+            #     "name": "with_extended_knowledge",
+            #     "function": generate_protocols_with_ext_know,
+            # },
             {"name": "regular", "function": generate_protocols_regular},
-            {
-                "name": "with_gemini2_5flash",
-                "function": generate_protocols_with_gemini2_5flash,
-                "model": "gemini-2.5-flash",
-            },
-            {
-                "name": "without_persona",
-                "function": generate_protocols_without_persona,
-            },
+            # {
+            #     "name": "with_gemini2_5flash",
+            #     "function": generate_protocols_with_gemini2_5flash,
+            #     "model": "gemini-2.5-flash",
+            # },
+            # {
+            #     "name": "without_persona",
+            #     "function": generate_protocols_without_persona,
+            # },
         ]
 
+        # output_dir = f"./eval_protocol_results/result_20250930_062718"
         output_dir = f"./eval_protocol_results/result_{timestamp}"
 
         results = await evaluate_protocols(
             csv_file="benchmark_data.csv",
             function_list=function_configs,
-            num_runs=1,
+            num_runs=3,
             output_dir=output_dir,
         )
 

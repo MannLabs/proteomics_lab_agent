@@ -40,6 +40,7 @@ def process_evaluation_data(
         "activity_type",
         "input_type",
         "model",
+        "video_duration",
     }
 
     rows = []
@@ -52,6 +53,7 @@ def process_evaluation_data(
             "activity_type": item["activity_type"],
             "input_type": item["input_type"],
             "model": item["model"],
+            "video_duration": item.get("metadata", {}).get("duration"),
         }
         row.update(item["summary_rating"])
         rows.append(row)
@@ -67,6 +69,7 @@ def process_evaluation_data(
         "activity_type": "All",
         "input_type": "All",
         "model": "All",
+        "video_duration": "All",
         "tested_function_name": json_data[-1][
             "function_name"
         ],  # Use last item's function name

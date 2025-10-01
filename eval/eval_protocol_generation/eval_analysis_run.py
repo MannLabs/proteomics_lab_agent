@@ -202,3 +202,5 @@ class EvaluationAnalyzer:
             )
 
         plot_generator.create_stacked_bar_chart(df, self.output_dir)
+
+        plot_generator.plot_mean_scores_by_function(df, self.output_dir)
