@@ -269,7 +269,7 @@ def query_performance_data(filters: dict) -> dict:
         - 'gradient': {'min': 40.0, 'max': 45.0} # Range query
         - 'gradient': {'min': 40.0} # Greater than or equal
         - 'gradient': {'max': 45.0} # Less than or equal
-        - 'gradient': {'tolerance': 0.5, 'value': 44.0} # Within tolerance
+        - 'gradient': {'value': 44.0, 'tolerance': 0.1} # Within 10% tolerance
         - 'gradient': 44.0 # Exact match (backward compatible)
 
     Returns
