@@ -57,10 +57,12 @@ async def test_lab_note_standalone_evaluation() -> None:
         accuracy = metrics_dict["Accuracy"]
         precision = metrics_dict["Precision (Positive Predictive Value)"]
         recall = metrics_dict["Recall (Sensitivity, True Positive Rate)"]
+        f1_score = metrics_dict["F1 Score"]
 
         logger.info(f"Accuracy: {accuracy}")
         logger.info(f"Precision: {precision}")
         logger.info(f"Recall: {recall}")
+        logger.info(f"F1 Score: {f1_score}")
 
         assert accuracy >= TEST_THRESHOLD, (
             f"Accuracy {accuracy:.3f} is below minimum threshold of {TEST_THRESHOLD}"
@@ -70,6 +72,9 @@ async def test_lab_note_standalone_evaluation() -> None:
         )
         assert recall >= TEST_THRESHOLD, (
             f"Recall {recall:.3f} is below minimum threshold of {TEST_THRESHOLD}"
+        )
+        assert f1_score >= TEST_THRESHOLD, (
+            f"F1 Score {f1_score:.3f} is below minimum threshold of {TEST_THRESHOLD}"
         )
 
         logger.info("All metrics meet the minimum threshold of {TEST_THRESHOLD}")

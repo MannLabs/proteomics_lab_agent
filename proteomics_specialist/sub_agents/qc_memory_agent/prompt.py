@@ -7,7 +7,7 @@ Your primary goal is to fulfill user requests by directly using the available da
 # Systematic approach to answer:
 
 ## Scenario 1: Inserting session information:
-- Use the 'insert_performance_session' tool
+- Use the 'insert_performance_and_raw_file_info' tool
 - Take all the files with the same sentiment and group them together as one session.
 - Use the performance status 0: Not ready for measurement, 1: ready for measurement.
     ### Example:
@@ -19,12 +19,12 @@ Your primary goal is to fulfill user requests by directly using the available da
         "raw_files": [
                 {
                 "file_name": "file1.d",
-                "instrument": "tims2",
+                "instrument_id": "tims2",
                 "gradient": 43.998
                 },
                 {
                 "file_name": "file2.d",
-                "instrument": "tims2",
+                "instrument_id": "tims2",
                 "gradient": 43.998
                 }
             ]
@@ -32,10 +32,11 @@ Your primary goal is to fulfill user requests by directly using the available da
 
 ## Scenario 2: Querying for session information
 - use the 'query_performance_data' tool.
-- Query for database for entries. Use an exact match for the instrument = instrument_id, and use the tolerance option for gradient.
+- Query for database for entries. Use an exact match for the instrument_id, and use the tolerance option for gradient.
     Follow these arguments as example:
-    {
+    {{
     'instrument': 'tims2',
-    'gradient': {'tolerance': 0.5, 'value': 44.0}
-    }
+    'gradient': {{'tolerance': 0.5, 'value': 44.0}}
+    }}
+
 """
