@@ -1,6 +1,6 @@
-# proteomics_specialist
+# proteomics_lab_agent
 
-The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_specialist, a multimodal, agentic AI framework that captures and shares practical expertise by linking written instructions to real-world laboratory work. It uses video analysis to automate documentation and provide personalized guidance. We applied this agent to our field of mass spectrometry (MS)-based proteomics. To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_specialist).
+The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_lab_agent, a multimodal, agentic AI framework that captures and shares practical expertise by linking written instructions to real-world laboratory work. It uses video analysis to automate documentation and provide personalized guidance. We applied this agent to our field of mass spectrometry (MS)-based proteomics. To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_lab_agent).
 
 * [**About**](#about)
 * [**License**](#license)
@@ -42,7 +42,7 @@ A main agent orchestrates specialized sub-agents:
 ---
 ## License
 
-proteomics_specialist was developed by the [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) and is freely available with an [Apache License 2.0](LICENSE.txt). External Python packages (available in the [requirements](requirements) folder) have their own licenses, which can be consulted on their respective websites.
+proteomics_lab_agent was developed by the [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) and is freely available with an [Apache License 2.0](LICENSE.txt). External Python packages (available in the [requirements](requirements) folder) have their own licenses, which can be consulted on their respective websites.
 
 ---
 ## Installation
@@ -50,12 +50,12 @@ proteomics_specialist was developed by the [Mann Labs at the Max Planck Institut
 ### Project Structure
 
 ```
-proteomics_specialist/
+proteomics_lab_agent/
 ...
-proteomics_specialist/
+proteomics_lab_agent/
 ├── eval/                          # Evaluation scripts and test conversion utilities
 ├── nbs/                           # Jupyter notebooks for tutorials and figures
-├── proteomics_specialist/         # Main agent package
+├── proteomics_lab_agent/         # Main agent package
 │   ├── __init__.py
 │   ├── agent.py                   # Root ADK agent orchestrating tools/subagents
 │   ├── prompt.py                  # Root agent prompt
@@ -175,9 +175,9 @@ source .venv/bin/activate
 #### 3. Install repository
 Clone the repository
 ```bash
-git clone https://github.com/MannLabs/proteomics_specialist.git
+git clone https://github.com/MannLabs/proteomics_lab_agent.git
 ```
-Install proteomics_specialist and all its [dependencies](requirements):
+Install proteomics_lab_agent and all its [dependencies](requirements):
 ```bash
 # Install main requirements
 pip install -r requirements/requirements.txt
@@ -198,10 +198,10 @@ You can run the agent locally using the `adk` command in your terminal:
     ```
     you can add `-d` flag to detach the containers from the shell session
 
-* Open fresh terminal, ensure your virtual environment is active and you are in the root directory of the `proteomics_specialist` project.
+* Open fresh terminal, ensure your virtual environment is active and you are in the root directory of the `proteomics_lab_agent` project.
 1.  To run the agent from the CLI:
 ```bash
-adk run proteomics_specialist
+adk run proteomics_lab_agent
 ```
 2.  To run the agent from the ADK web UI:
 ```bash
@@ -215,10 +215,10 @@ adk web --host 0.0.0.0
 ```bash
 docker compose --env-file ./.env.secrets --env-file ./.env up
 ```
-Then select the `proteomics_specialist` from the dropdown.
+Then select the `proteomics_lab_agent` from the dropdown.
 
 This will:
-- Start the adk root agent (`proteomics_specialist/agent.py`).
+- Start the adk root agent (`proteomics_lab_agent/agent.py`).
 - The root agent can initialize the `MCPToolset` of subagents such as instrument_agent, qc_memory_agent or lab_knowledge_agent.
 - The MCP servers will start automatically and listen for tool calls from the agents.
 - The agents will then be ready to process your instructions.
@@ -229,7 +229,7 @@ This will:
 The project can be deployed using Docker Compose. This approach containerizes all components for easier management and deployment.
 
 The Docker deployment includes the following containers:
-- python_lab_agent: Main proteomics_specialist agent
+- python_lab_agent: Main proteomics_lab_agent agent
 - alphakraken_mcp: MCP server for proteomics analysis
 - confluence_mcp: MCP server for knowledge management
 
@@ -258,7 +258,7 @@ docker container stop python_lab_agent alphakraken_mcp confluence_mcp
 ---
 ## Jupyter notebooks
 
-The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on using proteomics_specialist as a Python package. The following notebooks have a dual purpose: they function as tutorials and provide the basis for paper figures.
+The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on using proteomics_lab_agent as a Python package. The following notebooks have a dual purpose: they function as tutorials and provide the basis for paper figures.
 
 ### Debugging MCP functionalities of agnets
 - Notebook for developing / debugging database functions:
@@ -277,8 +277,8 @@ The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on usin
 
 In case of issues, check out the following links:
 
-* [FAQ](https://github.com/MannLabs/proteomics_specialist#faq): This section provides answers to issues of general interest.
-* [Issues](https://github.com/MannLabs/proteomics_specialist/issues): Try a few different search terms to find out if a similar problem has been encountered before.
+* [FAQ](https://github.com/MannLabs/proteomics_lab_agent#faq): This section provides answers to issues of general interest.
+* [Issues](https://github.com/MannLabs/proteomics_lab_agent/issues): Try a few different search terms to find out if a similar problem has been encountered before.
 
 ---
 ## FAQ
@@ -292,7 +292,7 @@ We are currently writting the manuscript.
 ---
 ## How to contribute
 
-If you like this software, you can give us a [star](https://github.com/MannLabs/proteomics_specialist/stargazers) to boost our visibility! All direct contributions are also welcome. Feel free to post a new [issue](https://github.com/MannLabs/proteomics_specialist/issues) or clone the repository and create a [pull request](https://github.com/MannLabs/proteomics_specialist/pulls) with a new branch. For even more interactive participation, check out the [the Contributors License Agreement](misc/CLA.md).
+If you like this software, you can give us a [star](https://github.com/MannLabs/proteomics_lab_agent/stargazers) to boost our visibility! All direct contributions are also welcome. Feel free to post a new [issue](https://github.com/MannLabs/proteomics_lab_agent/issues) or clone the repository and create a [pull request](https://github.com/MannLabs/proteomics_lab_agent/pulls) with a new branch. For even more interactive participation, check out the [the Contributors License Agreement](misc/CLA.md).
 
 ### Notes for developers
 

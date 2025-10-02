@@ -1,12 +1,12 @@
 """Root agent is designed to support proteomics researchers."""
 
 import logging
+from datetime import UTC
 
 from google.adk.agents import LlmAgent
 from google.adk.tools import FunctionTool
 from google.adk.tools.agent_tool import AgentTool
-
-from proteomics_specialist.config import config
+from proteomics_lab_agent.config import config
 
 from . import prompt
 from .sub_agents.instrument_agent import instrument_agent
@@ -24,9 +24,9 @@ logger = logging.getLogger(__name__)
 
 def get_current_datetime() -> dict:
     """Get current date and time."""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    utc_now = datetime.now(timezone.utc)
+    utc_now = datetime.now(UTC)
     local_now = utc_now.astimezone()
 
     try:

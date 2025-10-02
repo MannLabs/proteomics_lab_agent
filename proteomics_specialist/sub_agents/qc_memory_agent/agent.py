@@ -8,8 +8,7 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.models import LlmResponse
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
 from google.genai import types
-
-from proteomics_specialist.config import config
+from proteomics_lab_agent.config import config
 
 from . import prompt
 

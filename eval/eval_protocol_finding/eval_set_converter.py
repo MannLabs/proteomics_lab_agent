@@ -473,7 +473,7 @@ def main() -> None:
 
     Sets up file paths and runs the evaluation set conversion process.
     """
-    input_file = BASE_DIR / "proteomics_specialist/protocol_finder.evalset.json"
+    input_file = BASE_DIR / "proteomics_lab_agent/protocol_finder.evalset.json"
     output_file = (
         BASE_DIR / "eval/eval_protocol_finding/protocol_finder_converted.evalset.json"
     )

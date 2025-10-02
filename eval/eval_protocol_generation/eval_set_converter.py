@@ -33,7 +33,7 @@ logging.basicConfig(
 
 BENCHMARK_CSV_PATH = Path("benchmark_data.csv")
 INPUT_JSON_PATH = Path(
-    BASE_DIR / "proteomics_specialist/protocol_generator.evalset.json"
+    BASE_DIR / "proteomics_lab_agent/protocol_generator.evalset.json"
 )
 MINIMUM_REQUIRED_FIELDS = ["eval_set_name", "user_prompt", "ground_truth_protocol"]
 

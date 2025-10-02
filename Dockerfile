@@ -10,7 +10,7 @@ COPY ./requirements/requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
 
-COPY ./proteomics_specialist ./proteomics_specialist
+COPY ./proteomics_lab_agent ./proteomics_lab_agent
 
 EXPOSE 8000
 

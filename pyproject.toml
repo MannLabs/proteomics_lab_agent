@@ -3,8 +3,8 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "proteomics_specialist"
-requires-python = ">3.8"
+name = "proteomics_lab_agent"
+requires-python = ">3.12"
 dynamic = ["version", "dependencies", "optional-dependencies"]
 
 authors = [
@@ -13,12 +13,14 @@ authors = [
 description = "An open-source Python package of the AlphaX ecosystem"
 readme = "README.md"
 keywords = [
-    "mass spectrometry",
-    "proteomics",
-    "bioinformatics",
-    "mass spectrometry",
     "GenAI",
     "agents",
+    "AI",
+    "lab",
+    "laboratory",
+    "bioinformatics",
+    "mass spectrometry",
+    "proteomics",
     "AlphaX ecosystem",
 ]
 license = {file = "LICENSE.txt"}
@@ -38,10 +40,10 @@ classifiers = [
 [project.urls]
 
 #"Paper preprint" = "https://www.biochem.mpg.de/mann"
-Repository = "https://github.com/MannLabs/proteomics_specialist"
-#Documentation = "https://proteomics_specialist.readthedocs.io/en/latest/"
+Repository = "https://github.com/MannLabs/proteomics_lab_agent"
+#Documentation = "https://proteomics_lab_agent.readthedocs.io/en/latest/"
 #Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
-Issues = "https://github.com/MannLabs/proteomics_specialist/issues"
+Issues = "https://github.com/MannLabs/proteomics_lab_agent/issues"
 "Mann Labs Homepage" = "https://www.biochem.mpg.de/mann"
 
 [tool.setuptools.packages]
@@ -52,10 +54,10 @@ find = {}
 dependencies = {file = ["requirements/requirements.txt"]}
 optional-dependencies.stable = { file = ["requirements/requirements_development.txt" ]}
 
-version = {attr = "proteomics_specialist.__version__"}
+version = {attr = "proteomics_lab_agent.__version__"}
 
 [project.scripts]
-proteomics_specialist = "proteomics_specialist.cli:run"
+proteomics_lab_agent = "proteomics_lab_agent.cli:run"
 
 [tool.ruff.lint]
 select =  [ "ALL" ]

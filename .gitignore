@@ -1,7 +1,7 @@
 .DS_store
 __pycache__
 .ipynb_checkpoints
-proteomics_specialist.egg-info
+proteomics_lab_agent.egg-info
 _build
 build
 dist
@@ -23,11 +23,11 @@ secrets.ini
 .adk
 eval_lab_note_results/
 eval_protocol_results/
-proteomics_specialist/lab_note_generator.evalset.json
-proteomics_specialist/protocol_finder.evalset.json
-proteomics_specialist/protocol_generator.evalset.json
-proteomics_specialist/question_agent.evalset.json
-proteomics_specialist/sub_agents/qc_memory_agent/database.db
+proteomics_lab_agent/lab_note_generator.evalset.json
+proteomics_lab_agent/protocol_finder.evalset.json
+proteomics_lab_agent/protocol_generator.evalset.json
+proteomics_lab_agent/question_agent.evalset.json
+proteomics_lab_agent/sub_agents/qc_memory_agent/database.db
 deployment_data/evalset/lab_note_generator.evalset.json
 deployment_data/evalset/protocol_finder.evalset.json
 deployment_data/evalset/protocol_generator.evalset.json

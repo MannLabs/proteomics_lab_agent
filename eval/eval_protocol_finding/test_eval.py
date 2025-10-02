@@ -2,7 +2,7 @@
 
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import dotenv
@@ -30,7 +30,7 @@ async def test_eval_agent() -> None:
     log_dir = Path("./eval_logs")
     log_dir.mkdir(exist_ok=True)
 
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     log_file = log_dir / f"eval_results_{timestamp}.log"
 
     logging.basicConfig(
@@ -52,7 +52,7 @@ async def test_eval_agent() -> None:
 
     try:
         await AgentEvaluator.evaluate(
-            agent_module="proteomics_specialist",
+            agent_module="proteomics_lab_agent",
             eval_dataset_file_path_or_dir=str(eval_file_path),
             num_runs=1,
         )

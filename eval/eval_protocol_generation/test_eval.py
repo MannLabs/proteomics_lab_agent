@@ -28,10 +28,11 @@ from tenacity import (
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+from proteomics_lab_agent.config import config
+from proteomics_lab_agent.sub_agents import utils
+from proteomics_lab_agent.sub_agents.protocol_generator_agent import agent, prompt
+
 from eval.eval_lab_note_generation.test_eval import setup_logging
-from proteomics_specialist.config import config
-from proteomics_specialist.sub_agents import utils
-from proteomics_specialist.sub_agents.protocol_generator_agent import agent, prompt
 
 from .eval_analysis_run import EvaluationAnalyzer
 from .evaluator import evaluate_protocols

@@ -46,7 +46,7 @@
         }
       ],
       "session_input": {
-        "app_name": "proteomics_specialist",
+        "app_name": "proteomics_lab_agent",
         "user_id": "user",
         "state": {}
       },
