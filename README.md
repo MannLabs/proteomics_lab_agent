@@ -280,7 +280,7 @@ In case of issues, check out the following links:
 
 ---
 ## FAQ
-- Where to find test file?
+- Where to find test files? You can find test files on Zenodo: https:// doi.org/ 10.5281/zenodo.17253029.
 
 ---
 ## Citations
