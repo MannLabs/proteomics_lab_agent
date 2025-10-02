@@ -18,7 +18,7 @@ jobs:
 
     - name: Run shared unit tests
       run: |
-        pip install -r requirements_development.txt
-        pip install -r shared/requirements_shared.txt
+        pip install -r requirements/requirements_development.txt
+        pip install -r requirements/requirements.txt
         pip freeze
         python -m pytest shared
