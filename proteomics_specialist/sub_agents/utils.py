@@ -10,10 +10,11 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import ffmpeg
 from google.genai import types
 
 if TYPE_CHECKING:
-    from google.cloud.storage import Bucket
+    from google.cloud.storage import Blob, Bucket
 
 logger = logging.getLogger(__name__)
 config = configparser.ConfigParser()
@@ -94,7 +95,7 @@ def upload_file_from_path_to_gcs(
     bucket: Bucket,
     subfolder_in_bucket: str | None = None,
     custom_blob_name: str | None = None,
-) -> tuple[Path, str, str]:
+) -> tuple[Path, str, str, Blob]:
     """Upload a file to Google Cloud Storage and return its URI.
 
     Uses the original filename as the blob name by default.
@@ -109,22 +110,64 @@ def upload_file_from_path_to_gcs(
         Optional subfolder path in the bucket (e.g., "video_files")
     custom_blob_name : str, optional
         Override the default blob name
+    add_video_metadata : bool, optional
+        If True, attempt to extract and add video metadata. Default is True.
 
     Returns
     -------
-    tuple[Path, str, str]
-        Tuple containing (path_obj, gcs_uri, filename)
+    tuple[Path, str, str, Blob]
+        Tuple containing (path_obj, gcs_uri, filename, blob)
 
     """
     path_obj = Path(path)
     filename = path_obj.name if custom_blob_name is None else custom_blob_name
-
     blob_name = f"{subfolder_in_bucket}/{filename}" if subfolder_in_bucket else filename
-
     blob = bucket.blob(blob_name)
-    blob.upload_from_filename(path)
 
-    return path_obj, f"gs://{bucket.name}/{blob_name}", filename
+    try:
+        probe = ffmpeg.probe(path)
+        duration = float(probe["format"]["duration"])
+        file_size = int(probe["format"]["size"])
+
+        custom_metadata = {
+            "duration": str(duration),
+            "file_size": str(file_size),
+            "input_type": "video",
+        }
+        blob.metadata = custom_metadata
+        logging.info(f"custom_metadata: {custom_metadata}")
+    except ffmpeg.Error as e:
+        logging.warning(f"Could not extract video metadata via ffmpeg: {e}")
+    except (KeyError, ValueError, TypeError) as e:
+        logging.warning(f"Could not parse video metadata: {e}")
+    except OSError as e:
+        logging.warning(f"Could not access file for metadata extraction: {e}")
+
+    blob.upload_from_filename(path)
+    return path_obj, f"gs://{bucket.name}/{blob_name}", filename, blob
+
+
+def get_blob_name_from_gcs_path(gcs_path: str) -> str:
+    """Extract blob name from GCS path.
+
+    Parameters
+    ----------
+    gcs_path : str
+        GCS path (gs://bucket/path/to/file).
+
+    Returns
+    -------
+    str
+        Blob name (path/to/file).
+
+    """
+    if gcs_path.startswith("gs://"):
+        path_without_prefix = gcs_path[5:]
+        parts = path_without_prefix.split("/", 1)
+        if len(parts) > 1:
+            return parts[1]
+        return ""
+    raise ValueError(f"Invalid GCS path: {gcs_path}")
 
 
 def generate_part_from_path(
@@ -155,6 +198,7 @@ def generate_part_from_path(
         - part: Part object created from the file URI
         - filename: Name of the uploaded file
         - mime_type: MIME type of the file
+        - metadata: Only if video: duration and file size
 
     """
     if path.startswith("gs://"):
@@ -165,22 +209,27 @@ def generate_part_from_path(
 
         file_uri = path
         file_path = path
+        blob_name = get_blob_name_from_gcs_path(file_path)
+        blob = bucket.blob(blob_name)
+        blob.reload()
 
     else:
         logging.info(f"Uploading local file to GCS: {path}")
-        file_path, file_uri, filename = upload_file_from_path_to_gcs(
+        file_path, file_uri, filename, blob = upload_file_from_path_to_gcs(
             path, bucket, subfolder_in_bucket
         )
 
     mime_type, _ = mimetypes.guess_type(filename)
 
     file_part = types.Part.from_uri(file_uri=file_uri, mime_type=mime_type)
+    logging.info(blob.metadata)
     return {
         "local_path": file_path,
         "gcs_uri": file_uri,
         "part": file_part,
         "filename": filename,
         "mime_type": mime_type,
+        "metadata": blob.metadata or {},
     }
 
 

@@ -283,7 +283,6 @@ def remove_zeros(d: T) -> T:
 
 def _process_errors_dataframes(row: Series, error_response: Any) -> pd.DataFrame:  # noqa: ANN401
     """Helper function to merge benchmark and AI error data into a DataFrame."""
-    # Parsing error dictionary
     error_dict = ast.literal_eval(row["error_dict"])
 
     df_error_ai = pd.DataFrame([step.model_dump() for step in error_response.steps])
@@ -291,6 +290,7 @@ def _process_errors_dataframes(row: Series, error_response: Any) -> pd.DataFrame
 
     df_error_benchmark = pd.DataFrame(error_dict)
     df_errors = df_error_benchmark.merge(df_error_ai, on="Step", how="outer")
+    df_errors = df_errors.fillna("N/A")
 
     df_errors["Identification"] = df_errors.apply(identify_error_type, axis=1)
     df_errors["Classification"] = df_errors.apply(classify_error_type, axis=1)
@@ -330,15 +330,10 @@ def _run_single_evaluation(
 
     try:
         logger.info("Step 3: Generating lab notes ...")
-        protocol_display = (
-            f"Protocol: {row['protocol'][:PROTOCOL_DISPLAY_MAX_LENGTH]}..."
-            if len(str(row["protocol"])) > PROTOCOL_DISPLAY_MAX_LENGTH
-            else f"Protocol: {row['protocol']}"
-        )
         logger.info(f"Video path: {row['video_path']}")
-        logger.info(protocol_display)
 
         start_time = time.time()
+
         generated_lab_note = agent.generate_lab_notes(
             row["video_path"],
             None,
@@ -366,11 +361,12 @@ def _run_single_evaluation(
             "eval_set_index": row.name + 1,
             "run": run_number,
             "lab_notes": generated_lab_note["lab_notes"],
-            "lab_note_generation_time_seconds": lab_note_generation_time,
-            "usage_metadata_lab_note_generation": generated_lab_note["usage_metadata"],
+            "generation_time_seconds": lab_note_generation_time,
+            "usage_metadata_generation": generated_lab_note["usage_metadata"],
             "df_errors": df_errors.to_dict("records"),
             "filtered_dict": filtered_dict,
             "summary_dict": summary_dict,
+            "metadata": generated_lab_note["metadata"],
         }
         logger.info(
             f"Run {run_number} for eval set {eval_set_name} completed successfully"

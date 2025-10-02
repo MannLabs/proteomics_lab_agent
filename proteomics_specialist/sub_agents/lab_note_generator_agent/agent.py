@@ -3,97 +3,23 @@
 from __future__ import annotations
 
 import logging
-import os
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import Literal, Optional
 
-from dotenv import load_dotenv
-from google import genai
 from google.adk.agents import LlmAgent
-from google.cloud import storage
+from google.adk.tools import ToolContext  # noqa: TC002
 from google.genai import types
 from pydantic import BaseModel, Field
 
 from proteomics_specialist.config import config
 from proteomics_specialist.sub_agents import utils
+from proteomics_specialist.sub_agents.enviroment_handling import (
+    CloudResourceError,
+    EnvironmentValidator,
+)
 
 from . import prompt
 
-if TYPE_CHECKING:
-    from google.adk.tools import ToolContext
-
 logging.basicConfig(level=logging.INFO)
-
-
-def load_lab_notes_environment() -> dict[str, str | None]:
-    """Load and validate environment variables for lab notes generation.
-
-    Returns
-    -------
-    dict[str, str | None]
-        Dictionary containing all required environment variables and config values
-
-    Raises
-    ------
-    ValueError
-        If required environment variables are missing
-
-    """
-    load_dotenv()
-
-    env_vars = {
-        "bucket_name": os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET"),
-        "project_id": os.getenv("GOOGLE_CLOUD_PROJECT"),
-        "knowledge_base_path": os.getenv("KNOWLEDGE_BASE_PATH"),
-        "example_protocol_path": os.getenv("EXAMPLE_PROTOCOL_PATH"),
-        "example_video_path": os.getenv("EXAMPLE_VIDEO_PATH"),
-        "example_lab_note_path": os.getenv("EXAMPLE_LAB_NOTE_PATH"),
-        "model": config.analysis_model,
-        "temperature": config.temperature,
-    }
-
-    missing_vars = validate_lab_notes_env(env_vars)
-
-    if missing_vars:
-        raise ValueError(
-            f"Missing required environment variables: {', '.join(missing_vars)}"
-        )
-
-    return env_vars
-
-
-def validate_lab_notes_env(env_vars: dict[str, str | None]) -> list[str]:
-    """Validate lab notes environment variables and return missing ones.
-
-    Parameters
-    ----------
-    env_vars : dict[str, str | None]
-        Dictionary of environment variables to validate
-
-    Returns
-    -------
-    list[str]
-        List of missing environment variable names
-
-    """
-    missing_vars = []
-
-    required_vars = {
-        "bucket_name": "GOOGLE_CLOUD_STORAGE_BUCKET",
-        "project_id": "GOOGLE_CLOUD_PROJECT",
-        "knowledge_base_path": "KNOWLEDGE_BASE_PATH",
-        "example_protocol_path": "EXAMPLE_PROTOCOL_PATH",
-        "example_video_path": "EXAMPLE_VIDEO_PATH",
-        "example_lab_note_path": "EXAMPLE_LAB_NOTE_PATH",
-    }
-
-    for key, env_name in required_vars.items():
-        if not env_vars.get(key):
-            missing_vars.append(env_name)
-
-    if not env_vars.get("model") or not env_vars.get("temperature"):
-        missing_vars.append("model or temperature configuration")
-
-    return missing_vars
 
 
 def generate_lab_notes(
@@ -108,7 +34,7 @@ def generate_lab_notes(
     query : str
         Query containing video path and analysis request.
     tool_context : ToolContext | None
-        ToolContext containing shared state from the protocol agent.
+        ToolContext containing shared state from the lab_knowledge agent .
     protocol_input : str, optional
         Protocol provided as a string as alternative to provided by ToolContext.
 
@@ -129,18 +55,18 @@ def generate_lab_notes(
             logging.info("Protocol as str input: %s", protocol)
 
         try:
-            env_vars = load_lab_notes_environment()
+            env_vars = EnvironmentValidator.load_environment(
+                agent_type="lab_note_generator", config=config
+            )
         except ValueError as e:
-            return {
-                "status": "error",
-                "error_message": str(e),
-            }
+            return {"status": "error", "error_message": str(e)}
 
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(env_vars["bucket_name"])
-        client = genai.Client(
-            vertexai=True, project=env_vars["project_id"], location="us-central1"
-        )
+        try:
+            storage_client, bucket, client = (
+                EnvironmentValidator.initialize_cloud_resources(env_vars)
+            )
+        except CloudResourceError as e:
+            return {"status": "error", "error_message": str(e)}
 
         background_knowledge = utils.generate_parts_from_folder(
             folder_path=env_vars["knowledge_base_path"],
@@ -176,7 +102,7 @@ def generate_lab_notes(
         video = utils.generate_part_from_path(
             path=file_path,
             bucket=bucket,
-            subfolder_in_bucket="input_video",
+            subfolder_in_bucket="input_for_lab_note",
         )
         logging.info(f"Video uploaded and converted successfully: {video['gcs_uri']}")
 
@@ -204,6 +130,7 @@ def generate_lab_notes(
                 types.Part.from_text(text=prompt.FINAL_INSTRUCTIONS_PROMPT),
             ],
         )
+        logging.info(f"Prompt: {collected_content}")
 
         logging.info("Preparing response...")
         response = client.models.generate_content(
@@ -211,7 +138,7 @@ def generate_lab_notes(
             contents=collected_content,
             config=types.GenerateContentConfig(temperature=env_vars["temperature"]),
         )
-
+        logging.info(f"Metadata: {video['metadata']}")
         return {
             "status": "success",
             "local_video_path": file_path,
@@ -221,6 +148,7 @@ def generate_lab_notes(
             "protocol": protocol,
             "lab_notes": response.text,
             "usage_metadata": response.usage_metadata,
+            "metadata": video["metadata"] or {},
         }
 
     except (OSError, ValueError, TypeError, RuntimeError) as e:
@@ -231,7 +159,7 @@ lab_note_generator_agent = LlmAgent(
     name="lab_note_generator_agent",
     model=config.model,
     description="Agent converts video files into lab notes.",
-    instruction="Always analyse the user query by invoking the tool 'generate_lab_notes' and reply the generated response.",
+    instruction=f"Always analyse the user query by invoking the tool '{generate_lab_notes.__name__}' and reply the generated response.",
     tools=[generate_lab_notes],
     output_key="lab_notes_result",
 )

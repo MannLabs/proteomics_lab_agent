@@ -6,7 +6,7 @@ SYSTEM_PROMPT = """
 You are Professor Matthias Mann, a pioneering scientist in proteomics and mass spectrometry. Your professional identity is defined by your ability to be exact in your responses and to produce meticulous, accurate results that others can trust completely.
 
 ## ====== Background Knowledge (FOR REFERENCE ONLY) ======
-[These documents are for building your proteomics background knowldege and are not part of today's task.]
+[These documents are for building your proteomics background knowledge and are not part of today's task.]
 """
 
 INSTRUCTIONS_LAB_NOTE_GENERATION_PROMPT = """
@@ -20,7 +20,7 @@ Compare the 'Ground truth written protocol' with the 'Video to evaluate', and cr
 
 # Evaluation
 
-## Rating rubics for each step:
+## Rating rubrics for each step:
     1. It was followed correctly (no special notation needed)
     2. It was skipped: ❌ **Omitted:**
     3. It was carried out but wrongly: ❌ **Error:** (be specific about what happened)
@@ -33,7 +33,10 @@ Compare the 'Ground truth written protocol' with the 'Video to evaluate', and cr
 * STEP 1: Read the 'Ground truth written protocol' thoroughly and write it down again word-by-word. Make sure to maintain the original content truthfully, including the numbering of procedure steps.
 
 * STEP 2: Go through the 'Video to evaluate' completely from beginning to end.
-    - Document all observed actions with timestamps
+    - adopt the video's perspective, which is filmed from the researcher's eye level
+    - first identify all visible objects and equipment in the workspace
+    - then establish their spatial positions and orientations relative to the researcher (left/right, near/far, angles)
+    - document all observed actions with timestamps, tracking how objects move through the workspace:
 
 Table 1:
 | Timestamp | Visual/Audio Action |\n
@@ -46,7 +49,7 @@ Table 1:
     - For each step, specifically search for evidence in Table 1
     - If a step is not present, scan the entire Table 1 to confirm it wasn't performed out of sequence
     - For each step, clearly state:
-        * Evaluate each step according to the rating rubics
+        * Evaluate each step according to the rating rubrics
         * The specific visual/audio evidence (or lack thereof) supporting your determination
         * Precise timestamps from the 'Video to evaluate'
     - If any step is present in Table 1 but not in 'Ground truth written protocol':
@@ -121,7 +124,7 @@ SKILL_ERROR_CATEGORIES_PROMPT = """
 * Fast: Errors that occur when actions happen too quickly for the AI model to process accurately (typically less than 1 second with standard frame sampling rates), such as brief button clicks on software interfaces or rapid manual manipulations that appear as motion blur.
 """
 
-LAB_NOTE_TO_BENCHMARK_DATASET_CONVERSION = """\
+LAB_NOTE_TO_BENCHMARK_DATASET_CONVERSION = f"""
 # Instruction
 You are an expert evaluator tasked with analyzing errors that have already been identified in AI-generated lab notes (Lab notes can be found in the session state under the key 'lab_notes_result'). Your task is to accurately extract the error positions and error types for each step. It is very important to you to be precise and thorough.\n
 

@@ -49,7 +49,7 @@ proteomics_specialist/
 │   ├── agent.py                   # Root ADK agent orchestrating tools/subagents
 │   ├── prompt.py                  # Root agent prompt
 │   └── sub_agents/
-│       └── alphakraken_agent/     # Sub-agent module
+│       └── instrument_agent/     # Sub-agent module
 │           ├── __init__.py
 │           ├── agent.py           # Local MCP server integration
 │           └── prompt.py          # Subagent prompt
@@ -80,17 +80,46 @@ git clone https://github.com/MannLabs/proteomics_specialist.git
 ### 1. Prerequisites
 - Python 3.12+
 - Access to a terminal or command prompt
-- Google Cloud Project
+
+#### Google Cloud Infrastructure
+- **Component**: Google Cloud Project with Cloud Storage Bucket
+- **Purpose**:
+    - Generate LLM responses via API calls
+    - Store and serve video content for prompt processing
+- **Text Setup Instructions**: [Creating Projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) & [Creating Cloud Storage Buckets](https://cloud.google.com/storage/docs/creating-buckets)
+- **Video Setup Instructions**: [Video with guide: Step 2 & 3 beginning at 10:14](https://www.youtube.com/watch?v=bPtKnDIVEsg)
+- **Required Services**:
+    - Billing enabled
+    - Cloud Storage API
+    - Vertex AI
+
+#### Knowledge Management System
+- **Component**: Confluence with lab_knowledge_agent
+- **Purpose**: Retrieve and save laboratory information
+- **Setup Instructions**: [Getting Started with Confluence Spaces](https://www.atlassian.com/software/confluence/resources/guides/get-started/set-up#learn-about-spaces)
+- **Configuration Notes**:
+    1. Create a dedicated Confluence space for lab_knowledge_agent
+    2. Create two parent pages:
+        - "Protocols" page
+        - "Lab Notes" page
+    3. Record the following for configuration: Space Key, Protocols Page ID, Lab Notes Page ID
+
+#### Proteomics Analysis Platform
+- **Component**: Alphakraken
+- **Purpose**: Provides fully automated data processing and analysis system for mass spectrometry experiments
+- **Setup Instructions**: [Alphakraken Quick Start Guide](https://github.com/MannLabs/alphakraken?tab=readme-ov-file#quick-start)
 
 Once you have created your project, [install the Google Cloud SDK](https://cloud.google.com/sdk/docs/install). Then run the following command to authenticate:
 ```bash
 gcloud auth login
+gcloud init
 ```
 This allows the ADK agent in this project to use a Gemini model.
 
 ### 2. Create and Activate Virtual Environment
 
-It's highly recommended to use a virtual environment to manage project dependencies. Create a virtual environment (e.g., named .venv)
+
+It's highly recommended to use a virtual environment to manage project dependencies. Navigate to the folder with this code base. Create a virtual environment (e.g., named .venv)
 ```bash
 python3 -m venv .venv
 ```
@@ -109,10 +138,12 @@ source .venv/bin/activate
 
 Install proteomics_specialist and all its [dependencies](requirements):
 ```bash
-pip install -e "./proteomics_specialist"
-```
+# Install main requirements
+pip install -r requirements/requirements.txt
 
-***By using the editable flag `-e`, all modifications to the [proteomics_specialist source code folder](proteomics_specialist) are directly reflected when running proteomics_specialist. Note that the proteomics_specialist folder cannot be moved and/or renamed if an editable version is installed.***
+# Install development requirements (if you need dev dependencies)
+pip install -r requirements/requirements_development.txt
+```
 
 ### 4. Configure settings
 The `agent.py` will load the keys defined in .env and secrets.ini.
@@ -168,11 +199,15 @@ adk run proteomics_specialist
 ```bash
 adk web
 ```
+or to make a web server accessible from other devices on your network, not just locally:
+```bash
+adk web --host 0.0.0.0
+```
 Then select the `proteomics_specialist` from the dropdown.
 
 This will:
 - Start the adk root agent (`proteomics_specialist/agent.py`).
-- The root agent can initialize the `MCPToolset` of subagents such as alphakraken_agent, database_agent or protocol_agent.
+- The root agent can initialize the `MCPToolset` of subagents such as instrument_agent, qc_memory_agent or lab_knowledge_agent.
 - The MCP servers will start automatically and listen for tool calls from the agents via stdio.
 - The agents will then be ready to process your instructions (which you would typically provide in a client application or test environment that uses these agents).
 
@@ -183,18 +218,16 @@ This will:
 
 The ‘nbs’ folder in the GitHub repository contains Jupyter Notebooks on using proteomics_specialist as a Python package. The following notebooks have a dual purpose: they function as tutorials and provide the basis for paper figures.
 
-#### Workflow for converting videos to protocols
-- Experimenting with various prompting techniques to supply a LLM with the required background information to convert lab videos into protocols.
-    File: 1_videoToProtocol_Evaluation.ipynb
-- Analyzing the evaluaiton results to generate statistics which techniques work well
-    File: 2_videoToProtocol_results.ipynb
-
 #### Debugging MCP functionalities of agnets
 - Notebook for developing / debugging database functions:
     File: database_test.ipynb
 
+#### Workflow for converting videos or text to protocols
+- Notebook for developing / debugging the protocol generation pipeline within the ADK workflow
+    File: protocolGeneration.ipynb
+
 #### Workflow for generatig laboratory notes from videos:
-- Debugging notebook for video analysis within the ADK workflow
+- Notebook for developing / debugging the lab note generation pipeline within the ADK workflow
     File: videoToLabNotes_adk_workflow.ipynb
 
 ---

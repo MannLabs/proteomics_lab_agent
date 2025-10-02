@@ -16,11 +16,11 @@ TEST_THRESHOLD = 0.5
 
 def setup_logging() -> Path:
     """Setup logging for lab note evaluation."""
-    log_dir = Path("./lab_note_eval_logs")
+    log_dir = Path("./eval_logs")
     log_dir.mkdir(exist_ok=True)
 
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-    log_file = log_dir / f"lab_note_eval_{timestamp}.log"
+    log_file = log_dir / f"eval_{timestamp}.log"
 
     logging.basicConfig(
         level=logging.INFO,
@@ -39,7 +39,7 @@ async def test_lab_note_standalone_evaluation() -> None:
     logger.info(f"Starting standalone lab note evaluation. Logs: {log_file}")
 
     try:
-        # output_dir = "./eval_lab_note_results/result_20250804_095234"
+        # output_dir = "./eval_lab_note_results/result_20250815_112915"
         output_dir = f"./eval_lab_note_results/result_{timestamp}"
         results = await evaluate_lab_notes(
             csv_file="benchmark_data.csv", num_runs=1, output_dir=output_dir

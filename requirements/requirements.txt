@@ -3,3 +3,4 @@
 google-adk==1.0.0
 mcp==1.9.1
 google-cloud-aiplatform[evaluation]
+ffmpeg-python
