@@ -391,7 +391,7 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
         try:
             video_duration = float(duration_value)
         except (ValueError, TypeError):
-            video_duration = None
+            video_duration = np.nan
 
         if item.get("protocol_type") is not None:
             timing_data.append(

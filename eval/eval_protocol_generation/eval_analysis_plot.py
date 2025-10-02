@@ -206,9 +206,7 @@ class TimingVisualizer:
         plt.style.use("default")
 
         with plt.rc_context(self.PLOT_STYLE):
-            fig, (ax1, ax2, ax3) = plt.subplots(
-                1, 3, figsize=(24, 7)
-            )  # Increased figure size for 3 plots
+            fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(24, 7))
             fig.patch.set_facecolor("white")
 
             self._create_boxplot(ax1, "generate_time", "Generation Times")
