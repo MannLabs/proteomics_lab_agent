@@ -2,26 +2,22 @@
 
 import logging
 
+from dotenv import load_dotenv
 from google.adk import Agent
-from google.adk.tools.mcp_tool.mcp_toolset import (
-    MCPToolset,
-    StdioConnectionParams,
-    StdioServerParameters,
-)
+from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerParams
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
 from proteomics_specialist.config import config
-from proteomics_specialist.sub_agents import utils
+from proteomics_specialist.sub_agents.enviroment_handling import get_env_var
 
 from . import prompt
+
+load_dotenv(".env.secrets")
 
 logger = logging.getLogger(__name__)
 
 try:
-    KRAKEN_PORT = utils.get_required_env("KRAKEN_PORT")
-    KRAKEN_HOST = utils.get_required_env("KRAKEN_HOST")
-    KRAKEN_USER = utils.get_required_env("KRAKEN_USER")
-    KRAKEN_PASSWORD = utils.get_required_env("KRAKEN_PASSWORD")
-    KRAKEN_MCP_IMAGE = utils.get_required_env("KRAKEN_MCP_IMAGE")
+    ALPHAKRAKEN_MCP_URL = get_env_var("ALPHAKRAKEN_MCP_URL")
 except ValueError:
     logger.exception("Configuration error occurred")
 
@@ -32,27 +28,9 @@ instrument_agent = Agent(
     instruction=prompt.KRAKEN_MCP_PROMPT,
     tools=[
         MCPToolset(
-            connection_params=StdioConnectionParams(
-                server_params=StdioServerParameters(
-                    command="docker",
-                    args=[
-                        "run",
-                        "-e",
-                        f"MONGO_PORT={KRAKEN_PORT}",
-                        "-e",
-                        f"MONGO_HOST={KRAKEN_HOST}",
-                        "-e",
-                        f"MONGO_USER={KRAKEN_USER}",
-                        "-e",
-                        f"MONGO_PASSWORD={KRAKEN_PASSWORD}",
-                        "--network",
-                        "host",
-                        "-i",
-                        "--rm",
-                        f"{KRAKEN_MCP_IMAGE}",
-                    ],
-                )
-            )
+            connection_params=StreamableHTTPServerParams(
+                url=ALPHAKRAKEN_MCP_URL,
+            ),
         )
     ],
 )

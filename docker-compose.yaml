@@ -1,0 +1,53 @@
+services:
+  ai_lab_agent:
+    container_name: python_lab_agent
+
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./.env
+      - ./.env.secrets
+    volumes:
+      - ${SERVICE_ACCOUNT_FILE:?error}:/env/service_account.json:ro # Service account auth file
+      # Mount all the persistent data stores to dedicated host files
+      - ./deployment_data/evalset/lab_note_generator.evalset.json:/app/proteomics_specialist/lab_note_generator.evalset.json
+      - ./deployment_data/evalset/protocol_finder.evalset.json:/app/proteomics_specialist/protocol_finder.evalset.json
+      - ./deployment_data/evalset/protocol_generator.evalset.json:/app/proteomics_specialist/protocol_generator.evalset.json
+      - ./deployment_data/evalset/question_agent.evalset.json:/app/proteomics_specialist/question_agent.evalset.json
+      - ./deployment_data/database.db:/app/proteomics_specialist/sub_agents/qc_memory_agent/database.db
+      - ${LOCAL_FOLDER_PATH:?error}:${LOCAL_FOLDER_PATH}:ro # This is a workaround since the videos are uploaded to the cloud with str path. Once ADK integrated video upload this can be changed.
+
+    ports:
+      - 8000:8000
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/env/service_account.json
+
+    depends_on:
+      - confluence_mcp
+      - alphakraken_mcp
+
+  confluence_mcp:
+      container_name: confluence_mcp
+      image: ghcr.io/sooperset/mcp-atlassian:latest
+      environment:
+        - CONFLUENCE_URL=${CONFLUENCE_URL}
+        - CONFLUENCE_USERNAME=${CONFLUENCE_USERNAME}
+        - CONFLUENCE_API_TOKEN=${CONFLUENCE_API_TOKEN}
+        - MCP_VERBOSE=true
+        - MCP_LOGGING_STDOUT=true
+        - ENABLED_TOOLS=confluence_search,confluence_get_page,confluence_get_page_children,confluence_get_labels,confluence_create_page,confluence_update_page,confluence_add_label
+        - CONFLUENCE_SPACES_FILTER=ProtocolMCP
+      command: "--transport streamable-http --port 9000 -v"
+      ports:
+        - 9000:9000
+  alphakraken_mcp:
+      container_name: alphakraken_mcp
+      image: mcpserver_http
+      environment:
+        - MONGO_PORT=${ALPHAKRAKEN_DB_PORT}
+        - MONGO_HOST=${ALPHAKRAKEN_DB_HOST}
+        - MONGO_USER=${ALPHAKRAKEN_DB_USER}
+        - MONGO_PASSWORD=${ALPHAKRAKEN_DB_PASSWORD}
+      ports:
+        - 8089:8089

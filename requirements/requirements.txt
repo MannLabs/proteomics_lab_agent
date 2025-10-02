@@ -1,6 +1,6 @@
 # google-generativeai==0.8.3
 # gradio==4.44.1
-google-adk==1.0.0
+google-adk==1.13.0
 mcp==1.9.1
 google-cloud-aiplatform[evaluation]
 ffmpeg-python

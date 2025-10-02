@@ -1,23 +1,6 @@
 """Prompts."""
 
-# ruff: noqa: RUF001
-EVALUATION_CRITERIA = """
-## Evaluation Criteria
-* Completeness: What is present in both protocols. What is present in the ground truth but missing from the AI-generated protocol. What is present in the AI-generated protocol but not in the ground truth
-* Technical Accuracy: The AI-generated protocol demonstrates scientific understanding by properly distinguishing between different techniques and equipment and using appropriate scientific terminology.
-* Logical Flow: The workflow maintains the chronological sequence of the procedure.
-* Safety: The appropriate identification and emphasis of critical cautions, warnings, and safety measures.
-* Formatting: The AI-generated protocol matches the formatting of the ground truth protocol.
-
-## Rating Rubric
-For each criterion, rate the AI-generated protocol on a scale of 1-5:
-
-5: (Very good). The AI-generated protocol demonstrates exceptional quality in this aspect, with no significant flaws or omissions. Fully meets or exceeds the ground truth protocol.
-4: (Good). The AI-generated protocol demonstrates strong quality in this aspect, with only minor shortcomings that don't significantly impact effectiveness. Closely aligns with the ground truth protocol.
-3: (Ok). The AI-generated protocol contains most essential elements but has noticeable differences from the ground truth protocol that might slightly impact its effectiveness.
-2: (Bad). The AI-generated protocol has significant deficiencies in multiple criteria from the ground truth, missing or wrongly displaying important information that would likely impact its effectiveness.
-1: (Very bad). The AI-generated protocol fails to meet minimum standards in this aspect, with fundamental flaws or critical omissions that render the content potentially unusable or unsafe.
-"""
+from proteomics_specialist.prompt import EVALUATION_CRITERIA
 
 
 def create_protocol_evaluation_prompt(gt_protocol: str, generated_protocol: str) -> str:

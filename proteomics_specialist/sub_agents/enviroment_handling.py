@@ -11,6 +11,14 @@ if TYPE_CHECKING:
     from proteomics_specialist.config import ResearchConfiguration
 
 
+def get_env_var(var_name: str) -> str:
+    """Validate that an environment variable is set and not empty."""
+    value = os.getenv(var_name)
+    if not value:
+        raise ValueError(f"{var_name} environment variable is not set")
+    return value
+
+
 class CloudResourceError(Exception):
     """Custom exception for cloud resource initialization failures."""
 

@@ -4,8 +4,7 @@ import os
 
 from dotenv import load_dotenv
 
-from eval.eval_protocol_generation.prompt import EVALUATION_CRITERIA
-
+# from eval.eval_protocol_generation.prompt import EVALUATION_CRITERIA
 from .sub_agents.lab_note_generator_agent.prompt import (
     CLASS_ERROR_CATEGORIES_PROMPT,
     SKILL_ERROR_CATEGORIES_PROMPT,
@@ -13,6 +12,25 @@ from .sub_agents.lab_note_generator_agent.prompt import (
 
 load_dotenv()
 local_folder_path = os.getenv("LOCAL_FOLDER_PATH")
+
+# ruff: noqa: RUF001
+EVALUATION_CRITERIA = """
+## Evaluation Criteria
+* Completeness: What is present in both protocols. What is present in the ground truth but missing from the AI-generated protocol. What is present in the AI-generated protocol but not in the ground truth
+* Technical Accuracy: The AI-generated protocol demonstrates scientific understanding by properly distinguishing between different techniques and equipment and using appropriate scientific terminology.
+* Logical Flow: The workflow maintains the chronological sequence of the procedure.
+* Safety: The appropriate identification and emphasis of critical cautions, warnings, and safety measures.
+* Formatting: The AI-generated protocol matches the formatting of the ground truth protocol.
+
+## Rating Rubric
+For each criterion, rate the AI-generated protocol on a scale of 1-5:
+
+5: (Very good). The AI-generated protocol demonstrates exceptional quality in this aspect, with no significant flaws or omissions. Fully meets or exceeds the ground truth protocol.
+4: (Good). The AI-generated protocol demonstrates strong quality in this aspect, with only minor shortcomings that don't significantly impact effectiveness. Closely aligns with the ground truth protocol.
+3: (Ok). The AI-generated protocol contains most essential elements but has noticeable differences from the ground truth protocol that might slightly impact its effectiveness.
+2: (Bad). The AI-generated protocol has significant deficiencies in multiple criteria from the ground truth, missing or wrongly displaying important information that would likely impact its effectiveness.
+1: (Very bad). The AI-generated protocol fails to meet minimum standards in this aspect, with fundamental flaws or critical omissions that render the content potentially unusable or unsafe.
+"""
 
 PROMPT = f"""
 # System Role:
@@ -23,7 +41,7 @@ You are an AI Research Assistant with a broad knowledge of proteomics. You provi
 - Minimize Clarification: Only ask clarifying questions if the user's intent is highly ambiguous and reasonable defaults cannot be inferred. Strive to act on the request using your best judgment.
 - Provide concise, direct answers based on tool output. Format information for easy readability.
 - If some information cannot be determined, ask for clarification.
-- If you cannot find a file path in any of the scenarios, ask the user if they saved the file at '{local_folder_path}' and specified the path in the prompt like this: '{local_folder_path}your_file_name.mp4'
+- If you cannot find a file path in any of the scenarios, ask the user to confirm that they saved the file at '{local_folder_path}' and specified the path in the prompt like this: '{local_folder_path}your_file_name.mp4'
 
 # Workflow:
 
@@ -44,7 +62,6 @@ Query matches when user asks about:
 Inform the user that you will now retrieve the latest QC analysis results for the specified instrument using AlphaKraken.
 **Action:** Invoke the instrument_agent/tool.
 **Input to Tool:** Provide the necessary instrument id (e.g. astral1, tims1).
-**Parameter:** Specify the desired max_age_in_days. Use a default timeframe, e.g., "in the last 7 days" or ask the user (e.g., in the last 14 days or in the last 30 days).
 **Expected Output from Tool:** A list of raw files and their analysis result metrics.
 **Presentation:** Present the extracted information clearly in the following format:
     * Raw file: [Raw file name]
@@ -70,7 +87,7 @@ When you were able to successfully extract analysis results, ask: "Would you pro
 │  - "I need help with the decision."
 │  - "What was a [good/bad] performance on [instrument id]?
     │
-    ├─ SUB-PATH B1: If the alphakraken query in step 1 required more than 7 days (e.g., 'Here are the QC runs for tims2 with the label 'DIAMA_HeLa' in the last 21 days')
+    ├─ SUB-PATH B1: If the alphakraken query in step 1 required more than 7 days (e.g., 'Here are the QC runs for tims2 with the label 'DIAMA_HeLa' in the last 14 days')
     │   1. Present the user with the QC analysis results of step 1.
     │   2. Proactively recommend to perform maintenance on this instrument.
     │   3. Continue with Step 4.
@@ -231,8 +248,8 @@ Inform the user that this analysis will take time.
 **Expected Output from Tool:** An analysis of the provide video content.
 
 #### STEP 2: Retrieving protocols from Confluence
-Wait until the video is analyzed. Then perform as a mendatory follow up:
-**Action:** Invoke the protocol agent/tool.
+Wait until the video is analyzed. Then perform as a mandatory follow up:
+**Action:** Invoke the lab_knowledge_agent/tool.
 **Input to Tool:** Get first the page titles and then the abstract of each page with the label "ai-protocol-nature-style" or "protocol-nature-style".
 **Expected Output from Tool:** The title and abstract of protocols on Confluence.
 
