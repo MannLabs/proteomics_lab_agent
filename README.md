@@ -22,7 +22,7 @@ The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.
 
 Much of a scientist's expertise is learned through hands-on practice, not from manuals. This "tacit knowledge" — the subtle variations in a protocol or troubleshooting instincts — is critical in technique-intensive fields like mass spectrometry-based proteomics, yet it is rarely documented. This challenge is amplified by high turnover in academic labs, which weakens reproducibility and makes cutting-edge science less accessible. We developed this AI agent to address these challenges by capturing and sharing this essential, practical expertise.
 
-The AI lab companion is a multimodal agentic AI framework that combines Mann Labs' proteomics expertise with Google's cloud infrastructure. The framework incorporates lab-specific knowledge through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services, integrated with local MCP servers.
+The proteomics lab agent is a multimodal agentic AI framework that combines Mann Labs' proteomics expertise with Google's cloud infrastructure. The framework incorporates lab-specific knowledge through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services, integrated with local MCP servers.
 
 ### Architecture
 
@@ -55,12 +55,12 @@ proteomics_lab_agent/
 proteomics_lab_agent/
 ├── eval/                          # Evaluation scripts and test conversion utilities
 ├── nbs/                           # Jupyter notebooks for tutorials and figures
-├── proteomics_lab_agent/         # Main agent package
+├── proteomics_lab_agent/          # Main agent package
 │   ├── __init__.py
 │   ├── agent.py                   # Root ADK agent orchestrating tools/subagents
 │   ├── prompt.py                  # Root agent prompt
 │   └── sub_agents/
-│       └── instrument_agent/     # Sub-agent module
+│       └── instrument_agent/      # Sub-agent module
 │           ├── __init__.py
 │           ├── agent.py           # Local MCP server integration
 │           └── prompt.py          # Subagent prompt
@@ -78,8 +78,8 @@ proteomics_lab_agent/
 ##### Google Cloud Infrastructure
 - **Component**: Google Cloud Project with Cloud Storage Bucket & Service account keys
 - **Purpose**:
-    - Generate LLM responses via API calls
-    - Store and serve video content during prompt processing
+    - Generates LLM responses via API calls
+    - Stores and serves video content during prompt processing
 - **Text Setup Instructions**: [Creating projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) & [Creating cloud storage buckets](https://cloud.google.com/storage/docs/creating-buckets) & [Creating service account keys](https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console)
 - **Video Setup Instructions**: [Video with guide: Step 2 & 3 beginning at 10:14](https://www.youtube.com/watch?v=bPtKnDIVEsg)
 - **Required Services**:
@@ -90,14 +90,14 @@ proteomics_lab_agent/
 
 ##### Knowledge Management System
 - **Component**: Confluence with lab_knowledge_agent
-- **Purpose**: Retrieve and save laboratory information
+- **Purpose**: Retrieves and saves laboratory information
 - **Setup Instructions**: [Getting started with confluence spaces](https://www.atlassian.com/software/confluence/resources/guides/get-started/set-up#learn-about-spaces)
 - **Configuration Notes**:
     1. Create a dedicated Confluence space for lab_knowledge_agent
     2. Create two parent pages:
         - "Protocols" page
         - "Lab Notes" page
-    3. Record the following for configuration: Space Key, Protocols Page ID, Lab Notes Page ID
+    3. Record the following data for configuration: Space Key, Protocols Page ID, Lab Notes Page ID
 
 ##### Proteomics Analysis Platform
 - **Component**: Alphakraken
@@ -124,7 +124,7 @@ Docker allows applications to be packaged and run in isolated environments calle
 ```bash
 docker --version
 ```
-4.  **Install the Alphakraken MCP server**: Clone the alphakraken repository:
+4.  **Install the Alphakraken MCP server**: Clone the Alphakraken repository:
 ```bash
 git clone https://github.com/MannLabs/alphakraken.git
 cd directory/of/alphakraken
@@ -192,8 +192,6 @@ You can run the agent locally using the `adk` command in your terminal:
 
 * Run docker containers for mcp servers of alphakraken and confluence:
 - ```bash
-    ALPHAKRAKEN_MCP_URL="http://127.0.0.1:8089/mcp" \
-    CONFLUENCE_MCP_URL="http://127.0.0.1:9000/mcp" \
     docker compose --env-file ./.env.secrets --env-file ./.env up confluence_mcp alphakraken_mcp
     ```
     you can add `-d` flag to detach the containers from the shell session
