@@ -136,7 +136,7 @@ def generate_lab_notes(
         response = client.models.generate_content(
             model=env_vars["model"],
             contents=collected_content,
-            config=types.GenerateContentConfig(temperature=env_vars["temperature"]),
+            config=types.GenerateContentConfig(temperature=0.2),
         )
         logging.info(f"Metadata: {video['metadata']}")
         return {

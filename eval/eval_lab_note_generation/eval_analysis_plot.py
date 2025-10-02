@@ -6,6 +6,7 @@ based on the evaluation data from lab note generation experiments.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.lines import Line2D
+
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 FIGURE_SIZE = (10, 6)
 BAR_HEIGHT = 0.8
@@ -422,10 +427,87 @@ def create_timing_visualization(df_timing: pd.DataFrame, output_dir: Path) -> No
         ax1.set_ylim(bottom=0, top=max_time * 1.1)
 
         ax2.scatter(df_timing["generate_time"], df_timing["generate_cost"])
-        ax2.set_xlabel("Generation Time (s)")
-        ax2.set_ylabel("Costs per Generation ($)")
-        ax2.set_title("Generation Times & Costs")
+        ax2.set_xlabel("generation time (s)")
+        ax2.set_ylabel("costs per generation ($)")
 
         plt.tight_layout()
         plt.savefig(output_dir / "generation_time_statistics.png", dpi=300)
+        plt.savefig(output_dir / "generation_time_statistics.pdf", dpi=300)
         plt.close(fig)
+
+
+def plot_metrics(dict_all_metric: dict, output_dir: Path) -> None:
+    """Generates and saves a bar plot summarizing key classification metrics.
+
+    This function aggregates metric scores across multiple experiments by
+    calculating the mean and standard deviation for Accuracy, Recall, and
+    Precision. It then visualizes these statistics in a bar chart with
+    error bars and saves the plot to the specified directory as both PNG
+    and PDF files.
+
+    Parameters
+    ----------
+    dict_all_metric : dict
+        A nested dictionary of metric scores. Outer keys should be experiment
+        identifiers (e.g., 'replicate_1'), and the inner dictionaries should
+        map metric names to their scores. A key named 'All' will be ignored.
+    output_dir : Path
+        The directory where the plot images ('experiment_metrics_with_error_bars.png'
+        and '.pdf') will be saved.
+
+    Returns
+    -------
+    None
+        This function saves the plot to disk and does not return any value.
+
+    """
+    filtered_data = {k: v for k, v in dict_all_metric.items() if k != "All"}
+    df_filtered_for_replicate = pd.DataFrame(filtered_data).T
+    df_subset_columns = df_filtered_for_replicate[
+        [
+            "Accuracy",
+            "Recall (Sensitivity, True Positive Rate)",
+            "Precision (Positive Predictive Value)",
+        ]
+    ]
+
+    means = df_subset_columns.mean()
+    std_errors = df_subset_columns.std()
+
+    fig, ax = plt.subplots(figsize=(15, 8))
+    x_pos = np.arange(len(means))
+    bars = ax.bar(
+        x_pos,
+        means,
+        yerr=std_errors,
+        capsize=5,
+        alpha=0.7,
+        color="steelblue",
+        edgecolor="black",
+        linewidth=1.2,
+    )
+
+    ax.set_xlabel("Metrics", fontsize=12, fontweight="bold")
+    ax.set_ylabel("Values", fontsize=12, fontweight="bold")
+
+    ax.set_xticks(x_pos)
+    ax.set_xticklabels(means.index, rotation=45, ha="right", fontsize=10)
+
+    ax.grid(visible=True, alpha=0.3, linestyle="--")
+
+    for bar, mean_val, std_val in zip(bars, means, std_errors):
+        height = bar.get_height()
+        error_offset = std_val if pd.notna(std_val) else 0
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.0,
+            height + error_offset + 0.01,
+            f"{mean_val:.3f}",
+            ha="center",
+            va="bottom",
+            fontsize=8,
+        )
+
+    plt.tight_layout()
+    plt.savefig(output_dir / "experiment_metrics_with_error_bars.png", dpi=300)
+    plt.savefig(output_dir / "experiment_metrics_with_error_bars.pdf", dpi=300)
+    plt.close(fig)

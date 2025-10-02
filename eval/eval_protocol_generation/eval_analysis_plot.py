@@ -12,10 +12,10 @@ from typing import TYPE_CHECKING, ClassVar
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 
 if TYPE_CHECKING:
-    import pandas as pd
     from matplotlib.axes import Axes
 
 LABEL_LENGTH = 20
@@ -29,7 +29,8 @@ class TimingVisualizer:
     CUSTOM_COLORS: ClassVar[list[str]] = ["grey", "#43215B", "#1A948E", "#3D4F8C"]
     PLOT_STYLE: ClassVar[dict[str, int]] = {
         "font.size": 12,
-        "font.family": "sans-serif",
+        "font.family": "Arial",
+        "pdf.fonttype": 42,
         "axes.spines.top": False,
         "axes.spines.right": False,
         "axes.grid": True,
@@ -49,6 +50,15 @@ class TimingVisualizer:
 
         """
         self.df_filtered = df_timing.copy()
+
+        for col in ["generate_time", "video_duration", "generate_cost"]:
+            if col in self.df_filtered.columns:
+                self.df_filtered[col] = pd.to_numeric(
+                    self.df_filtered[col], errors="coerce"
+                )
+
+        self.df_filtered.dropna(subset=["generate_time", "video_duration"])
+
         self.group_by = group_by
         self.group_column, self.unique_groups = self._setup_grouping()
         self.colors = self._get_colors()
@@ -82,12 +92,12 @@ class TimingVisualizer:
             return self.CUSTOM_COLORS[: len(self.unique_groups)]
         return plt.cm.tab20(np.linspace(0, 1, len(self.unique_groups)))
 
-    def _create_boxplot(self, ax: Axes) -> None:
-        """Create the boxplot for generation times."""
+    def _create_boxplot(self, ax: Axes, column_name: str, title: str) -> None:
+        """Create the boxplot for a given data column."""
         if self.group_column and self.unique_groups:
             box_data = [
                 self.df_filtered[self.df_filtered[self.group_column] == group][
-                    "generate_time"
+                    column_name
                 ].to_numpy()
                 for group in self.unique_groups
             ]
@@ -113,16 +123,16 @@ class TimingVisualizer:
             if any(len(label.get_text()) > LABEL_LENGTH for label in labels):
                 ax.set_xticklabels(labels, rotation=45, ha="right")
         else:
-            bp = ax.boxplot(self.df_filtered["generate_time"], patch_artist=True)
+            bp = ax.boxplot(self.df_filtered[column_name], patch_artist=True)
             bp["boxes"][0].set_facecolor(self.colors[0])
             bp["boxes"][0].set_alpha(0.7)
 
         ax.set_ylabel("Time (seconds)", fontweight="bold", fontsize=13)
-        ax.set_title("Generation Times", fontweight="bold", fontsize=14, pad=20)
+        ax.set_title(title, fontweight="bold", fontsize=14, pad=20)
 
-        if not self.df_filtered["generate_time"].empty:
-            max_time = self.df_filtered["generate_time"].max()
-            ax.set_ylim(bottom=0, top=max_time * 1.15)
+        if not self.df_filtered[column_name].empty:
+            max_val = self.df_filtered[column_name].max()
+            ax.set_ylim(bottom=0, top=max_val * 1.15)
 
     def _create_scatterplot(self, ax: Axes) -> None:
         """Create the scatterplot for generation times vs costs."""
@@ -135,7 +145,7 @@ class TimingVisualizer:
                     color=self.colors[i],
                     label=group,
                     alpha=0.8,
-                    s=60,
+                    s=200,
                     edgecolors="white",
                     linewidth=0.8,
                 )
@@ -173,10 +183,11 @@ class TimingVisualizer:
         ax.set_ylabel("Cost per Generation ($)", fontweight="bold", fontsize=13)
         ax.set_title("Generation Times & Costs", fontweight="bold", fontsize=14, pad=20)
 
-    def _style_axes(self, ax1: Axes, ax2: Axes) -> None:
-        """Apply styling to both axes."""
+    def _style_axes(self, ax1: Axes, ax2: Axes, ax3: Axes) -> None:
+        """Apply styling to all three axes."""
         ax1.set_facecolor("#fafafa")
         ax2.set_facecolor("#fafafa")
+        ax3.set_facecolor("#fafafa")
 
     def _get_filename(self) -> str:
         """Generate filename for the saved plot."""
@@ -195,17 +206,19 @@ class TimingVisualizer:
         plt.style.use("default")
 
         with plt.rc_context(self.PLOT_STYLE):
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 7))
+            fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(24, 7))
             fig.patch.set_facecolor("white")
 
-            self._create_boxplot(ax1)
-            self._create_scatterplot(ax2)
-            self._style_axes(ax1, ax2)
+            self._create_boxplot(ax1, "generate_time", "Generation Times")
+            self._create_boxplot(ax2, "video_duration", "Video Duration")
+            self._create_scatterplot(ax3)
+            self._style_axes(ax1, ax2, ax3)
 
             plt.tight_layout()
 
             filename = self._get_filename()
             plt.savefig(output_dir / f"{filename}.png", dpi=300, bbox_inches="tight")
+            plt.savefig(output_dir / f"{filename}.pdf", dpi=300, bbox_inches="tight")
             plt.close(fig)
 
 
@@ -236,7 +249,6 @@ def plot_line_with_error_bars(
         for config in configs
     ]
 
-    # Line plot with error bars
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.errorbar(
         range(len(configs)),
@@ -283,6 +295,11 @@ def plot_line_with_error_bars(
         dpi=300,
         bbox_inches="tight",
     )
+    plt.savefig(
+        output_dir / f"line_plot_with_error_bars_{column_value}.pdf",
+        dpi=300,
+        bbox_inches="tight",
+    )
     plt.close(fig)
 
 
@@ -303,7 +320,6 @@ def plot_seaborn_individual(
         List of metrics to plot. If None, uses default metrics.
 
     """
-    logging.info(f"here: {df['tested_function_name']}")
     if metrics is None:
         metrics = [
             "Overall",
@@ -314,7 +330,6 @@ def plot_seaborn_individual(
             "Formatting",
         ]
 
-    # Melt the dataframe to long format for easier plotting
     id_vars = [
         "inputs_experiment_name",
         "replicate_num",
@@ -332,7 +347,6 @@ def plot_seaborn_individual(
 
         metric_data = df_melted[df_melted["metric"] == metric]
 
-        # Create a categorical x-axis mapping
         unique_functions = df["tested_function_name"].cat.categories.tolist()
         function_mapping = {func: i for i, func in enumerate(unique_functions)}
         metric_data = metric_data.copy()
@@ -349,9 +363,9 @@ def plot_seaborn_individual(
             marker="o",
             markersize=8,
             linewidth=3,
-            errorbar=("ci", 95),  # 95% bootstrap confidence intervals
+            errorbar=("ci", 95),
             n_boot=1000,
-        )  # Number of bootstrap samples
+        )
 
         ax.set_title(
             f"{metric} Performance by Tested Function (Bootstrap 95% CI)",
@@ -370,6 +384,7 @@ def plot_seaborn_individual(
         plt.tight_layout()
 
         filename = f"{output_dir}/Ribbon_plot_{metric}.png"
+        filename = f"{output_dir}/Ribbon_plot_{metric}.pdf"
         fig.savefig(filename, dpi=300, bbox_inches="tight")
         plt.close()
 
@@ -377,12 +392,10 @@ def plot_seaborn_individual(
 def compare_entries_boxplot(
     df: pd.DataFrame, metric: str, output_dir: str = "./"
 ) -> None:
-    """Create box plots comparing all entries using matplotlib."""
-    """
-    Create box plots comparing all replicate runs using matplotlib.
+    """Create box plots comparing all replicate runs using matplotlib.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     df : DataFrame
         DataFrame containing the data to plot.
     metric : str
@@ -391,7 +404,6 @@ def compare_entries_boxplot(
         directory to save plots
 
     """
-
     entry_counts = df["inputs_experiment_name"].value_counts()
     entries_with_pairs = entry_counts[entry_counts > 1].index
     df_paired = df[df["inputs_experiment_name"].isin(entries_with_pairs)]
@@ -400,7 +412,7 @@ def compare_entries_boxplot(
         logging.info("No entries with multiple measurements found!")
         return
 
-    plt.figure(figsize=(14, 8))
+    fig, ax = plt.subplots(figsize=(14, 8))
 
     experiment_names = df_paired["inputs_experiment_name"].unique()
     data_for_boxplot = [
@@ -408,7 +420,7 @@ def compare_entries_boxplot(
         for name in experiment_names
     ]
 
-    plt.boxplot(
+    ax.boxplot(
         data_for_boxplot,
         tick_labels=experiment_names,
         patch_artist=True,
@@ -417,16 +429,19 @@ def compare_entries_boxplot(
 
     for i, name in enumerate(experiment_names):
         values = df_paired[df_paired["inputs_experiment_name"] == name][metric]
-        x_positions = [i + 1] * len(values)  # matplotlib boxplot uses 1-based indexing
-        plt.scatter(x_positions, values, color="steelblue", s=64, alpha=0.7, zorder=3)
+        x_positions = [i + 1] * len(values)
+        ax.scatter(x_positions, values, color="steelblue", s=64, alpha=0.7, zorder=3)
 
-    plt.xlabel("Protocol Entry", fontsize=12)
-    plt.ylabel(metric, fontsize=12)
-    plt.xticks(rotation=45, ha="right")
-    plt.grid(visible=True, alpha=0.3, axis="y")
+    ax.set_xlabel("Protocol Entry", fontsize=12)
+    ax.set_ylabel(metric, fontsize=12)
+    ax.tick_params(axis="x", rotation=45)
+    ax.grid(visible=True, alpha=0.3, axis="y")
+
+    ax.set_ylim(bottom=0)
     plt.tight_layout()
 
     filename = f"{output_dir}_{metric}.png"
+    filename = f"{output_dir}_{metric}.pdf"
     plt.savefig(filename, dpi=300, bbox_inches="tight")
     plt.close()
 
@@ -475,7 +490,6 @@ def create_stacked_bar_chart(
         for j, activity in enumerate(activities):
             value = category_data[activity]
             if value > 0:
-                # Fix: Define label before using it
                 if (category, activity) not in labeled_combinations:
                     label = activity
                     labeled_combinations.add((category, activity))
@@ -506,7 +520,7 @@ def create_stacked_bar_chart(
     handles, labels = ax.get_legend_handles_labels()
     unique_handles = []
     unique_labels = []
-    for handle, label in zip(handles, labels):  # More descriptive variable names
+    for handle, label in zip(handles, labels):
         if label:
             unique_handles.append(handle)
             unique_labels.append(label)
@@ -526,5 +540,100 @@ def create_stacked_bar_chart(
 
     plt.tight_layout()
     filename = f"{output_dir}/benchmark_dataset.png"
+    filename = f"{output_dir}/benchmark_dataset.pdf"
     plt.savefig(filename, dpi=300, bbox_inches="tight")
     plt.close()
+
+
+def plot_mean_scores_by_function(
+    df: pd.DataFrame,
+    output_dir: Path,
+    group_by_col: str = "tested_function_name",
+) -> None:
+    """Create a bar chart of mean scores for each unique function.
+
+    This function groups the dataframe by a specified column (e.g., function name),
+    and for each group, it generates a bar chart showing the mean and standard
+    deviation of various score metrics.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The input DataFrame containing the evaluation results.
+    output_dir : Path
+        The directory where the plot images will be saved.
+    group_by_col : str, default "tested_function_name"
+        The column name to group by for generating individual plots.
+
+    """
+    score_columns = [
+        "Completeness",
+        "Technical Accuracy",
+        "Logical Flow",
+        "Safety",
+        "Formatting",
+        "Overall",
+    ]
+
+    function_names = df[group_by_col].unique()
+
+    for func_name in function_names:
+        df_func = df[df[group_by_col] == func_name]
+
+        if df_func.empty:
+            logging.warning(f"No data found for function '{func_name}'; skipping plot.")
+            continue
+
+        means = [df_func[col].mean() for col in score_columns]
+        stds = [df_func[col].std() for col in score_columns]
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+
+        bars = ax.bar(
+            range(len(score_columns)),
+            means,
+            yerr=stds,
+            capsize=5,
+            alpha=0.7,
+            color="#3D4F8C",
+        )
+
+        for bar, mean, std in zip(bars, means, stds):
+            if pd.notna(mean) and pd.notna(std):
+                ax.text(
+                    bar.get_x() + bar.get_width() / 2,
+                    bar.get_height() + std + 0.02,
+                    f"{mean:.2f}±{std:.2f}",
+                    ha="center",
+                    va="bottom",
+                    fontsize=10,
+                    fontweight="bold",
+                )
+
+        ax.set_title(
+            f"Mean Scores for: {func_name}", fontsize=16, fontweight="bold", pad=20
+        )
+        ax.set_xticks(range(len(score_columns)))
+        ax.set_xticklabels(score_columns, rotation=45, ha="right")
+        ax.set_ylabel("Score", fontsize=12)
+        ax.grid(visible=True, alpha=0.3, axis="y")
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+
+        if not all(pd.isna(m) for m in means):
+            ax.set_ylim(
+                0,
+                max(m for m in means if pd.notna(m))
+                + max(s for s in stds if pd.notna(s))
+                + 0.3,
+            )
+
+        plt.tight_layout()
+        sanitized_func_name = "".join(
+            c for c in func_name if c.isalnum() or c in ("_", "-")
+        ).rstrip()
+        filename = output_dir / f"mean_scores_{sanitized_func_name}.png"
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
+        filename = output_dir / f"mean_scores_{sanitized_func_name}.pdf"
+        plt.savefig(filename, dpi=300, bbox_inches="tight")
+        plt.close(fig)

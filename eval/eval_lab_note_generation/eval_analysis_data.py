@@ -9,27 +9,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-MEAN_COLS = [
-    "Classification Accuracy",
-    "Accuracy",
-    "Precision (Positive Predictive Value)",
-    "Recall (Sensitivity, True Positive Rate)",
-    "Specificity (True Negative Rate)",
-    "F1 Score",
-    "Balanced Accuracy",
-    "False Positive Rate",
-    "False Negative Rate",
-    "False Discovery Rate",
-    "False Omission Rate",
-    "Positive Predictive Value",
-    "Negative Predictive Value",
-]
 
 PERFORMANCE_COLS = [
     "inputs_experiment_name",
@@ -42,7 +27,6 @@ PERFORMANCE_COLS = [
     "Errors evaluated",
     "Total errors analyzed",
     "Correctly classified errors",
-    *MEAN_COLS,
 ]
 
 SKILL_TYPES = [
@@ -167,15 +151,12 @@ def process_evaluation_data(json_data: list[dict[str, Any]]) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     num_rep = len(df["replicate_num"].unique())
 
-    sum_cols = [col for col in df.columns if col not in MEAN_COLS]
-    sum_cols.remove("inputs_experiment_name")
-    sum_cols.remove("replicate_num")
+    sum_cols = df.columns.drop(["inputs_experiment_name", "replicate_num"])
 
     summary_row_data = {
         "inputs_experiment_name": ["Summary"],
         "replicate_num": ["All"],
         **{col: [df[col].sum() / num_rep] for col in sum_cols},
-        **{col: [df[col].mean()] for col in MEAN_COLS},
     }
 
     summary_row = pd.DataFrame(summary_row_data)
@@ -406,6 +387,12 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
         else:
             cost = calculate_gemini_cost(usage_metadata)
 
+        duration_value = item.get("metadata", {}).get("duration")
+        try:
+            video_duration = float(duration_value)
+        except (ValueError, TypeError):
+            video_duration = np.nan
+
         if item.get("protocol_type") is not None:
             timing_data.append(
                 {
@@ -415,6 +402,7 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
                     "input_type": item["input_type"],
                     "model": item["model"],
                     "generate_time": item["generation_time_seconds"],
+                    "video_duration": video_duration,
                     "generate_cost": cost["total_cost"],
                 }
             )
@@ -423,6 +411,7 @@ def analyze_timing_and_costs(json_data: list[dict[str, Any]]) -> pd.DataFrame:
                 {
                     "experiment_name": item["eval_set"] + str(item["run"]),
                     "generate_time": item["generation_time_seconds"],
+                    "video_duration": video_duration,
                     "generate_cost": cost["total_cost"],
                 }
             )
@@ -454,3 +443,97 @@ def generate_timing_statistics(df_timing: pd.DataFrame) -> dict[str, dict[str, f
             "max": df_timing["generate_time"].max(),
         },
     }
+
+
+def calculate_metrics(df: pd.DataFrame) -> dict[str, float]:
+    """Computes a set of binary classification metrics from evaluation results.
+
+    This function calculates various performance metrics based on the fundamental
+    counts of true/false positives and negatives. It requires a DataFrame
+    containing specific columns for these counts.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A DataFrame containing evaluation results. It must include the
+        following columns with summed counts:
+        - 'True Positives (TP) = Correct error identifications'
+        - 'True Negatives (TN) = Correct no error identifications'
+        - 'False Positives (fp)'
+        - 'False Negatives (fn)'
+        - 'Correctly classified errors'
+
+    Returns
+    -------
+    dict[str, float]
+        A dictionary where keys are the names of metrics (e.g., 'Accuracy',
+        'F1 Score') and values are their calculated scores. If a metric cannot
+        be calculated (e.g., due to division by zero), its value will be `np.nan`.
+
+    """
+    tp = df["True Positives (TP) = Correct error identifications"].sum()
+    tn = df["True Negatives (TN) = Correct no error identifications"].sum()
+    fp = df["False Positives (fp)"].sum()
+    fn = df["False Negatives (fn)"].sum()
+
+    precision = tp / (tp + fp) if (tp + fp) > 0 else np.nan
+    recall = tp / (tp + fn) if (tp + fn) > 0 else np.nan
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else np.nan
+    accuracy = (tp + tn) / (tp + tn + fp + fn) if (tp + tn + fp + fn) > 0 else np.nan
+    f1_score = (
+        2 * (precision * recall) / (precision + recall)
+        if (precision + recall) > 0
+        else np.nan
+    )
+    balanced_accuracy = (recall + specificity) / 2
+    classification_accuracy = (
+        df["Correctly classified errors"].sum() / tp if tp > 0 else np.nan
+    )
+
+    return {
+        "Classification Accuracy": classification_accuracy,
+        "Accuracy": accuracy,
+        "Precision (Positive Predictive Value)": precision,
+        "Recall (Sensitivity, True Positive Rate)": recall,
+        "Specificity (True Negative Rate)": specificity,
+        "F1 Score": f1_score,
+        "Balanced Accuracy": balanced_accuracy,
+        "False Positive Rate": fp / (fp + tn) if (fp + tn) > 0 else np.nan,
+        "False Negative Rate": fn / (tp + fn) if (tp + fn) > 0 else np.nan,
+        "False Discovery Rate": fp / (tp + fp) if (tp + fp) > 0 else np.nan,
+        "False Omission Rate": fn / (tn + fn) if (tn + fn) > 0 else np.nan,
+        "Positive Predictive Value": precision,
+        "Negative Predictive Value": tn / (tn + fn) if (tn + fn) > 0 else np.nan,
+    }
+
+
+def calculate_metrics_per_replicate(df: pd.DataFrame) -> dict[str, dict[str, float]]:
+    """Calculates classification metrics for each experimental replicate.
+
+    This function iterates through a DataFrame, groups data by the 'replicate_num'
+    column, and applies the `calculate_metrics` function to each group. The result
+    is a nested dictionary containing the full set of metrics for each replicate.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame containing results for all replicates. It must include a
+        'replicate_num' column to distinguish between experiments, as well as
+        all columns required by the `calculate_metrics` function.
+
+    Returns
+    -------
+    dict[str, dict[str, float]]
+        A nested dictionary where outer keys are the replicate numbers from the
+        'replicate_num' column. The corresponding values are the metric
+        dictionaries produced by `calculate_metrics` for that replicate.
+
+    """
+    dict_all_metric = {}
+    replicates = [str(r) for r in df["replicate_num"].unique()]
+
+    for replicate in sorted(replicates):
+        df_subset_replicate = df[df["replicate_num"].astype(str) == replicate]
+        dict_metric = calculate_metrics(df_subset_replicate)
+        dict_all_metric[replicate] = dict_metric
+    return dict_all_metric
