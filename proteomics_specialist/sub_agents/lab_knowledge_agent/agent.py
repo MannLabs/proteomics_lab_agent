@@ -9,7 +9,7 @@ from google.adk.tools.mcp_tool.mcp_session_manager import StreamableHTTPServerPa
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
 
 from proteomics_specialist.config import config
-from proteomics_specialist.sub_agents.enviroment_handling import validate_env_var
+from proteomics_specialist.sub_agents.enviroment_handling import get_env_var
 
 from . import prompt
 
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 load_dotenv(".env.secrets")
 
 try:
-    CONFLUENCE_MCP_URL = validate_env_var("CONFLUENCE_MCP_URL")
+    CONFLUENCE_MCP_URL = get_env_var("CONFLUENCE_MCP_URL")
 except ValueError:
     logger.exception("Configuration error occurred")
 
