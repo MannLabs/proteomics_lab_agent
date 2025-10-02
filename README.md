@@ -129,7 +129,7 @@ docker --version
 git clone https://github.com/MannLabs/alphakraken.git
 cd directory/of/alphakraken
 git checkout main
-docker build -t mcpserver_http -f mcp-server/Dockerfile .
+docker build -t mcpserver -f mcp_server/Dockerfile .
 # test that the mcpserver works
 docker run -p 8089:8089 mcpserver_http
 ```

@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import sqlite3
 import traceback
 from pathlib import Path
 
@@ -34,6 +35,16 @@ logger = logging.getLogger(__name__)
 # --- MCP Server Setup ---
 logger.info("Creating MCP Server instance for SQLite DB...")
 app = Server("sqlite-db-mcp-server")
+
+try:
+    logger.info("Testing database connection on startup...")
+    db_path = Path(__file__).parent / "database.db"
+    conn = sqlite3.connect(db_path)
+    conn.close()
+    logger.info("Database connection test successful.")
+except sqlite3.Error as e:
+    logger.critical(f"FATAL: Database connection failed on startup: {e}", exc_info=True)
+    raise
 
 # Wrap database utility functions as ADK FunctionTools
 ADK_DB_TOOLS = {

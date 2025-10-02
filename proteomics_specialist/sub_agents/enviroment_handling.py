@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from proteomics_specialist.config import ResearchConfiguration
 
 
-def validate_env_var(var_name: str) -> str:
+def get_env_var(var_name: str) -> str:
     """Validate that an environment variable is set and not empty."""
     value = os.getenv(var_name)
     if not value:
