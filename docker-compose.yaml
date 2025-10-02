@@ -5,6 +5,9 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    env_file:
+      - ./.env
+      - ./.env.secrets
     volumes:
       - ${SERVICE_ACCOUNT_FILE:?error}:/env/service_account.json:ro # Service account auth file
       # Mount all the persistent data stores to dedicated host files
@@ -17,9 +20,6 @@ services:
 
     ports:
       - 8000:8000
-    env_file:
-      - ./.env
-      - ./.env.secrets
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/env/service_account.json
 
@@ -45,9 +45,9 @@ services:
       container_name: alphakraken_mcp
       image: mcpserver_http
       environment:
-        - MONGO_PORT=${KRAKEN_PORT}
-        - MONGO_HOST=${KRAKEN_HOST}
-        - MONGO_USER=${KRAKEN_USER}
-        - MONGO_PASSWORD=${KRAKEN_PASSWORD}
+        - MONGO_PORT=${ALPHAKRAKEN_DB_PORT}
+        - MONGO_HOST=${ALPHAKRAKEN_DB_HOST}
+        - MONGO_USER=${ALPHAKRAKEN_DB_USER}
+        - MONGO_PASSWORD=${ALPHAKRAKEN_DB_PASSWORD}
       ports:
         - 8089:8089
