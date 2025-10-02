@@ -6,14 +6,14 @@ services:
       context: .
       dockerfile: ./Dockerfile
     volumes:
-      - ${SERVICE_ACCOUNT_FILE}:/env/service_account.json:ro # Service account auth file
+      - ${SERVICE_ACCOUNT_FILE:?error}:/env/service_account.json:ro # Service account auth file
       # Mount all the persistent data stores to dedicated host files
       - ./deployment_data/evalset/lab_note_generator.evalset.json:/app/proteomics_specialist/lab_note_generator.evalset.json
       - ./deployment_data/evalset/protocol_finder.evalset.json:/app/proteomics_specialist/protocol_finder.evalset.json
       - ./deployment_data/evalset/protocol_generator.evalset.json:/app/proteomics_specialist/protocol_generator.evalset.json
       - ./deployment_data/evalset/question_agent.evalset.json:/app/proteomics_specialist/question_agent.evalset.json
       - ./deployment_data/database.db:/app/proteomics_specialist/sub_agents/qc_memory_agent/database.db
-      - ${LOCAL_FOLDER_PATH}:${LOCAL_FOLDER_PATH}:ro # This is a workaround since the videos are uploaded to the cloud with str path. Once ADK integrated video upload this can be changed.
+      - ${LOCAL_FOLDER_PATH:?error}:${LOCAL_FOLDER_PATH}:ro # This is a workaround since the videos are uploaded to the cloud with str path. Once ADK integrated video upload this can be changed.
 
     ports:
       - 8000:8000
