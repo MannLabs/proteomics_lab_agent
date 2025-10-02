@@ -130,7 +130,9 @@ def get_table_schema(table_name: str) -> dict:
 
         columns = [{"name": row["name"], "type": row["type"]} for row in schema_info]
         logger.info(
-            f"Successfully retrieved schema for table '{table_name}' with {len(columns)} columns"
+            "Successfully retrieved schema for table '%s' with %d columns",
+            table_name,
+            len(columns),
         )
     except DatabaseError as e:
         logger.exception(f"Database error getting schema for '{table_name}'.")
@@ -455,6 +457,13 @@ def _validate_raw_files(raw_files: list) -> dict | None:
                 "message": f"Raw file at index {i} must be a dictionary",
                 "error_code": "VALIDATION_ERROR",
             }
+        if isinstance(file_data["gradient"], str):
+            try:
+                file_data["gradient"] = float(file_data["gradient"])
+            except ValueError as e:
+                raise ValidationError(
+                    f"Invalid gradient value: {file_data['gradient']}"
+                ) from e
 
         required_file_fields = ["file_name", "instrument_id", "gradient"]
         missing_file_fields = [

@@ -62,7 +62,7 @@ async def test_lab_note_standalone_evaluation() -> None:
         logger.info(f"Accuracy: {accuracy}")
         logger.info(f"Precision: {precision}")
         logger.info(f"Recall: {recall}")
-        logger.info(f"Recall: {f1_score}")
+        logger.info(f"F1 Score: {f1_score}")
 
         assert accuracy >= TEST_THRESHOLD, (
             f"Accuracy {accuracy:.3f} is below minimum threshold of {TEST_THRESHOLD}"
