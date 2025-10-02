@@ -1,6 +1,6 @@
 # proteomics_specialist
 
-The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_specialist (also called AI Proteomics Advisor), a multimodal, agentic AI framework that aims to democratizes mass spectrometry-based proteomics through personalized laboratory assistance and automated documentation. To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_specialist).
+The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_specialist, a multimodal, agentic AI framework that captures and shares practical expertise by linking written instructions to real-world laboratory work. It uses video analysis to automate documentation and provide personalized guidance. We applied this agent to our field of mass spectrometry (MS)-based proteomics. To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_specialist).
 
 * [**About**](#about)
 * [**License**](#license)
@@ -20,16 +20,24 @@ The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.
 ---
 ## About
 
-Mass spectrometry-based proteomics has advanced significantly in the last decade, yet its widespread adoption remains constrained by complex instrumentations & software that requires extensive expertise. We identified documentation and knowledge transfer as key bottlenecks in proteomics accessibility and developed an AI Proteomics Agent to address these challenges.
+Much of a scientist's expertise is learned through hands-on practice, not from manuals. This "tacit knowledge" — the subtle variations in a protocol or troubleshooting instincts — is critical in technique-intensive fields like mass spectrometry-based proteomics, yet it is rarely documented. This challenge is amplified by high turnover in academic labs, which weakens reproducibility and makes cutting-edge science less accessible. We developed this AI agent to address these challenges by capturing and sharing this essential, practical expertise.
 
-The AI Proteomics Agent is a multimodal agentic framework that combines Mann Labs' proteomics expertise with Google's cloud infrastructure. The framework incorporates lab-specific knowledge through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services, integrated with local MCP servers including Alphakraken for retrieving QC results and Confluence for managing lab-internal protocols.
+The AI lab companion is a multimodal agentic AI framework that combines Mann Labs' proteomics expertise with Google's cloud infrastructure. The framework incorporates lab-specific knowledge through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services, integrated with local MCP servers.
+
+### Architecture
+
+A main agent orchestrates specialized sub-agents:
+* **Protocol Agent:** Analyzes video and audio of a tutorial video to automatically generate a formatted protocol.
+* **Lab Note Agent:** Detects errors or omissions by comparing a researcher's actions on video against a reference protocol.
+* **Lab Knowledge Agent:** Retrieves documents from an internal knowledge base like Confluence MCP server.
+* **Instrument Agent:** Monitors the performance of mass spectrometers via a local AlphaKraken MCP server.
+* **QC Memory Agent:** Logs quality control ratings using a local database MCP server to preserve troubleshooting history.
 
 ### Key Features
 
-It provides:
-* **Personalized guidance** based on user expertise levels
-* **Automatic protocol generation:** Transforms notes, photos, or laboratory videos with expert voice-over explanations into Nature-style protocols, significantly lowering documentation barriers for researchers.
-* **Automated laboratory notes generation and error detection:** Generates error-flagging laboratory notes by comparing video footage with baseline protocol procedures.
+* **Automated protocol generation from video:** An expert can simply record themselves performing a procedure while explaining the steps. The Protocol Agent then analyzes the visual and audio data to generate a detailed, formatted protocol in minutes.
+* **Error detection and guided lab work:** Once a protocol exists, the Lab Note Agent can analyze a researchers actions and automatically generate a lab note that flags deviations from the reference protocol.
+* **Instrument readiness assessment:** The agent can answer practical questions like, "Is this instrument ready for use?". It accomplishes this by comparing current QC metrics against historical data and expert decisions.
 
 ---
 ## License
@@ -61,23 +69,6 @@ proteomics_specialist/
 └── README.md                      # Project documentation
 ```
 
-### Download source code
-
-proteomics_specialist can be installed in editable (i.e. developer) mode with `bash` commands. This allows to fully customize the software and even modify the source code to your specific needs. When an editable Python package is installed, its source code is stored in a transparent location of your choice. While optional, it is advised to first (create and) navigate to e.g. a general software folder:
-
-```bash
-mkdir ~/folder/where/to/install/software
-cd ~/folder/where/to/install/software
-```
-
-***The following commands assume you do not perform any additional `cd` commands anymore***.
-
-Next, download the proteomics_specialist repository from GitHub either directly or with a `git` command. This creates a new proteomics_specialist subfolder in your current directory.
-
-```bash
-git clone https://github.com/MannLabs/proteomics_specialist.git
-```
-
 ### Setup Instructions
 
 #### 1. Prerequisites
@@ -88,7 +79,7 @@ git clone https://github.com/MannLabs/proteomics_specialist.git
 - **Component**: Google Cloud Project with Cloud Storage Bucket & Service account keys
 - **Purpose**:
     - Generate LLM responses via API calls
-    - Store and serve video content for prompt processing
+    - Store and serve video content during prompt processing
 - **Text Setup Instructions**: [Creating projects](https://cloud.google.com/resource-manager/docs/creating-managing-projects) & [Creating cloud storage buckets](https://cloud.google.com/storage/docs/creating-buckets) & [Creating service account keys](https://cloud.google.com/iam/docs/keys-create-delete#iam-service-account-keys-create-console)
 - **Video Setup Instructions**: [Video with guide: Step 2 & 3 beginning at 10:14](https://www.youtube.com/watch?v=bPtKnDIVEsg)
 - **Required Services**:
@@ -137,7 +128,7 @@ docker --version
 ```bash
 git clone https://github.com/MannLabs/alphakraken.git
 cd directory/of/alphakraken
-git checkout mcp_http
+git checkout main
 docker build -t mcpserver_http -f mcp-server/Dockerfile .
 # test that the mcpserver works
 docker run -p 8089:8089 mcpserver_http
@@ -181,8 +172,11 @@ source .venv/bin/activate
 .venv\Scripts\activate
 ```
 
-#### 3. Install dependencies
-
+#### 3. Install repository
+Clone the repository
+```bash
+git clone https://github.com/MannLabs/proteomics_specialist.git
+```
 Install proteomics_specialist and all its [dependencies](requirements):
 ```bash
 # Install main requirements
@@ -226,8 +220,8 @@ Then select the `proteomics_specialist` from the dropdown.
 This will:
 - Start the adk root agent (`proteomics_specialist/agent.py`).
 - The root agent can initialize the `MCPToolset` of subagents such as instrument_agent, qc_memory_agent or lab_knowledge_agent.
-- The MCP servers will start automatically and listen for tool calls from the agents via stdio.
-- The agents will then be ready to process your instructions (which you would typically provide in a client application or test environment that uses these agents).
+- The MCP servers will start automatically and listen for tool calls from the agents.
+- The agents will then be ready to process your instructions.
 
 
 ### Deployment
@@ -235,7 +229,7 @@ This will:
 The project can be deployed using Docker Compose. This approach containerizes all components for easier management and deployment.
 
 The Docker deployment includes the following containers:
-- python_lab_agent: Main proteomics specialist agent
+- python_lab_agent: Main proteomics_specialist agent
 - alphakraken_mcp: MCP server for proteomics analysis
 - confluence_mcp: MCP server for knowledge management
 
@@ -256,9 +250,8 @@ docker compose --env-file ./.env.secrets --env-file ./.env up -d
 ```
 
 #### Stop deployment (when updating or maintenance)
-
+Stop all containers defined in docker-compose
 ```bash
-# Stop all containers defined in docker-compose
 docker container stop python_lab_agent alphakraken_mcp confluence_mcp
 ```
 
