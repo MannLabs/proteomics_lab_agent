@@ -43,11 +43,12 @@ services:
         - 9000:9000
   alphakraken_mcp:
       container_name: alphakraken_mcp
-      image: mcpserver_http
+      image: mcpserver
       environment:
         - MONGO_PORT=${ALPHAKRAKEN_DB_PORT}
         - MONGO_HOST=${ALPHAKRAKEN_DB_HOST}
         - MONGO_USER=${ALPHAKRAKEN_DB_USER}
         - MONGO_PASSWORD=${ALPHAKRAKEN_DB_PASSWORD}
+        - MCP_TRANSPORT=streamable-http
       ports:
         - 8089:8089
