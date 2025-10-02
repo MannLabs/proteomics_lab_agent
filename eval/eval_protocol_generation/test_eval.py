@@ -683,8 +683,9 @@ async def test_protocol_evaluation() -> None:
     logger.info(f"Starting standalone lab note evaluation. Logs: {log_file}")
 
     try:
-        output_dir = "./eval_protocol_results/result_20250817_151404"
         function_configs = [
+            # The final experiment for the corresponding paper was conducted using only the standard agent function for protocol generation.
+            {"name": "regular", "function": generate_protocols_regular},
             # {
             #     "name": "with_gemini2_0flash",
             #     "function": generate_protocols_with_gemini2_0flash,
@@ -706,7 +707,6 @@ async def test_protocol_evaluation() -> None:
             #     "name": "with_extended_knowledge",
             #     "function": generate_protocols_with_ext_know,
             # },
-            {"name": "regular", "function": generate_protocols_regular},
             # {
             #     "name": "with_gemini2_5flash",
             #     "function": generate_protocols_with_gemini2_5flash,
