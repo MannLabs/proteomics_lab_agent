@@ -69,6 +69,14 @@ proteomics_lab_agent/
 └── README.md                      # Project documentation
 ```
 
+### Download source code
+
+proteomics_specialist can be installed in editable (i.e. developer) mode with `bash` commands. Download the proteomics_specialist repository from GitHub either directly or with a `git` command. This creates a new proteomics_specialist subfolder in your current directory.
+
+```bash
+git clone https://github.com/MannLabs/proteomics_specialist.git
+```
+
 ### Setup Instructions
 
 #### 1. Prerequisites
@@ -131,7 +139,7 @@ cd directory/of/alphakraken
 git checkout main
 docker build -t mcpserver -f mcp_server/Dockerfile .
 # test that the mcpserver works
-docker run -p 8089:8089 mcpserver_http
+docker run -p 8089:8089 mcpserver
 ```
 
 **Optional: Install sqlite**: The qc_memory agent is writting and reading a sqlite database. Install sqlite if you want to check the database entries.
@@ -173,10 +181,7 @@ source .venv/bin/activate
 ```
 
 #### 3. Install repository
-Clone the repository
-```bash
-git clone https://github.com/MannLabs/proteomics_lab_agent.git
-```
+
 Install proteomics_lab_agent and all its [dependencies](requirements):
 ```bash
 # Install main requirements
@@ -280,7 +285,7 @@ In case of issues, check out the following links:
 
 ---
 ## FAQ
-- Where to find test files? You can find test files on Zenodo: https:// doi.org/ 10.5281/zenodo.17253029.
+- Where to find test files? You can find test files on [Zenodo](https://doi.org/10.5281/zenodo.17253029)
 
 ---
 ## Citations
