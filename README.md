@@ -22,7 +22,7 @@ The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.
 
 Much of a scientist's expertise is learned through hands-on practice, not from manuals. This "tacit knowledge" — the subtle variations in a protocol or troubleshooting instincts — is critical in technique-intensive fields like mass spectrometry-based proteomics, yet it is rarely documented. This challenge is amplified by high turnover in academic labs, which weakens reproducibility and makes cutting-edge science less accessible. We developed this AI agent to address these challenges by capturing and sharing this essential, practical expertise.
 
-The proteomics lab agent is a multimodal agentic AI framework that combines Mann Labs' proteomics expertise with Google's cloud infrastructure. The framework incorporates lab-specific knowledge through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services, integrated with local MCP servers.
+The proteomics lab agent is a multimodal agentic AI. The framework incorporates Mann Labs' proteomics expertise through multimodal chain-of-thought prompting and a custom knowledge base containing laboratory protocols. It also leverages Google's Agent Development Kit, Gemini, and Vertex AI services of Google Cloud, integrated with local MCP servers.
 
 ### Architecture
 
@@ -71,7 +71,7 @@ proteomics_lab_agent/
 
 ### Download source code
 
-proteomics_lab_agent can be installed in editable (i.e. developer) mode with `bash` commands. Download the proteomics_lab_agent repository from GitHub either directly or with a `git` command. This creates a new proteomics_lab_agent subfolder in your current directory.
+proteomics_lab_agent can be installed in editable (i.e. developer) mode with `bash` commands. Download the proteomics_lab_agent repository from GitHub either directly or with a `git` command.
 
 ```bash
 git clone https://github.com/MannLabs/proteomics_lab_agent.git
@@ -97,8 +97,8 @@ git clone https://github.com/MannLabs/proteomics_lab_agent.git
     - Service account keys
 
 ##### Knowledge Management System
-- **Component**: Confluence with lab_knowledge_agent
-- **Purpose**: Retrieves and saves laboratory information
+- **Component**: Confluence for lab_knowledge_agent
+- **Purpose**: Retrieves and saves lab information
 - **Setup Instructions**: [Getting started with confluence spaces](https://www.atlassian.com/software/confluence/resources/guides/get-started/set-up#learn-about-spaces)
 - **Configuration Notes**:
     1. Create a dedicated Confluence space for lab_knowledge_agent
@@ -204,7 +204,7 @@ You can run the agent locally using the `adk` command in your terminal:
     ```
     you can add `-d` flag to detach the containers from the shell session
 
-* Open fresh terminal, ensure your virtual environment is active and you are in the root directory of the `proteomics_lab_agent` project.
+* Open a fresh terminal, ensure your virtual environment is active and you are in the root directory of the `proteomics_lab_agent` project.
 1.  To run the agent from the CLI:
 ```bash
 adk run proteomics_lab_agent
