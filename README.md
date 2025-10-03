@@ -112,7 +112,7 @@ git clone https://github.com/MannLabs/proteomics_lab_agent.git
 - **Purpose**: Provides fully automated data processing and analysis system for mass spectrometry experiments
 - **Setup Instructions**: [Alphakraken quick start guide](https://github.com/MannLabs/alphakraken?tab=readme-ov-file#quick-start)
 
-#### 4. Configure settings
+#### 2. Configure settings
 The `agent.py` will load the keys defined in .env and .env.secrets.
 
 1. Set the environment variables. You can set them in your .env file (modify and rename .env.example file to .env). The `agent.py` will load the defined Google Cloud project to be able to access the Gemini model.
@@ -122,7 +122,7 @@ The `agent.py` will load the keys defined in .env and .env.secrets.
     2. Click **Create API token**, name it
     3. Copy the token immediately
 
-#### 5. Establish MCP servers with Docker
+#### 3. Establish MCP servers with Docker
 
 Docker allows applications to be packaged and run in isolated environments called containers. Some MCP servers are distributed as Docker images, making them easy to run across different operating systems.
 
@@ -132,7 +132,10 @@ Docker allows applications to be packaged and run in isolated environments calle
 ```bash
 docker --version
 ```
-4.  **Install the Alphakraken MCP server**: Clone the Alphakraken repository:
+
+#### 4. Install the Alphakraken MCP server
+
+Clone the Alphakraken repository:
 ```bash
 git clone https://github.com/MannLabs/alphakraken.git
 cd directory/of/alphakraken
