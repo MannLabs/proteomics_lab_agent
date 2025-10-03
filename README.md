@@ -71,10 +71,10 @@ proteomics_lab_agent/
 
 ### Download source code
 
-proteomics_specialist can be installed in editable (i.e. developer) mode with `bash` commands. Download the proteomics_specialist repository from GitHub either directly or with a `git` command. This creates a new proteomics_specialist subfolder in your current directory.
+proteomics_lab_agent can be installed in editable (i.e. developer) mode with `bash` commands. Download the proteomics_lab_agent repository from GitHub either directly or with a `git` command. This creates a new proteomics_lab_agent subfolder in your current directory.
 
 ```bash
-git clone https://github.com/MannLabs/proteomics_specialist.git
+git clone https://github.com/MannLabs/proteomics_lab_agent.git
 ```
 
 ### Setup Instructions
