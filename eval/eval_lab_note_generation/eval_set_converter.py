@@ -30,7 +30,7 @@ logging.basicConfig(
 
 BENCHMARK_CSV_PATH = Path("benchmark_data.csv")
 INPUT_JSON_PATH = Path(
-    BASE_DIR / "proteomics_specialist/lab_note_generator.evalset.json"
+    BASE_DIR / "proteomics_lab_agent/lab_note_generator.evalset.json"
 )
 MINIMUM_REQUIRED_FIELDS = ["eval_set_name", "protocol", "video_path", "error_dict"]
 

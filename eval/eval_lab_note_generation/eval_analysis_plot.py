@@ -126,7 +126,9 @@ def create_simple_error_chart_bw(
         A tuple containing the Matplotlib Figure and Axes objects.
 
     """
-    unrecognized = [total - rec for total, rec in zip(total_counts, recognized)]
+    unrecognized = [
+        total - rec for total, rec in zip(total_counts, recognized, strict=False)
+    ]
 
     fig, ax = plt.subplots(figsize=FIGURE_SIZE)
     fig.patch.set_facecolor("white")
@@ -170,7 +172,10 @@ def create_simple_error_chart_bw(
 
     ax.set_yticks(y_pos)
     ax.set_yticklabels(
-        [f"{err}\n({total})" for err, total in zip(error_types, total_counts)]
+        [
+            f"{err}\n({total})"
+            for err, total in zip(error_types, total_counts, strict=False)
+        ]
     )
 
     max_x_value = max(total_counts)
@@ -319,7 +324,9 @@ def create_error_chart_skills(
             linewidth=0.5,
         )
 
-        for i, (width, cum_width) in enumerate(zip(widths, cumulative_widths)):
+        for i, (width, cum_width) in enumerate(
+            zip(widths, cumulative_widths, strict=False)
+        ):
             if width > 0:
                 error_type = error_types[i]
                 percentage = percentages_by_error.get(error_type, 0)
@@ -495,7 +502,7 @@ def plot_metrics(dict_all_metric: dict, output_dir: Path) -> None:
 
     ax.grid(visible=True, alpha=0.3, linestyle="--")
 
-    for bar, mean_val, std_val in zip(bars, means, std_errors):
+    for bar, mean_val, std_val in zip(bars, means, std_errors, strict=False):
         height = bar.get_height()
         error_offset = std_val if pd.notna(std_val) else 0
         ax.text(
@@ -506,6 +513,7 @@ def plot_metrics(dict_all_metric: dict, output_dir: Path) -> None:
             va="bottom",
             fontsize=8,
         )
+    plt.ylim(0, 1)
 
     plt.tight_layout()
     plt.savefig(output_dir / "experiment_metrics_with_error_bars.png", dpi=300)

@@ -10,9 +10,9 @@ from google.adk.tools import ToolContext  # noqa: TC002
 from google.genai import types
 from pydantic import BaseModel, Field
 
-from proteomics_specialist.config import config
-from proteomics_specialist.sub_agents import utils
-from proteomics_specialist.sub_agents.enviroment_handling import (
+from proteomics_lab_agent.config import config
+from proteomics_lab_agent.sub_agents import utils
+from proteomics_lab_agent.sub_agents.enviroment_handling import (
     CloudResourceError,
     EnvironmentValidator,
 )

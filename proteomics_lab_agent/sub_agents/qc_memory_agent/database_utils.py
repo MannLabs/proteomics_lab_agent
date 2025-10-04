@@ -426,7 +426,7 @@ def _validate_session_data(session_data: dict) -> dict | None:
 
 def _validate_performance_status(status: int) -> dict | None:
     """Validate performance status field."""
-    if not isinstance(status, (int, bool)) or status not in (0, 1):
+    if not isinstance(status, (int | bool)) or status not in (0, 1):
         return {
             "success": False,
             "message": "performance_status must be 0, 1",
@@ -437,7 +437,7 @@ def _validate_performance_status(status: int) -> dict | None:
 
 def _validate_performance_rating(rating: float) -> dict | None:
     """Validate performance rating field."""
-    if not isinstance(rating, (int, float)) or not (
+    if not isinstance(rating, (int | float)) or not (
         0 <= rating <= MAX_PERFORMANCE_RATING
     ):
         return {
@@ -503,7 +503,7 @@ def _validate_file_fields(file_data: dict, index: int) -> dict | None:
             "message": f"Raw file at index {index}: instrument_id must be a non-empty string",
             "error_code": "VALIDATION_ERROR",
         }
-    if not isinstance(file_data["gradient"], (int, float)):
+    if not isinstance(file_data["gradient"], (int | float)):
         return {
             "success": False,
             "message": f"Raw file at index {index}: gradient must be a float or int",

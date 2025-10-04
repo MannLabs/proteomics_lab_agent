@@ -1,6 +1,6 @@
 """Prompts."""
 
-from proteomics_specialist.prompt import EVALUATION_CRITERIA
+from proteomics_lab_agent.prompt import EVALUATION_CRITERIA
 
 
 def create_protocol_evaluation_prompt(gt_protocol: str, generated_protocol: str) -> str:

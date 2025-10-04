@@ -17,8 +17,8 @@ from pydantic import BaseModel
 path_to_append = Path(Path.cwd()).parent.parent
 sys.path.append(str(path_to_append))
 
-from proteomics_specialist.sub_agents.lab_note_generator_agent import agent
-from proteomics_specialist.sub_agents.lab_note_generator_agent.prompt import (
+from proteomics_lab_agent.sub_agents.lab_note_generator_agent import agent
+from proteomics_lab_agent.sub_agents.lab_note_generator_agent.prompt import (
     CLASS_ERROR_CATEGORIES_PROMPT,
 )
 

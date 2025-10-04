@@ -11,11 +11,11 @@ services:
     volumes:
       - ${SERVICE_ACCOUNT_FILE:?error}:/env/service_account.json:ro # Service account auth file
       # Mount all the persistent data stores to dedicated host files
-      - ./deployment_data/evalset/lab_note_generator.evalset.json:/app/proteomics_specialist/lab_note_generator.evalset.json
-      - ./deployment_data/evalset/protocol_finder.evalset.json:/app/proteomics_specialist/protocol_finder.evalset.json
-      - ./deployment_data/evalset/protocol_generator.evalset.json:/app/proteomics_specialist/protocol_generator.evalset.json
-      - ./deployment_data/evalset/question_agent.evalset.json:/app/proteomics_specialist/question_agent.evalset.json
-      - ./deployment_data/database.db:/app/proteomics_specialist/sub_agents/qc_memory_agent/database.db
+      - ./deployment_data/evalset/lab_note_generator.evalset.json:/app/proteomics_lab_agent/lab_note_generator.evalset.json
+      - ./deployment_data/evalset/protocol_finder.evalset.json:/app/proteomics_lab_agent/protocol_finder.evalset.json
+      - ./deployment_data/evalset/protocol_generator.evalset.json:/app/proteomics_lab_agent/protocol_generator.evalset.json
+      - ./deployment_data/evalset/question_agent.evalset.json:/app/proteomics_lab_agent/question_agent.evalset.json
+      - ./deployment_data/database.db:/app/proteomics_lab_agent/sub_agents/qc_memory_agent/database.db
       - ${LOCAL_FOLDER_PATH:?error}:${LOCAL_FOLDER_PATH}:ro # This is a workaround since the videos are uploaded to the cloud with str path. Once ADK integrated video upload this can be changed.
 
     ports:
@@ -43,11 +43,12 @@ services:
         - 9000:9000
   alphakraken_mcp:
       container_name: alphakraken_mcp
-      image: mcpserver_http
+      image: mcpserver
       environment:
         - MONGO_PORT=${ALPHAKRAKEN_DB_PORT}
         - MONGO_HOST=${ALPHAKRAKEN_DB_HOST}
         - MONGO_USER=${ALPHAKRAKEN_DB_USER}
         - MONGO_PASSWORD=${ALPHAKRAKEN_DB_PASSWORD}
+        - MCP_TRANSPORT=streamable-http
       ports:
         - 8089:8089

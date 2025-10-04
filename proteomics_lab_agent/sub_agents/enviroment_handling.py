@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, ClassVar
 from dotenv import load_dotenv
 
 if TYPE_CHECKING:
-    from proteomics_specialist.config import ResearchConfiguration
+    from proteomics_lab_agent.config import ResearchConfiguration
 
 
 def get_env_var(var_name: str) -> str:
