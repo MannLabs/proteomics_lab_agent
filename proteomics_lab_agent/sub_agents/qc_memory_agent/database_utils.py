@@ -36,6 +36,20 @@ def _raise_file_id_error() -> NoReturn:
     raise DatabaseError("Failed to get file_id after insert")
 
 
+def _raise_schema_not_found_error() -> NoReturn:
+    """Helper function to raise schema version not found error."""
+    raise DatabaseError("Schema version table '_schema_version' not found or is empty.")
+
+
+def _raise_schema_mismatch_error(db_version: int) -> NoReturn:
+    """Helper function to raise schema mismatch error."""
+    raise DatabaseError(
+        f"Database schema version mismatch. Agent requires "
+        f"version {COMPATIBLE_SCHEMA_VERSION}, but database is "
+        f"version {db_version}."
+    )
+
+
 def get_db_connection() -> sqlite3.Connection:
     """Get a database connection, validate schema version, and set row factory.
 
@@ -66,17 +80,11 @@ def get_db_connection() -> sqlite3.Connection:
         db_version_row = cursor.fetchone()
 
         if db_version_row is None:
-            raise DatabaseError(  # noqa: TRY301
-                "Schema version table '_schema_version' not found or is empty."
-            )
+            _raise_schema_not_found_error()
 
         db_version = db_version_row["version"]
         if db_version != COMPATIBLE_SCHEMA_VERSION:
-            raise DatabaseError(  # noqa: TRY301
-                f"Database schema version mismatch. Agent requires "
-                f"version {COMPATIBLE_SCHEMA_VERSION}, but database is "
-                f"version {db_version}."
-            )
+            _raise_schema_mismatch_error(db_version)
 
     except sqlite3.Error as e:
         conn.close()
@@ -200,9 +208,10 @@ def query_performance_data(filters: dict) -> dict:
         - 'performance_status': Boolean (0,1)
         - 'performance_rating': Integer (0-5)
         - 'performance_comment': String (partial match)
-        - 'instrument': String (exact match)
+        - 'instrument_id': String (exact match)
         - 'gradient': Float (exact match) OR dict with range options
         - 'file_name': String (exact match)
+        - 'created_by_agent_version': String (exact match)
 
         For gradient range queries, use:
         - 'gradient': {'min': 40.0, 'max': 45.0} # Range query
