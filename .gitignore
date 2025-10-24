@@ -27,12 +27,12 @@ proteomics_lab_agent/lab_note_generator.evalset.json
 proteomics_lab_agent/protocol_finder.evalset.json
 proteomics_lab_agent/protocol_generator.evalset.json
 proteomics_lab_agent/question_agent.evalset.json
-# proteomics_lab_agent/sub_agents/qc_memory_agent/database.db
+proteomics_lab_agent/sub_agents/qc_memory_agent/database.db
 deployment_data/evalset/lab_note_generator.evalset.json
 deployment_data/evalset/protocol_finder.evalset.json
 deployment_data/evalset/protocol_generator.evalset.json
 deployment_data/evalset/question_agent.evalset.json
-# deployment_data/database.db
+deployment_data/database.db
 
 # Github defaults are below
 # TODO: sort through them
