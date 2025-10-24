@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import sqlite3
+import uuid
 from pathlib import Path
 from typing import NoReturn
 
@@ -14,6 +15,8 @@ GRADIENT_TOLERANCE = (
     0.001  # Tolerance for retrieving raw files based on gradient length
 )
 MAX_PERFORMANCE_RATING = 5
+COMPATIBLE_SCHEMA_VERSION = 1
+AGENT_NAME = "qc_memory_agent_v1.0"
 
 
 class DatabaseError(Exception):
@@ -28,134 +31,68 @@ class SessionError(DatabaseError):
     """Exception for session processing errors."""
 
 
-def _raise_performance_id_error() -> NoReturn:
-    """Helper function to raise performance ID error."""
-    raise DatabaseError("Failed to get performance_id after insert")
-
-
 def _raise_file_id_error() -> NoReturn:
     """Helper function to raise file ID error."""
     raise DatabaseError("Failed to get file_id after insert")
 
 
 def get_db_connection() -> sqlite3.Connection:
-    """Get a database connection with row factory set to sqlite3.Row."""
+    """Get a database connection, validate schema version, and set row factory.
+
+    Raises
+    ------
+    DatabaseError
+        If connection fails or if schema version is incompatible.
+
+    Returns
+    -------
+    sqlite3.Connection
+        An active database connection.
+
+    """
     try:
         conn = sqlite3.connect(DATABASE_PATH)
         conn.row_factory = sqlite3.Row
     except sqlite3.Error as e:
         logger.exception("Failed to connect to database.")
-        return {
-            "success": False,
-            "message": f"Database error: {e!s}",
-            "error_code": "DATABASE_ERROR",
-        }
-    else:
-        return conn
-
-
-def list_db_tables() -> dict:
-    """Lists all tables in the SQLite database.
-
-    Returns
-    -------
-    dict
-        A dictionary with keys 'success' (bool), 'message' (str),
-        and 'data' containing the table names if successful.
-
-    """
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        tables = [row[0] for row in cursor.fetchall()]
-
-        logger.info(f"Successfully listed {len(tables)} tables")
-    except sqlite3.Error as e:
-        logger.exception("Database error listing tables.")
-        return {
-            "success": False,
-            "message": f"Database error: {e!s}",
-            "error_code": "DATABASE_ERROR",
-        }
-    except Exception as e:
-        logger.exception("Unexpected error listing tables.")
-        return {
-            "success": False,
-            "message": f"Unexpected error: {e!s}",
-            "error_code": "UNEXPECTED_ERROR",
-        }
-    else:
-        return {
-            "success": True,
-            "message": "Tables listed successfully.",
-            "data": {"tables": tables},
-        }
-    finally:
-        conn.close()
-
-
-def get_table_schema(table_name: str) -> dict:
-    """Gets the schema (column names and types) of a specific table.
-
-    Parameters
-    ----------
-    table_name : str
-        The name of the table to get schema for.
-
-    Returns
-    -------
-    dict
-        Dictionary with success status and schema information.
-
-    """
-    if not table_name or not isinstance(table_name, str):
-        return {
-            "success": False,
-            "message": "table_name must be a non-empty string",
-            "error_code": "VALIDATION_ERROR",
-        }
+        raise DatabaseError(f"Database connection error: {e!s}") from e
 
     try:
-        conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(f"PRAGMA table_info('{table_name}');")
-        schema_info = cursor.fetchall()
-        if not schema_info:
-            return {
-                "success": False,
-                "message": f"Table '{table_name}' not found or no schema information.",
-                "error_code": "TABLE_NOT_FOUND",
-            }
-
-        columns = [{"name": row["name"], "type": row["type"]} for row in schema_info]
-        logger.info(
-            "Successfully retrieved schema for table '%s' with %d columns",
-            table_name,
-            len(columns),
+        # Fetch the highest (latest) schema version
+        cursor.execute(
+            "SELECT version FROM _schema_version ORDER BY version DESC LIMIT 1"
         )
-    except DatabaseError as e:
-        logger.exception(f"Database error getting schema for '{table_name}'.")
-        return {
-            "success": False,
-            "message": f"Database error: {e!s}",
-            "error_code": "DATABASE_ERROR",
-        }
+        db_version_row = cursor.fetchone()
+
+        if db_version_row is None:
+            raise DatabaseError(  # noqa: TRY301
+                "Schema version table '_schema_version' not found or is empty."
+            )
+
+        db_version = db_version_row["version"]
+        if db_version != COMPATIBLE_SCHEMA_VERSION:
+            raise DatabaseError(  # noqa: TRY301
+                f"Database schema version mismatch. Agent requires "
+                f"version {COMPATIBLE_SCHEMA_VERSION}, but database is "
+                f"version {db_version}."
+            )
+
     except sqlite3.Error as e:
-        logger.exception(f"Unexpected error getting schema for '{table_name}'.")
-        return {
-            "success": False,
-            "message": f"Unexpected error: {e!s}",
-            "error_code": "UNEXPECTED_ERROR",
-        }
-    else:
-        return {
-            "success": True,
-            "message": f"Schema retrieved for table '{table_name}'.",
-            "data": {"table_name": table_name, "columns": columns},
-        }
-    finally:
         conn.close()
+        logger.exception("Failed to validate database schema version.")
+        if "no such table" in str(e):
+            raise DatabaseError(
+                "Schema version table '_schema_version' not found. "
+                "Is this an old or uninitialized database?"
+            ) from e
+        raise DatabaseError(f"Schema check failed: {e!s}") from e
+    except DatabaseError:
+        conn.close()
+        raise
+    else:
+        logger.debug(f"DB schema version {db_version} validated successfully.")
+        return conn
 
 
 def _validate_query_filters(filters: dict) -> dict | None:
@@ -167,6 +104,7 @@ def _validate_query_filters(filters: dict) -> dict | None:
         "instrument_id": "rf.instrument_id",
         "gradient": "rf.gradient",
         "file_name": "rf.file_name",
+        "created_by_agent_version": "pd.created_by_agent_version",
     }
 
     if not filters:
@@ -224,6 +162,7 @@ def _build_filter_conditions(filters: dict) -> tuple[list, list]:
         "instrument_id": "rf.instrument_id",
         "gradient": "rf.gradient",
         "file_name": "rf.file_name",
+        "created_by_agent_version": "pd.created_by_agent_version",
     }
 
     conditions = []
@@ -282,6 +221,7 @@ def query_performance_data(filters: dict) -> dict:
     if validation_error:
         return validation_error
 
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -294,10 +234,11 @@ def query_performance_data(filters: dict) -> dict:
                 rf.gradient,
                 pd.performance_status,
                 pd.performance_rating,
-                pd.performance_comment
+                pd.performance_comment,
+                pd.created_by_agent_version
             FROM raw_files rf
-            JOIN raw_file_to_session rfts ON rf.id = rfts.raw_file_id
-            JOIN performance_data pd ON rfts.performance_id = pd.id
+            JOIN raw_files_to_performance_data rfts ON rf.id = rfts.raw_files_id
+            JOIN performance_data pd ON rfts.performance_data_id = pd.id
             """
 
         conditions, params = _build_filter_conditions(filters)
@@ -319,19 +260,12 @@ def query_performance_data(filters: dict) -> dict:
             "message": f"Validation error: {e!s}",
             "error_code": "VALIDATION_ERROR",
         }
-    except DatabaseError as e:
+    except (sqlite3.Error, DatabaseError) as e:
         logger.exception("Database error in query_performance_data.")
         return {
             "success": False,
             "message": f"Database error: {e!s}",
             "error_code": "DATABASE_ERROR",
-        }
-    except sqlite3.Error as e:
-        logger.exception("Unexpected database error in query_performance_data.")
-        return {
-            "success": False,
-            "message": f"Unexpected error querying performance data: {e!s}",
-            "error_code": "UNEXPECTED_ERROR",
         }
     except Exception as e:
         logger.exception("Unexpected error in query_performance_data.")
@@ -347,7 +281,8 @@ def query_performance_data(filters: dict) -> dict:
             "data": {"results": results, "count": len(results)},
         }
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 
 def _validate_session_structure(session_data: dict) -> dict | None:
@@ -539,7 +474,7 @@ def _process_raw_file(cursor: sqlite3.Cursor, file_data: dict) -> tuple[int, str
             ),
         )
         return existing_id, "updated"
-    # Create new file record
+
     cursor.execute(
         "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
         (
@@ -602,13 +537,22 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
     if validation_error:
         return validation_error
 
+    conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        performance_data_id = str(uuid.uuid4())
+
         # Insert performance record
         perf_cols = [k for k in session_data if k != "raw_files"]
         perf_values = [session_data[k] for k in perf_cols]
+
+        perf_cols.insert(0, "id")
+        perf_values.insert(0, performance_data_id)
+
+        perf_cols.append("created_by_agent_version")
+        perf_values.append(AGENT_NAME)
 
         columns = ", ".join(perf_cols)
         placeholders = ", ".join(["?" for _ in perf_cols])
@@ -618,10 +562,6 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
         """
 
         cursor.execute(perf_query, perf_values)
-        performance_id = cursor.lastrowid
-
-        if not performance_id:
-            _raise_performance_id_error()
 
         # Process raw files
         file_ids = []
@@ -634,11 +574,11 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
 
         # Insert links between session data and raw file info
         link_query = """
-            INSERT OR IGNORE INTO raw_file_to_session (performance_id, raw_file_id)
+            INSERT OR IGNORE INTO raw_files_to_performance_data (performance_data_id, raw_files_id)
             VALUES (?, ?)
         """
 
-        link_data = [(performance_id, file_id) for file_id in file_ids]
+        link_data = [(performance_data_id, file_id) for file_id in file_ids]
         cursor.executemany(link_query, link_data)
         links_created = cursor.rowcount
 
@@ -651,15 +591,16 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
 
         summary_message = f"Session created with {len(file_ids)} files ({created_count} new, {updated_count} updated, {found_count} reused)"
         logger.info(
-            f"Successfully created performance session {performance_id} with {len(file_ids)} files"
+            f"Successfully created performance session {performance_data_id} with {len(file_ids)} files"
         )
 
-    except sqlite3.Error as e:
-        conn.rollback()  # Roll back changes on error
+    except (sqlite3.Error, DatabaseError) as e:
+        if conn:
+            conn.rollback()  # Roll back changes on error
         return {
             "success": False,
-            "message": f"Unexpected error during session creation: {e!s}",
-            "error_code": "UNEXPECTED_ERROR",
+            "message": f"Database error during session creation: {e!s}",
+            "error_code": "DATABASE_ERROR",
         }
     except ValidationError as e:
         logger.exception("Validation error in insert_performance_and_raw_file_info.")
@@ -668,14 +609,9 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
             "message": f"Validation error: {e!s}",
             "error_code": "VALIDATION_ERROR",
         }
-    except DatabaseError as e:
-        logger.exception("Database error in insert_performance_and_raw_file_info.")
-        return {
-            "success": False,
-            "message": f"Database error: {e!s}",
-            "error_code": "DATABASE_ERROR",
-        }
     except Exception as e:
+        if conn:
+            conn.rollback()
         logger.exception("Unexpected error in insert_performance_and_raw_file_info.")
         return {
             "success": False,
@@ -687,8 +623,8 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
             "success": True,
             "message": summary_message,
             "data": {
-                "performance_id": performance_id,
-                "raw_file_ids": file_ids,
+                "performance_data_id": performance_data_id,
+                "raw_files_ids": file_ids,
                 "files_created": created_count,
                 "files_updated": updated_count,
                 "files_reused": found_count,
@@ -696,4 +632,5 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
             },
         }
     finally:
-        conn.close()
+        if conn:
+            conn.close()

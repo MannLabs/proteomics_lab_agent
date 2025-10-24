@@ -48,8 +48,6 @@ except sqlite3.Error as e:
 
 # Wrap database utility functions as ADK FunctionTools
 ADK_DB_TOOLS = {
-    "list_db_tables": FunctionTool(func=database_utils.list_db_tables),
-    "get_table_schema": FunctionTool(func=database_utils.get_table_schema),
     "query_performance_data": FunctionTool(func=database_utils.query_performance_data),
     "insert_performance_and_raw_file_info": FunctionTool(
         func=database_utils.insert_performance_and_raw_file_info
