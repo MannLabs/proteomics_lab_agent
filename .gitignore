@@ -34,6 +34,10 @@ deployment_data/evalset/protocol_generator.evalset.json
 deployment_data/evalset/question_agent.evalset.json
 deployment_data/database.db
 
+# docu files
+docs/generated
+docs/api
+
 # Github defaults are below
 # TODO: sort through them
 

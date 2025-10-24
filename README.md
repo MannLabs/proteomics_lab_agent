@@ -293,7 +293,7 @@ In case of issues, check out the following links:
 ---
 ## Citations
 
-We are currently writting the manuscript.
+[bioRxiv preprint](https://doi.org/10.1101/2025.10.05.680425)
 
 ---
 ## How to contribute

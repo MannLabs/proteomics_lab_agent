@@ -4,16 +4,20 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proteomics_lab_agent"
+description = "Multimodal AI agent to capture and share proteomics lab practice."
+readme = "README.md"
+maintainers = [
+  { name = "MannLabs", email = "skowronek@biochem.mpg.de"},
+]
+authors = [
+  { name = "MannLabs" },
+]
+
 requires-python = ">3.12"
 dynamic = ["version", "dependencies", "optional-dependencies"]
 
-authors = [
-    {name = "Mann Labs", email = "opensource@alphapept.com"}
-]
-description = "An open-source Python package of the AlphaX ecosystem"
-readme = "README.md"
 keywords = [
-    "GenAI",
+    "multimodal",
     "agents",
     "AI",
     "lab",
@@ -39,8 +43,9 @@ classifiers = [
 
 [project.urls]
 
-#"Paper preprint" = "https://www.biochem.mpg.de/mann"
+#"Paper preprint" = "https://doi.org/10.1101/2025.10.05.680425"
 Repository = "https://github.com/MannLabs/proteomics_lab_agent"
+Source = "https://github.com/MannLabs/proteomics_lab_agent"
 #Documentation = "https://proteomics_lab_agent.readthedocs.io/en/latest/"
 #Changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 Issues = "https://github.com/MannLabs/proteomics_lab_agent/issues"
