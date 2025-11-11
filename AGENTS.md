@@ -1,10 +1,11 @@
-# AGENDS.md
+# AGENTS.md
 
 This file provides guidance to AI coding agents when working with code in this repository.
 
 ## Project Overview
-
-This is a multimodal agentic AI framework for proteomics laboratory work that uses Google's Agent Development Kit (ADK), Gemini models, and Vertex AI. The system captures and shares practical expertise by linking written instructions to real-world laboratory work through video analysis.
+This is a multimodal agentic AI framework for proteomics laboratory work that uses Google's Agent Development Kit (ADK), 
+Gemini models, and Vertex AI. The system captures and shares practical expertise by linking written instructions to 
+real-world laboratory work through video analysis.
 
 ## Architecture
 
