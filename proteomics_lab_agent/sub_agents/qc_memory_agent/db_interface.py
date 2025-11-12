@@ -401,14 +401,8 @@ def _validate_raw_files(raw_files: list) -> dict | None:
                 "message": f"Raw file at index {i} must be a dictionary",
                 "error_code": "VALIDATION_ERROR",
             }
-        if isinstance(file_data["gradient"], str):
-            try:
-                file_data["gradient"] = float(file_data["gradient"])
-            except ValueError as e:
-                raise ValidationError(
-                    f"Invalid gradient value: {file_data['gradient']}"
-                ) from e
 
+        # Check for required fields first
         required_file_fields = ["file_name", "instrument_id", "gradient"]
         missing_file_fields = [
             field for field in required_file_fields if field not in file_data
@@ -419,6 +413,17 @@ def _validate_raw_files(raw_files: list) -> dict | None:
                 "message": f"Raw file at index {i} missing required fields: {', '.join(missing_file_fields)}",
                 "error_code": "VALIDATION_ERROR",
             }
+
+        # Attempt to convert string gradient to float
+        if isinstance(file_data["gradient"], str):
+            try:
+                file_data["gradient"] = float(file_data["gradient"])
+            except ValueError:
+                return {
+                    "success": False,
+                    "message": f"Raw file at index {i}: gradient value '{file_data['gradient']}' cannot be converted to float",
+                    "error_code": "VALIDATION_ERROR",
+                }
 
         field_error = _validate_file_fields(file_data, i)
         if field_error:
