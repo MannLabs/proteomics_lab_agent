@@ -7,26 +7,6 @@
 #
 #
 #
-# === _build_filter_conditions ===
-# test_build_filter_conditions_returns_conditions_and_params_for_exact_match_filters
-# """Test that _build_filter_conditions builds correct SQL for exact match filters."""
-# value: 8/10 (core functionality)
-# approach: create new test with performance_status, performance_rating filters
-#
-# test_build_filter_conditions_returns_like_condition_for_performance_comment
-# """Test that _build_filter_conditions builds LIKE SQL for performance_comment filter."""
-# value: 9/10 (special case handling)
-# approach: create new test with performance_comment filter
-#
-# test_build_filter_conditions_returns_gradient_condition_for_gradient_filter
-# """Test that _build_filter_conditions delegates to _build_gradient_condition for gradient."""
-# value: 8/10 (delegation testing)
-# approach: create new test with gradient filter
-#
-# test_build_filter_conditions_handles_multiple_filters
-# """Test that _build_filter_conditions combines multiple filters correctly."""
-# value: 9/10 (real-world usage)
-# approach: create new test with 3+ different filters
 #
 # === query_performance_data ===
 # test_query_performance_data_returns_success_with_matching_records

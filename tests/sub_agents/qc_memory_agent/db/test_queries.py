@@ -154,3 +154,74 @@ def test_build_gradient_condition_raises_error_for_invalid_dict_format() -> None
         match="Invalid gradient filter format. Use 'min'/'max', 'tolerance'/'value', or numeric value.",
     ):
         queries._build_gradient_condition(value)
+
+
+# ============================================================================
+# Tests for _build_filter_conditions
+# ============================================================================
+
+
+def test_build_filter_conditions_returns_conditions_and_params_for_exact_match_filters() -> (
+    None
+):
+    """Test that _build_filter_conditions builds correct SQL for exact match filters."""
+    # given
+    filters = {"performance_status": 1, "performance_rating": 5}
+
+    # when
+    conditions, params = queries._build_filter_conditions(filters)
+
+    # then
+    assert conditions == ["pd.performance_status = ?", "pd.performance_rating = ?"]
+    assert params == [1, 5]
+
+
+def test_build_filter_conditions_returns_like_condition_for_performance_comment() -> (
+    None
+):
+    """Test that _build_filter_conditions builds LIKE SQL for performance_comment filter."""
+    # given
+    filters = {"performance_comment": "Excellent"}
+
+    # when
+    conditions, params = queries._build_filter_conditions(filters)
+
+    # then
+    assert conditions == ["pd.performance_comment LIKE ?"]
+    assert params == ["%Excellent%"]
+
+
+def test_build_filter_conditions_returns_gradient_condition_for_gradient_filter() -> (
+    None
+):
+    """Test that _build_filter_conditions delegates to _build_gradient_condition for gradient."""
+    # given
+    filters = {"gradient": {"min": 40.0, "max": 45.0}}
+
+    # when
+    conditions, params = queries._build_filter_conditions(filters)
+
+    # then
+    assert conditions == ["rf.gradient BETWEEN ? AND ?"]
+    assert params == [40.0, 45.0]
+
+
+def test_build_filter_conditions_handles_multiple_filters() -> None:
+    """Test that _build_filter_conditions combines multiple filters correctly."""
+    # given
+    filters = {
+        "performance_status": 1,
+        "instrument_id": "tims2",
+        "gradient": 44.0,
+    }
+
+    # when
+    conditions, params = queries._build_filter_conditions(filters)
+
+    # then
+    assert conditions == [
+        "pd.performance_status = ?",
+        "rf.instrument_id = ?",
+        "rf.gradient = ?",
+    ]
+    assert params == [1, "tims2", 44.0]
