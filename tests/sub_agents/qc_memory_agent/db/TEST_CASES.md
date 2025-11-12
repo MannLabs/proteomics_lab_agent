@@ -8,67 +8,7 @@
 #
 #
 #
-# === _validate_session_structure ===
-# test_validate_session_structure_returns_none_for_valid_structure
-# """Test that _validate_session_structure returns None for valid session data."""
-# value: 8/10 (happy path)
-# approach: create new test with valid session_data dict
 #
-# test_validate_session_structure_returns_error_for_none
-# """Test that _validate_session_structure returns error dict when session_data is None."""
-# value: 8/10 (input validation)
-# approach: create new test with None
-#
-# test_validate_session_structure_returns_error_for_non_dict
-# """Test that _validate_session_structure returns error dict when session_data is not dict."""
-# value: 8/10 (type validation)
-# approach: create new test with list/string as session_data
-#
-# test_validate_session_structure_returns_error_for_empty_dict
-# """Test that _validate_session_structure returns error dict for empty dict."""
-# value: 7/10 (edge case)
-# approach: create new test with empty dict
-#
-# test_validate_session_structure_returns_error_when_raw_files_missing
-# """Test that _validate_session_structure returns error dict when raw_files key missing."""
-# value: 9/10 (required field validation)
-# approach: create new test without raw_files key
-#
-# test_validate_session_structure_returns_error_when_raw_files_empty
-# """Test that _validate_session_structure returns error dict when raw_files list is empty."""
-# value: 8/10 (business logic validation)
-# approach: create new test with empty raw_files list
-#
-# test_validate_session_structure_returns_error_when_raw_files_not_list
-# """Test that _validate_session_structure returns error dict when raw_files is not list."""
-# value: 8/10 (type validation)
-# approach: create new test with raw_files as dict/string
-#
-# === _validate_required_fields ===
-# test_validate_required_fields_returns_none_for_complete_fields
-# """Test that _validate_required_fields returns None when all required fields present."""
-# value: 8/10 (happy path)
-# approach: create new test with all required fields
-#
-# test_validate_required_fields_returns_error_for_missing_performance_status
-# """Test that _validate_required_fields returns error dict when performance_status missing."""
-# value: 8/10 (field validation)
-# approach: create new test without performance_status
-#
-# test_validate_required_fields_returns_error_for_missing_performance_rating
-# """Test that _validate_required_fields returns error dict when performance_rating missing."""
-# value: 8/10 (field validation)
-# approach: create new test without performance_rating
-#
-# test_validate_required_fields_returns_error_for_missing_performance_comment
-# """Test that _validate_required_fields returns error dict when performance_comment missing."""
-# value: 8/10 (field validation)
-# approach: create new test without performance_comment
-#
-# test_validate_required_fields_returns_error_for_multiple_missing_fields
-# """Test that _validate_required_fields returns error dict listing all missing fields."""
-# value: 9/10 (comprehensive error reporting)
-# approach: create new test missing 2+ fields
 #
 # === _validate_performance_fields ===
 # test_validate_performance_fields_returns_none_for_valid_fields

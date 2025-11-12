@@ -106,3 +106,94 @@ def test_validate_session_structure_returns_error_when_raw_files_not_list() -> N
         "message": "raw_files must be a list",
         "error_code": "VALIDATION_ERROR",
     }
+
+
+# ============================================================================
+# Tests for _validate_required_fields
+# ============================================================================
+
+
+def test_validate_required_fields_returns_none_for_complete_fields() -> None:
+    """Test that _validate_required_fields returns None when all required fields present."""
+    # given
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 5,
+        "performance_comment": "Good",
+    }
+
+    # when
+    result = insert._validate_required_fields(session_data)
+
+    # then
+    assert result is None
+
+
+def test_validate_required_fields_returns_error_for_missing_performance_status() -> (
+    None
+):
+    """Test that _validate_required_fields returns error dict when performance_status missing."""
+    # given
+    session_data = {"performance_rating": 5, "performance_comment": "Good"}
+
+    # when
+    result = insert._validate_required_fields(session_data)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Missing required fields: performance_status",
+        "error_code": "VALIDATION_ERROR",
+    }
+
+
+def test_validate_required_fields_returns_error_for_missing_performance_rating() -> (
+    None
+):
+    """Test that _validate_required_fields returns error dict when performance_rating missing."""
+    # given
+    session_data = {"performance_status": 1, "performance_comment": "Good"}
+
+    # when
+    result = insert._validate_required_fields(session_data)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Missing required fields: performance_rating",
+        "error_code": "VALIDATION_ERROR",
+    }
+
+
+def test_validate_required_fields_returns_error_for_missing_performance_comment() -> (
+    None
+):
+    """Test that _validate_required_fields returns error dict when performance_comment missing."""
+    # given
+    session_data = {"performance_status": 1, "performance_rating": 5}
+
+    # when
+    result = insert._validate_required_fields(session_data)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Missing required fields: performance_comment",
+        "error_code": "VALIDATION_ERROR",
+    }
+
+
+def test_validate_required_fields_returns_error_for_multiple_missing_fields() -> None:
+    """Test that _validate_required_fields returns error dict listing all missing fields."""
+    # given
+    session_data = {"performance_status": 1}
+
+    # when
+    result = insert._validate_required_fields(session_data)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Missing required fields: performance_rating, performance_comment",
+        "error_code": "VALIDATION_ERROR",
+    }
