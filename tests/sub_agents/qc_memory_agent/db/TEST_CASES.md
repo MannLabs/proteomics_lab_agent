@@ -11,143 +11,10 @@
 #
 #
 # === _validate_performance_fields ===
-# test_validate_performance_fields_returns_none_for_valid_fields
-# """Test that _validate_performance_fields returns None for valid performance fields."""
-# value: 8/10 (happy path)
-# approach: create new test with valid status and rating
 #
-# test_validate_performance_fields_returns_error_for_invalid_status
-# """Test that _validate_performance_fields returns error dict for invalid status."""
-# value: 8/10 (delegates to _validate_performance_status)
-# approach: create new test with invalid status
 #
-# test_validate_performance_fields_returns_error_for_invalid_rating
-# """Test that _validate_performance_fields returns error dict for invalid rating."""
-# value: 8/10 (delegates to _validate_performance_rating)
-# approach: create new test with invalid rating
 #
-# === _validate_performance_status ===
-# test_validate_performance_status_returns_none_for_valid_int_0
-# """Test that _validate_performance_status returns None for integer 0."""
-# value: 8/10 (valid value)
-# approach: create new test with status=0
 #
-# test_validate_performance_status_returns_none_for_valid_int_1
-# """Test that _validate_performance_status returns None for integer 1."""
-# value: 8/10 (valid value)
-# approach: create new test with status=1
-#
-# test_validate_performance_status_returns_none_for_valid_bool_false
-# """Test that _validate_performance_status returns None for boolean False."""
-# value: 8/10 (valid value, bool is subclass of int)
-# approach: create new test with status=False
-#
-# test_validate_performance_status_returns_none_for_valid_bool_true
-# """Test that _validate_performance_status returns None for boolean True."""
-# value: 8/10 (valid value, bool is subclass of int)
-# approach: create new test with status=True
-#
-# test_validate_performance_status_returns_error_for_int_2
-# """Test that _validate_performance_status returns error dict for integer 2."""
-# value: 9/10 (boundary check)
-# approach: create new test with status=2
-#
-# test_validate_performance_status_returns_error_for_negative_int
-# """Test that _validate_performance_status returns error dict for negative integer."""
-# value: 8/10 (boundary check)
-# approach: create new test with status=-1
-#
-# test_validate_performance_status_returns_error_for_string
-# """Test that _validate_performance_status returns error dict for string value."""
-# value: 8/10 (type validation)
-# approach: create new test with status="1"
-#
-# test_validate_performance_status_returns_error_for_none
-# """Test that _validate_performance_status returns error dict for None."""
-# value: 8/10 (type validation)
-# approach: create new test with status=None
-#
-# === _validate_performance_rating ===
-# test_validate_performance_rating_returns_none_for_valid_int_0
-# """Test that _validate_performance_rating returns None for integer 0."""
-# value: 8/10 (boundary check)
-# approach: create new test with rating=0
-#
-# test_validate_performance_rating_returns_none_for_valid_int_5
-# """Test that _validate_performance_rating returns None for integer 5."""
-# value: 8/10 (boundary check)
-# approach: create new test with rating=5
-#
-# test_validate_performance_rating_returns_none_for_valid_float_2_5
-# """Test that _validate_performance_rating returns None for float 2.5."""
-# value: 8/10 (valid float)
-# approach: create new test with rating=2.5
-#
-# test_validate_performance_rating_returns_error_for_negative_value
-# """Test that _validate_performance_rating returns error dict for negative value."""
-# value: 9/10 (boundary check)
-# approach: create new test with rating=-1
-#
-# test_validate_performance_rating_returns_error_for_value_above_max
-# """Test that _validate_performance_rating returns error dict for value > MAX_PERFORMANCE_RATING."""
-# value: 9/10 (boundary check)
-# approach: create new test with rating=6
-#
-# test_validate_performance_rating_returns_error_for_string
-# """Test that _validate_performance_rating returns error dict for string value."""
-# value: 8/10 (type validation)
-# approach: create new test with rating="5"
-#
-# test_validate_performance_rating_returns_error_for_none
-# """Test that _validate_performance_rating returns error dict for None."""
-# value: 8/10 (type validation)
-# approach: create new test with rating=None
-#
-# === _validate_raw_files ===
-# test_validate_raw_files_returns_none_for_valid_single_file
-# """Test that _validate_raw_files returns None for single valid file in list."""
-# value: 8/10 (happy path)
-# approach: create new test with one valid file dict
-#
-# test_validate_raw_files_returns_none_for_valid_multiple_files
-# """Test that _validate_raw_files returns None for multiple valid files in list."""
-# value: 8/10 (happy path)
-# approach: create new test with two valid file dicts
-#
-# test_validate_raw_files_returns_error_for_non_dict_item
-# """Test that _validate_raw_files returns error dict when list contains non-dict."""
-# value: 9/10 (type validation)
-# approach: create new test with string in list
-#
-# test_validate_raw_files_returns_error_for_missing_file_name
-# """Test that _validate_raw_files returns error dict when file_name missing."""
-# value: 9/10 (required field)
-# approach: create new test without file_name
-#
-# test_validate_raw_files_returns_error_for_missing_instrument_id
-# """Test that _validate_raw_files returns error dict when instrument_id missing."""
-# value: 9/10 (required field)
-# approach: create new test without instrument_id
-#
-# test_validate_raw_files_returns_error_for_missing_gradient
-# """Test that _validate_raw_files returns error dict when gradient missing."""
-# value: 9/10 (required field)
-# approach: create new test without gradient
-#
-# test_validate_raw_files_converts_string_gradient_to_float
-# """Test that _validate_raw_files converts string gradient to float successfully."""
-# value: 8/10 (data coercion)
-# approach: create new test with gradient="44.0" and verify conversion
-#
-# test_validate_raw_files_returns_error_for_invalid_string_gradient
-# """Test that _validate_raw_files returns error dict when gradient string can't be converted."""
-# value: 9/10 (error handling)
-# approach: create new test with gradient="invalid"
-#
-# test_validate_raw_files_includes_file_index_in_error_messages
-# """Test that _validate_raw_files includes file index in error messages."""
-# value: 7/10 (error reporting quality)
-# approach: adapt existing test to verify index in error message
 #
 # === _validate_file_fields ===
 # test_validate_file_fields_returns_none_for_valid_fields
@@ -160,40 +27,20 @@
 # value: 9/10 (validation)
 # approach: create new test with file_name=""
 #
-# test_validate_file_fields_returns_error_for_whitespace_file_name
-# """Test that _validate_file_fields returns error dict for whitespace-only file_name."""
-# value: 8/10 (validation)
-# approach: create new test with file_name="   "
 #
-# test_validate_file_fields_returns_error_for_non_string_file_name
-# """Test that _validate_file_fields returns error dict for non-string file_name."""
-# value: 8/10 (type validation)
-# approach: create new test with file_name=123
 #
 # test_validate_file_fields_returns_error_for_empty_instrument_id
 # """Test that _validate_file_fields returns error dict for empty string instrument_id."""
 # value: 9/10 (validation)
 # approach: create new test with instrument_id=""
 #
-# test_validate_file_fields_returns_error_for_whitespace_instrument_id
-# """Test that _validate_file_fields returns error dict for whitespace-only instrument_id."""
-# value: 8/10 (validation)
-# approach: create new test with instrument_id="   "
 #
-# test_validate_file_fields_returns_error_for_non_string_instrument_id
-# """Test that _validate_file_fields returns error dict for non-string instrument_id."""
-# value: 8/10 (type validation)
-# approach: create new test with instrument_id=123
 #
 # test_validate_file_fields_returns_error_for_non_numeric_gradient
 # """Test that _validate_file_fields returns error dict for non-numeric gradient."""
 # value: 8/10 (type validation)
 # approach: create new test with gradient="text"
 #
-# test_validate_file_fields_includes_index_in_error_messages
-# """Test that _validate_file_fields includes file index in error messages."""
-# value: 7/10 (error reporting quality)
-# approach: adapt existing test to verify index in error message
 #
 # === _process_raw_file ===
 # test_process_raw_file_creates_new_file_when_not_exists
