@@ -9,16 +9,7 @@
 #
 #
 # === query_performance_data ===
-#
-# test_query_performance_data_returns_empty_results_when_no_matches
-# """Test that query_performance_data returns success dict with empty data when no matches."""
-# value: 8/10 (common scenario)
-# approach: create new test with filter that matches nothing
-#
-# test_query_performance_data_returns_error_for_invalid_filters
-# """Test that query_performance_data returns error dict for invalid filters."""
-# value: 9/10 (input validation)
-# approach: adapt existing test or create new test with invalid filters
+
 #
 # test_query_performance_data_filters_by_performance_status
 # """Test that query_performance_data correctly filters by performance_status."""

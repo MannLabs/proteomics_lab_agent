@@ -282,3 +282,59 @@ def test_query_performance_data_returns_success_with_matching_records(
             "count": 1,
         },
     }
+
+
+def test_query_performance_data_returns_empty_results_when_no_matches(
+    in_memory_db: Path,
+) -> None:
+    """Test that query_performance_data returns success dict with empty data when no matches."""
+    # given - populate database with test data
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 5,
+        "performance_comment": "Excellent performance",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # Insert test data
+        insert_result = insert.insert_performance_and_raw_file_info(session_data)
+        assert insert_result["success"] is True
+
+        # when - query with filter that doesn't match
+        filters = {"performance_status": 0}
+        result = queries.query_performance_data(filters)
+
+    # then
+    assert result == {
+        "success": True,
+        "message": "Query executed successfully. Found 0 record(s).",
+        "data": {"results": [], "count": 0},
+    }
+
+
+def test_query_performance_data_returns_error_for_invalid_filters() -> None:
+    """Test that query_performance_data returns error dict for invalid filters."""
+    # given
+    filters = {"invalid_field": "value"}
+
+    # when
+    result = queries.query_performance_data(filters)
+
+    # then
+    valid_fields = [
+        "performance_status",
+        "performance_rating",
+        "performance_comment",
+        "instrument_id",
+        "gradient",
+        "file_name",
+        "created_by_agent_version",
+    ]
+    assert result == {
+        "success": False,
+        "message": f"Invalid filter field(s): ['invalid_field']. Valid fields: {valid_fields}",
+        "error_code": "VALIDATION_ERROR",
+    }
