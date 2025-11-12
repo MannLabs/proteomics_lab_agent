@@ -829,3 +829,53 @@ def test_insert_performance_and_raw_file_info_creates_links_between_session_and_
         assert links[1]["performance_data_id"] == result["data"]["performance_data_id"]
 
         conn.close()
+
+
+def test_insert_performance_and_raw_file_info_rolls_back_transaction_on_error(
+    in_memory_db: Path,
+) -> None:
+    """Test that insert_performance_and_raw_file_info rolls back changes when error occurs."""
+    # given
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 4.0,
+        "performance_comment": "Good",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+
+    # Mock _process_raw_file to raise error after performance_data insert
+    with (
+        patch.object(connection, "DATABASE_PATH", in_memory_db),
+        patch.object(
+            insert, "_process_raw_file", side_effect=Exception("Simulated error")
+        ),
+    ):
+        # when
+        result = insert.insert_performance_and_raw_file_info(session_data)
+
+        # then
+        assert result == {
+            "success": False,
+            "message": "Unexpected error: Simulated error",
+            "error_code": "UNEXPECTED_ERROR",
+        }
+
+        # Verify no data was committed (transaction rolled back)
+        conn = connection.get_db_connection()
+        cursor = conn.cursor()
+
+        # Check performance_data table is empty
+        cursor.execute("SELECT COUNT(*) as count FROM performance_data")
+        assert cursor.fetchone()["count"] == 0
+
+        # Check raw_files table is empty
+        cursor.execute("SELECT COUNT(*) as count FROM raw_files")
+        assert cursor.fetchone()["count"] == 0
+
+        # Check junction table is empty
+        cursor.execute("SELECT COUNT(*) as count FROM raw_files_to_performance_data")
+        assert cursor.fetchone()["count"] == 0
+
+        conn.close()
