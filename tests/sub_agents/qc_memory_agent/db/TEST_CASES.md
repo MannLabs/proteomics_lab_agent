@@ -18,32 +18,6 @@
 #
 
 #
-# === insert_performance_and_raw_file_info ===
-# test_insert_performance_and_raw_file_info_creates_session_with_single_new_file
-# """Test that insert_performance_and_raw_file_info successfully creates session with one new file."""
-# value: 10/10 (primary happy path)
-# approach: create new test with valid single-file session
-#
-# test_insert_performance_and_raw_file_info_creates_session_with_multiple_new_files
-# """Test that insert_performance_and_raw_file_info successfully creates session with multiple new files."""
-# value: 10/10 (primary happy path)
-# approach: create new test with valid multi-file session
-#
-# test_insert_performance_and_raw_file_info_reuses_existing_matching_files
-# """Test that insert_performance_and_raw_file_info reuses files when exact match exists."""
-# value: 9/10 (important logic)
-# approach: create new test with pre-existing matching files
-#
-# test_insert_performance_and_raw_file_info_updates_existing_non_matching_files
-# """Test that insert_performance_and_raw_file_info updates files when data differs."""
-# value: 9/10 (important logic)
-# approach: create new test with pre-existing files with different data
-#
-# test_insert_performance_and_raw_file_info_creates_links_between_session_and_files
-# """Test that insert_performance_and_raw_file_info creates records in junction table."""
-# value: 9/10 (core functionality)
-# approach: adapt existing test to verify junction table records
-#
 # test_insert_performance_and_raw_file_info_uses_uuid_for_performance_id
 # """Test that insert_performance_and_raw_file_info generates UUID for performance_data_id."""
 # value: 7/10 (implementation detail)

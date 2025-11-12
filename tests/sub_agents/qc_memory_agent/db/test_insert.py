@@ -383,7 +383,7 @@ def test_process_raw_file_creates_new_file_when_not_exists(in_memory_db: Path) -
         row = cursor.fetchone()
         assert row["file_name"] == "test.d"
         assert row["instrument_id"] == "tims2"
-        assert row["gradient"] == 44.0  # noqa: PLR2004
+        assert row["gradient"] == 44.0
 
         conn.close()
 
@@ -473,7 +473,7 @@ def test_process_raw_file_updates_when_gradient_differs_beyond_tolerance(
 
         # Verify gradient was updated
         cursor.execute("SELECT gradient FROM raw_files WHERE id = ?", (file_id,))
-        assert cursor.fetchone()["gradient"] == 44.0  # noqa: PLR2004
+        assert cursor.fetchone()["gradient"] == 44.0
 
         conn.close()
 
@@ -505,7 +505,7 @@ def test_process_raw_file_reuses_when_gradient_within_tolerance(
 
         # Verify gradient was NOT updated (still has old value)
         cursor.execute("SELECT gradient FROM raw_files WHERE id = ?", (file_id,))
-        assert cursor.fetchone()["gradient"] == 44.0005  # noqa: PLR2004
+        assert cursor.fetchone()["gradient"] == 44.0005
 
         conn.close()
 
@@ -614,3 +614,218 @@ def test_validate_session_data_returns_error_for_invalid_raw_files() -> None:
         "message": "Raw file at index 0: file_name must be a non-empty string",
         "error_code": "VALIDATION_ERROR",
     }
+
+
+# ============================================================================
+# Tests for insert_performance_and_raw_file_info (integration tests)
+# ============================================================================
+
+
+def test_insert_performance_and_raw_file_info_creates_session_with_single_new_file(
+    in_memory_db: Path,
+) -> None:
+    """Test that insert_performance_and_raw_file_info successfully creates session with one new file."""
+    # given
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 5.0,
+        "performance_comment": "Excellent",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # when
+        result = insert.insert_performance_and_raw_file_info(session_data)
+
+        # then
+        assert result["success"] is True
+        assert "performance_data_id" in result["data"]
+        assert result["data"]["files_created"] == 1
+        assert result["data"]["files_updated"] == 0
+        assert result["data"]["files_reused"] == 0
+
+        # Verify database state
+        conn = connection.get_db_connection()
+        cursor = conn.cursor()
+
+        # Check performance_data table
+        cursor.execute(
+            "SELECT * FROM performance_data WHERE id = ?",
+            (result["data"]["performance_data_id"],),
+        )
+        perf = cursor.fetchone()
+        assert perf["performance_status"] == 1
+        assert perf["performance_rating"] == 5.0
+        assert perf["performance_comment"] == "Excellent"
+        assert perf["created_by_agent_version"] == "qc_memory_agent_v1.0"
+
+        # Check raw_files table
+        cursor.execute("SELECT * FROM raw_files WHERE file_name = ?", ("test1.d",))
+        file = cursor.fetchone()
+        assert file["instrument_id"] == "tims2"
+        assert file["gradient"] == 44.0
+
+        # Check junction table
+        cursor.execute(
+            "SELECT * FROM raw_files_to_performance_data WHERE performance_data_id = ?",
+            (result["data"]["performance_data_id"],),
+        )
+        links = cursor.fetchall()
+        assert len(links) == 1
+
+        conn.close()
+
+
+def test_insert_performance_and_raw_file_info_creates_session_with_multiple_new_files(
+    in_memory_db: Path,
+) -> None:
+    """Test that insert_performance_and_raw_file_info successfully creates session with multiple new files."""
+    # given
+    session_data = {
+        "performance_status": 0,
+        "performance_rating": 2.5,
+        "performance_comment": "Poor",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0},
+            {"file_name": "test2.d", "instrument_id": "tims1", "gradient": 30.0},
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # when
+        result = insert.insert_performance_and_raw_file_info(session_data)
+
+        # then
+        assert result["success"] is True
+        assert result["data"]["files_created"] == 2
+        assert result["data"]["files_updated"] == 0
+        assert result["data"]["files_reused"] == 0
+
+        # Verify junction table has 2 links
+        conn = connection.get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM raw_files_to_performance_data WHERE performance_data_id = ?",
+            (result["data"]["performance_data_id"],),
+        )
+        links = cursor.fetchall()
+        assert len(links) == 2
+
+        conn.close()
+
+
+def test_insert_performance_and_raw_file_info_reuses_existing_matching_files(
+    in_memory_db: Path,
+) -> None:
+    """Test that insert_performance_and_raw_file_info reuses files when exact match exists."""
+    # given
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 4.0,
+        "performance_comment": "Good",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # Pre-insert matching file
+        conn = connection.get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
+            ("test1.d", "tims2", 44.0),
+        )
+        conn.commit()
+        conn.close()
+
+        # when
+        result = insert.insert_performance_and_raw_file_info(session_data)
+
+        # then
+        assert result["success"] is True
+        assert result["data"]["files_created"] == 0
+        assert result["data"]["files_updated"] == 0
+        assert result["data"]["files_reused"] == 1
+
+
+def test_insert_performance_and_raw_file_info_updates_existing_non_matching_files(
+    in_memory_db: Path,
+) -> None:
+    """Test that insert_performance_and_raw_file_info updates files when data differs."""
+    # given
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 4.0,
+        "performance_comment": "Good",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # Pre-insert file with different instrument
+        conn = connection.get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
+            ("test1.d", "tims1", 44.0),
+        )
+        conn.commit()
+        conn.close()
+
+        # when
+        result = insert.insert_performance_and_raw_file_info(session_data)
+
+        # then
+        assert result["success"] is True
+        assert result["data"]["files_created"] == 0
+        assert result["data"]["files_updated"] == 1
+        assert result["data"]["files_reused"] == 0
+
+
+def test_insert_performance_and_raw_file_info_creates_links_between_session_and_files(
+    in_memory_db: Path,
+) -> None:
+    """Test that insert_performance_and_raw_file_info creates records in junction table."""
+    # given
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 3.0,
+        "performance_comment": "OK",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0},
+            {"file_name": "test2.d", "instrument_id": "tims1", "gradient": 30.0},
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # when
+        result = insert.insert_performance_and_raw_file_info(session_data)
+
+        # then
+        conn = connection.get_db_connection()
+        cursor = conn.cursor()
+
+        # Verify junction table links performance_data to both files
+        cursor.execute(
+            """
+            SELECT rf.file_name, rfpd.performance_data_id, rfpd.raw_files_id
+            FROM raw_files_to_performance_data rfpd
+            JOIN raw_files rf ON rfpd.raw_files_id = rf.id
+            WHERE rfpd.performance_data_id = ?
+            ORDER BY rf.file_name
+            """,
+            (result["data"]["performance_data_id"],),
+        )
+        links = cursor.fetchall()
+
+        assert len(links) == 2
+        assert links[0]["file_name"] == "test1.d"
+        assert links[1]["file_name"] == "test2.d"
+        assert links[0]["performance_data_id"] == result["data"]["performance_data_id"]
+        assert links[1]["performance_data_id"] == result["data"]["performance_data_id"]
+
+        conn.close()

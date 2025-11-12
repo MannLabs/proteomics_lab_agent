@@ -99,5 +99,6 @@ ignore = [
     "T201" # use of 'print' detected
 ]
 "tests/**/*.py" = [
-    "SLF001" # Private member accessed
+    "SLF001", # Private member accessed
+    "PLR2004" # Magic numbers
 ]
