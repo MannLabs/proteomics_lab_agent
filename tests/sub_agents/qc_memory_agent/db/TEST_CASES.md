@@ -6,36 +6,6 @@
 # Review these and decide which to implement:
 #
 #
-# === _build_gradient_condition ===
-# test_build_gradient_condition_returns_exact_match_for_float
-# """Test that _build_gradient_condition returns exact match SQL for float value."""
-# value: 8/10 (happy path)
-# approach: create new test with float value
-#
-# test_build_gradient_condition_returns_range_for_min_max_dict
-# """Test that _build_gradient_condition returns BETWEEN SQL for min/max dict."""
-# value: 9/10 (important feature)
-# approach: create new test with min/max dict
-#
-# test_build_gradient_condition_returns_gte_for_min_only_dict
-# """Test that _build_gradient_condition returns >= SQL for min-only dict."""
-# value: 8/10 (important feature)
-# approach: create new test with min-only dict
-#
-# test_build_gradient_condition_returns_lte_for_max_only_dict
-# """Test that _build_gradient_condition returns <= SQL for max-only dict."""
-# value: 8/10 (important feature)
-# approach: create new test with max-only dict
-#
-# test_build_gradient_condition_returns_tolerance_range_for_tolerance_dict
-# """Test that _build_gradient_condition returns BETWEEN SQL for tolerance dict."""
-# value: 8/10 (important feature)
-# approach: create new test with tolerance/value dict
-#
-# test_build_gradient_condition_raises_error_for_invalid_dict_format
-# """Test that _build_gradient_condition raises ValidationError for invalid dict format."""
-# value: 9/10 (error handling)
-# approach: create new test with dict missing required keys
 #
 # === _build_filter_conditions ===
 # test_build_filter_conditions_returns_conditions_and_params_for_exact_match_filters

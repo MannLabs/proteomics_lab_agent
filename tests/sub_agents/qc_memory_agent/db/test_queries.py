@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import pytest
+
 from proteomics_lab_agent.sub_agents.qc_memory_agent.db import queries
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import ValidationError
 
 # ============================================================================
 # Tests for _validate_query_filters
@@ -68,3 +71,86 @@ def test_validate_query_filters_returns_error_for_invalid_filter_fields() -> Non
         "message": f"Invalid filter field(s): ['invalid_field']. Valid fields: {valid_fields}",
         "error_code": "VALIDATION_ERROR",
     }
+
+
+# ============================================================================
+# Tests for _build_gradient_condition
+# ============================================================================
+
+
+def test_build_gradient_condition_returns_exact_match_for_float() -> None:
+    """Test that _build_gradient_condition returns exact match SQL for float value."""
+    # given
+    value = 44.0
+
+    # when
+    condition, params = queries._build_gradient_condition(value)
+
+    # then
+    assert condition == "rf.gradient = ?"
+    assert params == [44.0]
+
+
+def test_build_gradient_condition_returns_range_for_min_max_dict() -> None:
+    """Test that _build_gradient_condition returns BETWEEN SQL for min/max dict."""
+    # given
+    value = {"min": 40.0, "max": 45.0}
+
+    # when
+    condition, params = queries._build_gradient_condition(value)
+
+    # then
+    assert condition == "rf.gradient BETWEEN ? AND ?"
+    assert params == [40.0, 45.0]
+
+
+def test_build_gradient_condition_returns_gte_for_min_only_dict() -> None:
+    """Test that _build_gradient_condition returns >= SQL for min-only dict."""
+    # given
+    value = {"min": 40.0}
+
+    # when
+    condition, params = queries._build_gradient_condition(value)
+
+    # then
+    assert condition == "rf.gradient >= ?"
+    assert params == [40.0]
+
+
+def test_build_gradient_condition_returns_lte_for_max_only_dict() -> None:
+    """Test that _build_gradient_condition returns <= SQL for max-only dict."""
+    # given
+    value = {"max": 45.0}
+
+    # when
+    condition, params = queries._build_gradient_condition(value)
+
+    # then
+    assert condition == "rf.gradient <= ?"
+    assert params == [45.0]
+
+
+def test_build_gradient_condition_returns_tolerance_range_for_tolerance_dict() -> None:
+    """Test that _build_gradient_condition returns BETWEEN SQL for tolerance dict."""
+    # given
+    value = {"value": 44.0, "tolerance": 0.5}
+
+    # when
+    condition, params = queries._build_gradient_condition(value)
+
+    # then
+    assert condition == "rf.gradient BETWEEN ? AND ?"
+    assert params == [43.5, 44.5]
+
+
+def test_build_gradient_condition_raises_error_for_invalid_dict_format() -> None:
+    """Test that _build_gradient_condition raises ValidationError for invalid dict format."""
+    # given
+    value = {"invalid_key": 44.0}
+
+    # when / then
+    with pytest.raises(
+        ValidationError,
+        match="Invalid gradient filter format. Use 'min'/'max', 'tolerance'/'value', or numeric value.",
+    ):
+        queries._build_gradient_condition(value)
