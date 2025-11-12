@@ -4,22 +4,15 @@ from __future__ import annotations
 
 import logging
 import sqlite3
-from pathlib import Path
 from typing import NoReturn
 
-logger = logging.getLogger(__name__)
-
-DATABASE_PATH = Path(__file__).parent / "database.db"
-GRADIENT_TOLERANCE = (
-    0.001  # Tolerance for retrieving raw files based on gradient length
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import (
+    COMPATIBLE_SCHEMA_VERSION,
+    DATABASE_PATH,
+    DatabaseError,
 )
-MAX_PERFORMANCE_RATING = 5
-COMPATIBLE_SCHEMA_VERSION = 1
-AGENT_NAME = "qc_memory_agent_v1.0"
 
-
-class DatabaseError(Exception):
-    """Custom exception for database operations."""
+logger = logging.getLogger(__name__)
 
 
 def _raise_schema_not_found_error() -> NoReturn:
