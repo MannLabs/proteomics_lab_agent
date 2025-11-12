@@ -56,10 +56,7 @@
 # value: 7/10 (feature verification)
 # approach: create new test with created_by_agent_version filter
 #
-# test_query_performance_data_combines_multiple_filters
-# """Test that query_performance_data correctly combines multiple filters with AND."""
-# value: 9/10 (real-world usage)
-# approach: create new test with 2-3 filters
+
 #
 # test_query_performance_data_returns_all_expected_fields
 # """Test that query_performance_data returns all expected fields in results."""

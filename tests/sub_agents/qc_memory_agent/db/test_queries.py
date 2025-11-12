@@ -338,3 +338,69 @@ def test_query_performance_data_returns_error_for_invalid_filters() -> None:
         "message": f"Invalid filter field(s): ['invalid_field']. Valid fields: {valid_fields}",
         "error_code": "VALIDATION_ERROR",
     }
+
+
+def test_query_performance_data_combines_multiple_filters(
+    in_memory_db: Path,
+) -> None:
+    """Test that query_performance_data correctly combines multiple filters with AND."""
+    # given - populate database with multiple sessions
+    session1 = {
+        "performance_status": 1,
+        "performance_rating": 5,
+        "performance_comment": "Excellent",
+        "raw_files": [
+            {"file_name": "file1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+    session2 = {
+        "performance_status": 1,
+        "performance_rating": 3,
+        "performance_comment": "Good",
+        "raw_files": [
+            {"file_name": "file2.d", "instrument_id": "tims1", "gradient": 44.0}
+        ],
+    }
+    session3 = {
+        "performance_status": 0,
+        "performance_rating": 2,
+        "performance_comment": "Poor",
+        "raw_files": [
+            {"file_name": "file3.d", "instrument_id": "tims2", "gradient": 30.0}
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # Insert test data
+        insert.insert_performance_and_raw_file_info(session1)
+        insert.insert_performance_and_raw_file_info(session2)
+        insert.insert_performance_and_raw_file_info(session3)
+
+        # when - query with multiple filters (should match only session1)
+        filters = {
+            "performance_status": 1,
+            "instrument_id": "tims2",
+            "gradient": 44.0,
+        }
+        result = queries.query_performance_data(filters)
+
+    # then - only file1.d matches all three filters
+    assert result == {
+        "success": True,
+        "message": "Query executed successfully. Found 1 record(s).",
+        "data": {
+            "results": [
+                {
+                    "id": 1,
+                    "file_name": "file1.d",
+                    "instrument_id": "tims2",
+                    "gradient": 44.0,
+                    "performance_status": 1,
+                    "performance_rating": 5.0,
+                    "performance_comment": "Excellent",
+                    "created_by_agent_version": "qc_memory_agent_v1.0",
+                }
+            ],
+            "count": 1,
+        },
+    }
