@@ -6,27 +6,6 @@
 # Review these and decide which to implement:
 #
 #
-# === _validate_query_filters ===
-# test_validate_query_filters_returns_none_for_valid_filters
-# """Test that _validate_query_filters returns None when all filters are valid."""
-# value: 8/10 (happy path validation)
-# approach: create new test with all valid filter combinations
-#
-# test_validate_query_filters_returns_error_for_empty_filters
-# """Test that _validate_query_filters returns error dict when filters dict is empty."""
-# value: 7/10 (input validation)
-# approach: create new test with empty dict
-#
-# test_validate_query_filters_returns_error_for_non_dict_filters
-# """Test that _validate_query_filters returns error dict when filters is not a dict."""
-# value: 8/10 (type validation)
-# approach: create new test with list/string/None as filters
-#
-# test_validate_query_filters_returns_error_for_invalid_filter_fields
-# """Test that _validate_query_filters returns error dict with invalid field names."""
-# value: 9/10 (prevents SQL injection and invalid queries)
-# approach: create new test with invalid field name
-#
 # === _build_gradient_condition ===
 # test_build_gradient_condition_returns_exact_match_for_float
 # """Test that _build_gradient_condition returns exact match SQL for float value."""
@@ -165,20 +144,6 @@
 # value: 7/10 (error handling)
 # approach: modify _build_gradient_condition to raise ValidationError
 #
-# test_query_performance_data_handles_unexpected_error
-# """Test that query_performance_data returns error dict for unexpected exceptions."""
-# value: 6/10 (error handling)
-# approach: create new test with mock that raises generic Exception
-#
-# test_query_performance_data_closes_connection_on_success
-# """Test that query_performance_data closes database connection after successful query."""
-# value: 7/10 (resource management)
-# approach: verify connection is closed in finally block
-#
-# test_query_performance_data_closes_connection_on_error
-# """Test that query_performance_data closes database connection after error."""
-# value: 7/10 (resource management)
-# approach: verify connection is closed even when error occurs
 #
 # === _validate_session_structure ===
 # test_validate_session_structure_returns_none_for_valid_structure
