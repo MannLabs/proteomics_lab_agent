@@ -16,32 +16,6 @@
 #
 #
 #
-# === _validate_file_fields ===
-# test_validate_file_fields_returns_none_for_valid_fields
-# """Test that _validate_file_fields returns None for all valid field values."""
-# value: 8/10 (happy path)
-# approach: create new test with valid file_name, instrument_id, gradient
-#
-# test_validate_file_fields_returns_error_for_empty_file_name
-# """Test that _validate_file_fields returns error dict for empty string file_name."""
-# value: 9/10 (validation)
-# approach: create new test with file_name=""
-#
-#
-#
-# test_validate_file_fields_returns_error_for_empty_instrument_id
-# """Test that _validate_file_fields returns error dict for empty string instrument_id."""
-# value: 9/10 (validation)
-# approach: create new test with instrument_id=""
-#
-#
-#
-# test_validate_file_fields_returns_error_for_non_numeric_gradient
-# """Test that _validate_file_fields returns error dict for non-numeric gradient."""
-# value: 8/10 (type validation)
-# approach: create new test with gradient="text"
-#
-#
 # === _process_raw_file ===
 # test_process_raw_file_creates_new_file_when_not_exists
 # """Test that _process_raw_file creates new record and returns (id, 'created')."""
@@ -67,11 +41,7 @@
 # """Test that _process_raw_file returns 'found_exact_match' when gradient within tolerance."""
 # value: 9/10 (tolerance logic)
 # approach: create new test with gradient difference < GRADIENT_TOLERANCE
-#
-# test_process_raw_file_raises_error_when_lastrowid_is_none
-# """Test that _process_raw_file raises DatabaseError when cursor.lastrowid is None after insert."""
-# value: 7/10 (error handling)
-# approach: create new test with mock cursor that returns None for lastrowid
+
 #
 # === _validate_session_data ===
 # test_validate_session_data_returns_none_for_valid_complete_session

@@ -283,3 +283,72 @@ def test_validate_performance_status_returns_error_for_negative_int() -> None:
         "message": "performance_status must be 0, 1",
         "error_code": "VALIDATION_ERROR",
     }
+
+
+# ============================================================================
+# Tests for _validate_file_fields
+# ============================================================================
+
+
+def test_validate_file_fields_returns_none_for_valid_fields() -> None:
+    """Test that _validate_file_fields returns None for all valid field values."""
+    # given
+    file_data = {"file_name": "test.d", "instrument_id": "tims2", "gradient": 44.0}
+    index = 0
+
+    # when
+    result = insert._validate_file_fields(file_data, index)
+
+    # then
+    assert result is None
+
+
+def test_validate_file_fields_returns_error_for_empty_file_name() -> None:
+    """Test that _validate_file_fields returns error dict for empty string file_name."""
+    # given
+    file_data = {"file_name": "", "instrument_id": "tims2", "gradient": 44.0}
+    index = 0
+
+    # when
+    result = insert._validate_file_fields(file_data, index)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Raw file at index 0: file_name must be a non-empty string",
+        "error_code": "VALIDATION_ERROR",
+    }
+
+
+def test_validate_file_fields_returns_error_for_empty_instrument_id() -> None:
+    """Test that _validate_file_fields returns error dict for empty string instrument_id."""
+    # given
+    file_data = {"file_name": "test.d", "instrument_id": "", "gradient": 44.0}
+    index = 0
+
+    # when
+    result = insert._validate_file_fields(file_data, index)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Raw file at index 0: instrument_id must be a non-empty string",
+        "error_code": "VALIDATION_ERROR",
+    }
+
+
+def test_validate_file_fields_returns_error_for_non_numeric_gradient() -> None:
+    """Test that _validate_file_fields returns error dict for non-numeric gradient."""
+    # given
+    file_data = {"file_name": "test.d", "instrument_id": "tims2", "gradient": "text"}
+    index = 0
+
+    # when
+    result = insert._validate_file_fields(file_data, index)
+
+    # then
+    assert result == {
+        "success": False,
+        "message": "Raw file at index 0: gradient must be a float or int",
+        "error_code": "VALIDATION_ERROR",
+    }
