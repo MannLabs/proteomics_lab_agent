@@ -1,4 +1,4 @@
-"""qc_memory agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""Database insertion functions for performance sessions and raw file info."""
 
 from __future__ import annotations
 
