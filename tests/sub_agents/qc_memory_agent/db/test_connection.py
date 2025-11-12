@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 import pytest
 
-from proteomics_lab_agent.sub_agents.qc_memory_agent import db_interface
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db import connection
 
 # ============================================================================
 # Tests for get_db_connection
@@ -18,9 +18,9 @@ from proteomics_lab_agent.sub_agents.qc_memory_agent import db_interface
 def test_get_db_connection_returns_valid_connection(in_memory_db: Path) -> None:
     """Test that get_db_connection returns a valid connection with correct schema."""
     # given
-    with patch.object(db_interface, "DATABASE_PATH", in_memory_db):
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
         # when
-        conn = db_interface.get_db_connection()
+        conn = connection.get_db_connection()
 
         # then
         assert isinstance(conn, sqlite3.Connection)
@@ -38,9 +38,9 @@ def test_get_db_connection_returns_valid_connection(in_memory_db: Path) -> None:
 def test_get_db_connection_validates_schema_version(in_memory_db: Path) -> None:
     """Test that get_db_connection validates schema version matches expected version."""
     # given
-    with patch.object(db_interface, "DATABASE_PATH", in_memory_db):
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
         # when
-        conn = db_interface.get_db_connection()
+        conn = connection.get_db_connection()
 
         # then
         cursor = conn.cursor()
@@ -48,7 +48,7 @@ def test_get_db_connection_validates_schema_version(in_memory_db: Path) -> None:
             "SELECT version FROM _schema_version ORDER BY version DESC LIMIT 1"
         )
         db_version = cursor.fetchone()["version"]
-        assert db_version == db_interface.COMPATIBLE_SCHEMA_VERSION
+        assert db_version == connection.COMPATIBLE_SCHEMA_VERSION
         conn.close()
 
 
@@ -66,13 +66,13 @@ def test_get_db_connection_raises_error_when_schema_table_missing() -> None:
 
     # when / then
     with (
-        patch.object(db_interface, "DATABASE_PATH", db_path),
+        patch.object(connection, "DATABASE_PATH", db_path),
         pytest.raises(
-            db_interface.DatabaseError,
+            connection.DatabaseError,
             match="Schema version table '_schema_version' not found",
         ),
     ):
-        db_interface.get_db_connection()
+        connection.get_db_connection()
 
     # Cleanup
     db_path.unlink(missing_ok=True)
@@ -98,13 +98,13 @@ def test_get_db_connection_raises_error_when_schema_version_incompatible() -> No
 
     # when / then
     with (
-        patch.object(db_interface, "DATABASE_PATH", db_path),
+        patch.object(connection, "DATABASE_PATH", db_path),
         pytest.raises(
-            db_interface.DatabaseError,
+            connection.DatabaseError,
             match=r"Database schema version mismatch.*requires version 1.*database is version 999",
         ),
     ):
-        db_interface.get_db_connection()
+        connection.get_db_connection()
 
     # Cleanup
     db_path.unlink(missing_ok=True)
