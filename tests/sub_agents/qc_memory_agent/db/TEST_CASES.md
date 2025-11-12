@@ -9,10 +9,6 @@
 #
 #
 # === query_performance_data ===
-# test_query_performance_data_returns_success_with_matching_records
-# """Test that query_performance_data returns success dict with data when records match."""
-# value: 10/10 (primary happy path)
-# approach: create new test with pre-populated database and valid filter
 #
 # test_query_performance_data_returns_empty_results_when_no_matches
 # """Test that query_performance_data returns success dict with empty data when no matches."""

@@ -2,9 +2,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from unittest.mock import patch
+
 import pytest
 
-from proteomics_lab_agent.sub_agents.qc_memory_agent.db import queries
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db import (
+    connection,
+    insert,
+    queries,
+)
 from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import ValidationError
 
 # ============================================================================
@@ -225,3 +232,53 @@ def test_build_filter_conditions_handles_multiple_filters() -> None:
         "rf.gradient = ?",
     ]
     assert params == [1, "tims2", 44.0]
+
+
+# ============================================================================
+# Tests for query_performance_data (integration tests)
+# ============================================================================
+
+
+def test_query_performance_data_returns_success_with_matching_records(
+    in_memory_db: Path,
+) -> None:
+    """Test that query_performance_data returns success dict with data when records match."""
+    # given - populate database with test data
+    session_data = {
+        "performance_status": 1,
+        "performance_rating": 5,
+        "performance_comment": "Excellent performance",
+        "raw_files": [
+            {"file_name": "test1.d", "instrument_id": "tims2", "gradient": 44.0}
+        ],
+    }
+
+    with patch.object(connection, "DATABASE_PATH", in_memory_db):
+        # Insert test data
+        insert_result = insert.insert_performance_and_raw_file_info(session_data)
+        assert insert_result["success"] is True
+
+        # when - query with matching filter
+        filters = {"performance_status": 1}
+        result = queries.query_performance_data(filters)
+
+    # then
+    assert result == {
+        "success": True,
+        "message": "Query executed successfully. Found 1 record(s).",
+        "data": {
+            "results": [
+                {
+                    "id": 1,
+                    "file_name": "test1.d",
+                    "instrument_id": "tims2",
+                    "gradient": 44.0,
+                    "performance_status": 1,
+                    "performance_rating": 5.0,
+                    "performance_comment": "Excellent performance",
+                    "created_by_agent_version": "qc_memory_agent_v1.0",
+                }
+            ],
+            "count": 1,
+        },
+    }
