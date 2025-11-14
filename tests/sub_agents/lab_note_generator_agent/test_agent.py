@@ -276,3 +276,52 @@ def test_generate_lab_notes_returns_error_when_no_file_path_extracted(
         "status": "error",
         "error_message": "Could not extract valid file path from query",
     }
+
+
+# ============================================================================
+# AGENT INSTANTIATION TESTS
+# ============================================================================
+
+
+def test_lab_note_generator_agent_instantiation() -> None:
+    """Test that lab_note_generator_agent is instantiated correctly with all expected attributes."""
+    # given/when
+    from proteomics_lab_agent.config import config
+
+    # then
+    assert agent.lab_note_generator_agent.name == "lab_note_generator_agent"
+    assert (
+        agent.lab_note_generator_agent.description
+        == "Agent converts video files into lab notes."
+    )
+    assert agent.lab_note_generator_agent.model == config.model
+    assert (
+        "Always analyse the user query by invoking the tool"
+        in agent.lab_note_generator_agent.instruction
+    )
+    assert "generate_lab_notes" in agent.lab_note_generator_agent.instruction
+    assert len(agent.lab_note_generator_agent.tools) == 1
+    assert agent.lab_note_generator_agent.tools[0] == agent.generate_lab_notes
+    assert agent.lab_note_generator_agent.output_key == "lab_notes_result"
+
+
+def test_lab_note_benchmark_helper_agent_instantiation() -> None:
+    """Test that lab_note_benchmark_helper_agent is instantiated correctly with all expected attributes."""
+    # given/when
+    from proteomics_lab_agent.config import config
+
+    # then
+    assert (
+        agent.lab_note_benchmark_helper_agent.name == "lab_note_benchmark_helper_agent"
+    )
+    assert (
+        agent.lab_note_benchmark_helper_agent.description
+        == "Agent helps to generate benchmark dataset from generated lab notes."
+    )
+    assert agent.lab_note_benchmark_helper_agent.model == config.model
+    assert (
+        agent.lab_note_benchmark_helper_agent.instruction
+        == agent.prompt.LAB_NOTE_TO_BENCHMARK_DATASET_CONVERSION
+    )
+    assert len(agent.lab_note_benchmark_helper_agent.tools) == 0
+    assert agent.lab_note_benchmark_helper_agent.output_schema == agent.BenchmarkDataset
