@@ -174,39 +174,250 @@ def test_generate_protocols_returns_success_with_text_input(
 
 
 # ============================================================================
-# UNCOVERED TEST CASES
+# Tests for generate_protocols - Error Handling
+# ============================================================================
+
+
+def test_generate_protocols_returns_error_when_environment_validation_fails() -> None:
+    """Test that generate_protocols returns error when EnvironmentValidator.load_environment raises ValueError."""
+    # given
+    query = "Create a protocol"
+
+    with patch.object(
+        agent.EnvironmentValidator,
+        "load_environment",
+        side_effect=ValueError("Missing required environment variables"),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "error",
+        "error_message": "Missing required environment variables",
+    }
+
+
+def test_generate_protocols_returns_error_when_cloud_resources_initialization_fails(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols returns error when EnvironmentValidator.initialize_cloud_resources raises CloudResourceError."""
+    # given
+    query = "Create a protocol"
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            side_effect=agent.CloudResourceError("Failed to connect to GCS"),
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "error",
+        "error_message": "Failed to connect to GCS",
+    }
+
+
+def test_generate_protocols_returns_error_when_generate_parts_from_folder_raises_os_error(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols returns error when utils.generate_parts_from_folder raises OSError."""
+    # given
+    query = "Create a protocol"
+
+    mock_bucket = MagicMock()
+    mock_client = MagicMock()
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            return_value=(MagicMock(), mock_bucket, mock_client),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
+            side_effect=OSError("Permission denied accessing folder"),
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "error",
+        "error_message": "Analysis failed: Permission denied accessing folder",
+    }
+
+
+def test_generate_protocols_returns_error_when_generate_part_from_path_raises_value_error(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols returns error when utils.generate_part_from_path raises ValueError."""
+    # given
+    query = "Video path: /invalid/path.mp4"
+
+    mock_bucket = MagicMock()
+    mock_client = MagicMock()
+    mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            return_value=(MagicMock(), mock_bucket, mock_client),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
+            return_value=mock_background_parts,
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
+            return_value=("/invalid/path.mp4", "path.mp4", ""),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
+            side_effect=ValueError("Invalid file path"),
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "error",
+        "error_message": "Analysis failed: Invalid file path",
+    }
+
+
+def test_generate_protocols_returns_error_when_generate_content_raises_type_error(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols returns error when client.models.generate_content raises TypeError."""
+    # given
+    query = "Create a protocol"
+
+    mock_bucket = MagicMock()
+    mock_client = MagicMock()
+    mock_client.models.generate_content.side_effect = TypeError("Invalid content type")
+
+    mock_example_parts = {
+        "protocol1": {"part": types.Part.from_text(text="mock protocol1")},
+        "video1": {"part": types.Part.from_text(text="mock video1")},
+        "protocol2": {"part": types.Part.from_text(text="mock protocol2")},
+        "video2": {"part": types.Part.from_text(text="mock video2")},
+    }
+    mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            return_value=(MagicMock(), mock_bucket, mock_client),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
+            return_value=mock_background_parts,
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
+            return_value=(None, None, query),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
+            side_effect=[
+                mock_example_parts["protocol1"],
+                mock_example_parts["video1"],
+                mock_example_parts["protocol2"],
+                mock_example_parts["video2"],
+            ],
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "error",
+        "error_message": "Analysis failed: Invalid content type",
+    }
+
+
+def test_generate_protocols_returns_error_when_generate_content_raises_runtime_error(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols returns error when client.models.generate_content raises RuntimeError."""
+    # given
+    query = "Create a protocol"
+
+    mock_bucket = MagicMock()
+    mock_client = MagicMock()
+    mock_client.models.generate_content.side_effect = RuntimeError("API timeout")
+
+    mock_example_parts = {
+        "protocol1": {"part": types.Part.from_text(text="mock protocol1")},
+        "video1": {"part": types.Part.from_text(text="mock video1")},
+        "protocol2": {"part": types.Part.from_text(text="mock protocol2")},
+        "video2": {"part": types.Part.from_text(text="mock video2")},
+    }
+    mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            return_value=(MagicMock(), mock_bucket, mock_client),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
+            return_value=mock_background_parts,
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
+            return_value=(None, None, query),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
+            side_effect=[
+                mock_example_parts["protocol1"],
+                mock_example_parts["video1"],
+                mock_example_parts["protocol2"],
+                mock_example_parts["video2"],
+            ],
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "error",
+        "error_message": "Analysis failed: API timeout",
+    }
+
+
+# ============================================================================
+# UNCOVERED TEST CASES (Lower Priority)
 # ============================================================================
 # Review these and decide which to implement:
-#
-# test_generate_protocols_returns_error_when_environment_validation_fails
-# """Test that generate_protocols returns error when EnvironmentValidator.load_environment raises ValueError."""
-# value: 10/10 (critical error path - missing environment variables is a common issue)
-# approach: create new test
-#
-# test_generate_protocols_returns_error_when_cloud_resources_initialization_fails
-# """Test that generate_protocols returns error when EnvironmentValidator.initialize_cloud_resources raises CloudResourceError."""
-# value: 10/10 (critical error path - cloud connection failures are common)
-# approach: create new test
-#
-# test_generate_protocols_returns_error_when_generate_parts_from_folder_raises_os_error
-# """Test that generate_protocols returns error when utils.generate_parts_from_folder raises OSError."""
-# value: 8/10 (important error path - file system issues can occur)
-# approach: create new test
-#
-# test_generate_protocols_returns_error_when_generate_part_from_path_raises_value_error
-# """Test that generate_protocols returns error when utils.generate_part_from_path raises ValueError."""
-# value: 8/10 (important error path - invalid file paths can occur)
-# approach: create new test
-#
-# test_generate_protocols_returns_error_when_generate_content_raises_type_error
-# """Test that generate_protocols returns error when client.models.generate_content raises TypeError."""
-# value: 7/10 (important error path - API call failures can occur)
-# approach: create new test
-#
-# test_generate_protocols_returns_error_when_generate_content_raises_runtime_error
-# """Test that generate_protocols returns error when client.models.generate_content raises RuntimeError."""
-# value: 7/10 (important error path - API call failures can occur)
-# approach: create new test
 #
 # test_generate_protocols_handles_video_with_gcs_path
 # """Test that generate_protocols processes video input when file_path is already a GCS URI."""
@@ -222,8 +433,3 @@ def test_generate_protocols_returns_success_with_text_input(
 # """Test that generate_protocols handles text input with special characters and unicode."""
 # value: 4/10 (edge case - special characters should be handled by the model)
 # approach: create new test or adapt existing test_generate_protocols_returns_success_with_text_input
-#
-# test_generate_protocols_measures_protocol_generation_time_correctly
-# """Test that protocol_generation_time is a positive float value."""
-# value: 3/10 (already implicitly tested by checking key exists)
-# approach: existing test already covers this with assert "protocol_generation_time" in result
