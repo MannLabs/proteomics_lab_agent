@@ -154,3 +154,32 @@ def test_check_model_response_preserves_existing_state() -> None:
     assert mock_callback_context.state["existing_key"] == "existing_value"
     assert mock_callback_context.state["tool_failed"] is True
     assert "error_response" in mock_callback_context.state
+
+
+# ============================================================================
+# AGENT INSTANTIATION TESTS
+# ============================================================================
+
+
+def test_qc_memory_agent_instantiation() -> None:
+    """Test that qc_memory_agent is instantiated correctly with all expected attributes."""
+    # given/when
+    from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset
+
+    from proteomics_lab_agent.config import config
+
+    # then
+    assert agent.qc_memory_agent.name == "qc_memory_agent"
+    assert (
+        agent.qc_memory_agent.description
+        == "An agent that can store and retrieve past evaluations of proteomics analysis results."
+    )
+    assert agent.qc_memory_agent.model == config.model
+    assert agent.qc_memory_agent.instruction == agent.prompt.DB_MCP_PROMPT
+    assert (
+        "You are a highly proactive and efficient assistant"
+        in agent.qc_memory_agent.instruction
+    )
+    assert len(agent.qc_memory_agent.tools) == 1
+    assert isinstance(agent.qc_memory_agent.tools[0], MCPToolset)
+    assert agent.qc_memory_agent.after_model_callback == agent.check_model_response
