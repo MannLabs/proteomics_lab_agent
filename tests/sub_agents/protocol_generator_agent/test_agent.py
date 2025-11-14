@@ -415,21 +415,157 @@ def test_generate_protocols_returns_error_when_generate_content_raises_runtime_e
 
 
 # ============================================================================
-# UNCOVERED TEST CASES (Lower Priority)
+# Tests for generate_protocols - Edge Cases
 # ============================================================================
-# Review these and decide which to implement:
-#
-# test_generate_protocols_handles_video_with_gcs_path
-# """Test that generate_protocols processes video input when file_path is already a GCS URI."""
-# value: 6/10 (edge case - GCS paths are already handled by utils, but worth testing integration)
-# approach: adapt existing test test_generate_protocols_returns_success_with_video_input
-#
-# test_generate_protocols_handles_empty_metadata_from_video
-# """Test that generate_protocols handles case when video metadata extraction fails and returns empty dict."""
-# value: 5/10 (edge case - metadata extraction can fail but doesn't break main flow)
-# approach: adapt existing test test_generate_protocols_returns_success_with_video_input
-#
-# test_generate_protocols_handles_query_with_special_characters
-# """Test that generate_protocols handles text input with special characters and unicode."""
-# value: 4/10 (edge case - special characters should be handled by the model)
-# approach: create new test or adapt existing test_generate_protocols_returns_success_with_text_input
+
+
+def test_generate_protocols_handles_video_with_gcs_path(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols processes video input when file_path is already a GCS URI."""
+    # given
+    query = "gs://test-bucket/input_video/sample.mp4"
+
+    mock_bucket = MagicMock()
+    mock_client = MagicMock()
+    mock_response = MagicMock()
+    mock_response.text = (
+        "# Protocol from GCS Video\n\n## Abstract\n\nGCS video protocol."
+    )
+    mock_response.usage_metadata = {"input_tokens": 120, "output_tokens": 60}
+    mock_client.models.generate_content.return_value = mock_response
+
+    mock_video_part = {
+        "part": types.Part.from_text(text="mock gcs video"),
+        "gcs_uri": "gs://test-bucket/input_video/sample.mp4",
+        "metadata": {"duration": "15.2", "file_size": "2048", "input_type": "video"},
+    }
+    mock_example_parts = {
+        "protocol1": {"part": types.Part.from_text(text="mock protocol1")},
+        "video1": {"part": types.Part.from_text(text="mock video1")},
+        "protocol2": {"part": types.Part.from_text(text="mock protocol2")},
+        "video2": {"part": types.Part.from_text(text="mock video2")},
+    }
+    mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            return_value=(MagicMock(), mock_bucket, mock_client),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
+            return_value=mock_background_parts,
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
+            return_value=(
+                "gs://test-bucket/input_video/sample.mp4",
+                "sample.mp4",
+                "",
+            ),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
+            side_effect=[
+                mock_example_parts["protocol1"],
+                mock_example_parts["video1"],
+                mock_example_parts["protocol2"],
+                mock_example_parts["video2"],
+                mock_video_part,
+            ],
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "success",
+        "local_video_path": "gs://test-bucket/input_video/sample.mp4",
+        "gcs_video_path": "gs://test-bucket/input_video/sample.mp4",
+        "video_name": "sample.mp4",
+        "remaining_message": query,
+        "protocol": "# Protocol from GCS Video\n\n## Abstract\n\nGCS video protocol.",
+        "usage_metadata": {"input_tokens": 120, "output_tokens": 60},
+        "protocol_generation_time": result["protocol_generation_time"],
+        "metadata": {"duration": "15.2", "file_size": "2048", "input_type": "video"},
+    }
+
+
+def test_generate_protocols_handles_empty_metadata_from_video(
+    mock_env_vars: dict[str, str],
+) -> None:
+    """Test that generate_protocols handles case when video metadata extraction fails and returns empty dict."""
+    # given
+    query = "Video path: /path/to/corrupted.mp4"
+
+    mock_bucket = MagicMock()
+    mock_client = MagicMock()
+    mock_response = MagicMock()
+    mock_response.text = (
+        "# Protocol Title\n\n## Abstract\n\nProtocol despite missing metadata."
+    )
+    mock_response.usage_metadata = {"input_tokens": 90, "output_tokens": 45}
+    mock_client.models.generate_content.return_value = mock_response
+
+    mock_video_part = {
+        "part": types.Part.from_text(text="mock video"),
+        "gcs_uri": "gs://test-bucket/corrupted.mp4",
+        "metadata": {},
+    }
+    mock_example_parts = {
+        "protocol1": {"part": types.Part.from_text(text="mock protocol1")},
+        "video1": {"part": types.Part.from_text(text="mock video1")},
+        "protocol2": {"part": types.Part.from_text(text="mock protocol2")},
+        "video2": {"part": types.Part.from_text(text="mock video2")},
+    }
+    mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
+
+    with (
+        patch.object(
+            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
+        ),
+        patch.object(
+            agent.EnvironmentValidator,
+            "initialize_cloud_resources",
+            return_value=(MagicMock(), mock_bucket, mock_client),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
+            return_value=mock_background_parts,
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
+            return_value=("/path/to/corrupted.mp4", "corrupted.mp4", ""),
+        ),
+        patch(
+            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
+            side_effect=[
+                mock_example_parts["protocol1"],
+                mock_example_parts["video1"],
+                mock_example_parts["protocol2"],
+                mock_example_parts["video2"],
+                mock_video_part,
+            ],
+        ),
+    ):
+        # when
+        result = agent.generate_protocols(query)
+
+    # then
+    assert result == {
+        "status": "success",
+        "local_video_path": "/path/to/corrupted.mp4",
+        "gcs_video_path": "gs://test-bucket/corrupted.mp4",
+        "video_name": "corrupted.mp4",
+        "remaining_message": query,
+        "protocol": "# Protocol Title\n\n## Abstract\n\nProtocol despite missing metadata.",
+        "usage_metadata": {"input_tokens": 90, "output_tokens": 45},
+        "protocol_generation_time": result["protocol_generation_time"],
+        "metadata": {},
+    }
