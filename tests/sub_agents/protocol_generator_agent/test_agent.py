@@ -35,7 +35,23 @@ def mock_env_vars() -> dict[str, str]:
 # ============================================================================
 
 
-def test_generate_protocols_returns_success_with_video_input(
+@patch(
+    "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path"
+)
+@patch(
+    "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message"
+)
+@patch(
+    "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder"
+)
+@patch.object(agent.EnvironmentValidator, "initialize_cloud_resources")
+@patch.object(agent.EnvironmentValidator, "load_environment")
+def test_generate_protocols_returns_success_with_video_input(  # noqa: PLR0913
+    mock_load_env: MagicMock,
+    mock_init_cloud: MagicMock,
+    mock_gen_parts_folder: MagicMock,
+    mock_extract_file: MagicMock,
+    mock_gen_part_path: MagicMock,
     mock_env_vars: dict[str, str],
 ) -> None:
     """Test that generate_protocols successfully processes video input."""
@@ -62,36 +78,24 @@ def test_generate_protocols_returns_success_with_video_input(
     }
     mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
 
-    with (
-        patch.object(
-            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
-        ),
-        patch.object(
-            agent.EnvironmentValidator,
-            "initialize_cloud_resources",
-            return_value=(MagicMock(), mock_bucket, mock_client),
-        ),
-        patch(
-            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
-            return_value=mock_background_parts,
-        ),
-        patch(
-            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
-            return_value=("/path/to/video.mp4", "video.mp4", "Analyze this video."),
-        ),
-        patch(
-            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
-            side_effect=[
-                mock_example_parts["protocol1"],
-                mock_example_parts["video1"],
-                mock_example_parts["protocol2"],
-                mock_example_parts["video2"],
-                mock_video_part,
-            ],
-        ),
-    ):
-        # when
-        result = agent.generate_protocols(query)
+    mock_load_env.return_value = mock_env_vars
+    mock_init_cloud.return_value = (MagicMock(), mock_bucket, mock_client)
+    mock_gen_parts_folder.return_value = mock_background_parts
+    mock_extract_file.return_value = (
+        "/path/to/video.mp4",
+        "video.mp4",
+        "Analyze this video.",
+    )
+    mock_gen_part_path.side_effect = [
+        mock_example_parts["protocol1"],
+        mock_example_parts["video1"],
+        mock_example_parts["protocol2"],
+        mock_example_parts["video2"],
+        mock_video_part,
+    ]
+
+    # when
+    result = agent.generate_protocols(query)
 
     # then
     assert result == {
@@ -107,7 +111,23 @@ def test_generate_protocols_returns_success_with_video_input(
     }
 
 
-def test_generate_protocols_returns_success_with_text_input(
+@patch(
+    "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path"
+)
+@patch(
+    "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message"
+)
+@patch(
+    "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder"
+)
+@patch.object(agent.EnvironmentValidator, "initialize_cloud_resources")
+@patch.object(agent.EnvironmentValidator, "load_environment")
+def test_generate_protocols_returns_success_with_text_input(  # noqa: PLR0913
+    mock_load_env: MagicMock,
+    mock_init_cloud: MagicMock,
+    mock_gen_parts_folder: MagicMock,
+    mock_extract_file: MagicMock,
+    mock_gen_part_path: MagicMock,
     mock_env_vars: dict[str, str],
 ) -> None:
     """Test that generate_protocols successfully processes text input."""
@@ -129,35 +149,19 @@ def test_generate_protocols_returns_success_with_text_input(
     }
     mock_background_parts = {"parts": [types.Part.from_text(text="mock background")]}
 
-    with (
-        patch.object(
-            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
-        ),
-        patch.object(
-            agent.EnvironmentValidator,
-            "initialize_cloud_resources",
-            return_value=(MagicMock(), mock_bucket, mock_client),
-        ),
-        patch(
-            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_parts_from_folder",
-            return_value=mock_background_parts,
-        ),
-        patch(
-            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.extract_file_path_and_message",
-            return_value=(None, None, query),
-        ),
-        patch(
-            "proteomics_lab_agent.sub_agents.protocol_generator_agent.agent.utils.generate_part_from_path",
-            side_effect=[
-                mock_example_parts["protocol1"],
-                mock_example_parts["video1"],
-                mock_example_parts["protocol2"],
-                mock_example_parts["video2"],
-            ],
-        ),
-    ):
-        # when
-        result = agent.generate_protocols(query)
+    mock_load_env.return_value = mock_env_vars
+    mock_init_cloud.return_value = (MagicMock(), mock_bucket, mock_client)
+    mock_gen_parts_folder.return_value = mock_background_parts
+    mock_extract_file.return_value = (None, None, query)
+    mock_gen_part_path.side_effect = [
+        mock_example_parts["protocol1"],
+        mock_example_parts["video1"],
+        mock_example_parts["protocol2"],
+        mock_example_parts["video2"],
+    ]
+
+    # when
+    result = agent.generate_protocols(query)
 
     # then
     assert result == {
@@ -178,18 +182,20 @@ def test_generate_protocols_returns_success_with_text_input(
 # ============================================================================
 
 
-def test_generate_protocols_returns_error_when_environment_validation_fails() -> None:
+@patch.object(
+    agent.EnvironmentValidator,
+    "load_environment",
+    side_effect=ValueError("Missing required environment variables"),
+)
+def test_generate_protocols_returns_error_when_environment_validation_fails(
+    mock_load_env: MagicMock,  # noqa: ARG001
+) -> None:
     """Test that generate_protocols returns error when EnvironmentValidator.load_environment raises ValueError."""
     # given
     query = "Create a protocol"
 
-    with patch.object(
-        agent.EnvironmentValidator,
-        "load_environment",
-        side_effect=ValueError("Missing required environment variables"),
-    ):
-        # when
-        result = agent.generate_protocols(query)
+    # when
+    result = agent.generate_protocols(query)
 
     # then
     assert result == {
@@ -198,25 +204,24 @@ def test_generate_protocols_returns_error_when_environment_validation_fails() ->
     }
 
 
+@patch.object(
+    agent.EnvironmentValidator,
+    "initialize_cloud_resources",
+    side_effect=agent.CloudResourceError("Failed to connect to GCS"),
+)
+@patch.object(agent.EnvironmentValidator, "load_environment")
 def test_generate_protocols_returns_error_when_cloud_resources_initialization_fails(
+    mock_load_env: MagicMock,
+    mock_init_cloud: MagicMock,  # noqa: ARG001
     mock_env_vars: dict[str, str],
 ) -> None:
     """Test that generate_protocols returns error when EnvironmentValidator.initialize_cloud_resources raises CloudResourceError."""
     # given
     query = "Create a protocol"
+    mock_load_env.return_value = mock_env_vars
 
-    with (
-        patch.object(
-            agent.EnvironmentValidator, "load_environment", return_value=mock_env_vars
-        ),
-        patch.object(
-            agent.EnvironmentValidator,
-            "initialize_cloud_resources",
-            side_effect=agent.CloudResourceError("Failed to connect to GCS"),
-        ),
-    ):
-        # when
-        result = agent.generate_protocols(query)
+    # when
+    result = agent.generate_protocols(query)
 
     # then
     assert result == {
