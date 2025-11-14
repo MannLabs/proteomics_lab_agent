@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
@@ -104,7 +104,10 @@ def test_get_blob_name_from_gcs_path_with_single_file() -> None:
     assert blob_name == "file.mp4"
 
 
-def test_upload_file_from_path_to_gcs_with_video_metadata() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe")
+def test_upload_file_from_path_to_gcs_with_video_metadata(
+    mock_probe: MagicMock,
+) -> None:
     """Test successful file upload with video metadata extraction."""
     # given
     mock_bucket = Mock()
@@ -113,51 +116,52 @@ def test_upload_file_from_path_to_gcs_with_video_metadata() -> None:
     mock_bucket.name = "test-bucket"
 
     probe_result = {"format": {"duration": "120.5", "size": "1048576"}}
+    mock_probe.return_value = probe_result
 
-    with patch(
-        "proteomics_lab_agent.sub_agents.utils.ffmpeg.probe", return_value=probe_result
-    ):
-        # when
-        path_obj, gcs_uri, filename, blob = upload_file_from_path_to_gcs(
-            "/path/to/video.mp4", mock_bucket
-        )
+    # when
+    path_obj, gcs_uri, filename, blob = upload_file_from_path_to_gcs(
+        "/path/to/video.mp4", mock_bucket
+    )
 
-        # then
-        assert path_obj == Path("/path/to/video.mp4")
-        assert gcs_uri == "gs://test-bucket/video.mp4"
-        assert filename == "video.mp4"
-        assert blob == mock_blob
-        assert blob.metadata == {
-            "duration": "120.5",
-            "file_size": "1048576",
-            "input_type": "video",
-        }
-        mock_blob.upload_from_filename.assert_called_once_with("/path/to/video.mp4")
+    # then
+    assert path_obj == Path("/path/to/video.mp4")
+    assert gcs_uri == "gs://test-bucket/video.mp4"
+    assert filename == "video.mp4"
+    assert blob == mock_blob
+    assert blob.metadata == {
+        "duration": "120.5",
+        "file_size": "1048576",
+        "input_type": "video",
+    }
+    mock_blob.upload_from_filename.assert_called_once_with("/path/to/video.mp4")
 
 
-def test_upload_file_from_path_to_gcs_with_subfolder() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe")
+def test_upload_file_from_path_to_gcs_with_subfolder(mock_probe: MagicMock) -> None:
     """Test file upload to subfolder in bucket."""
     # given
     mock_bucket = Mock()
     mock_blob = Mock()
     mock_bucket.blob.return_value = mock_blob
     mock_bucket.name = "test-bucket"
+    mock_probe.side_effect = OSError("Not a video")
 
-    with patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe") as mock_probe:
-        mock_probe.side_effect = OSError("Not a video")
+    # when
+    path_obj, gcs_uri, filename, blob = upload_file_from_path_to_gcs(
+        "/path/to/document.pdf", mock_bucket, subfolder_in_bucket="documents"
+    )
 
-        # when
-        path_obj, gcs_uri, filename, blob = upload_file_from_path_to_gcs(
-            "/path/to/document.pdf", mock_bucket, subfolder_in_bucket="documents"
-        )
-
-        # then
-        assert gcs_uri == "gs://test-bucket/documents/document.pdf"
-        assert filename == "document.pdf"
-        mock_bucket.blob.assert_called_once_with("documents/document.pdf")
+    # then
+    assert gcs_uri == "gs://test-bucket/documents/document.pdf"
+    assert filename == "document.pdf"
+    mock_bucket.blob.assert_called_once_with("documents/document.pdf")
 
 
-def test_generate_part_from_path_with_local_file() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.types.Part.from_uri")
+@patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe")
+def test_generate_part_from_path_with_local_file(
+    mock_probe: MagicMock, mock_part: MagicMock
+) -> None:
     """Test generating Part from local file path."""
     # given
     mock_bucket = Mock()
@@ -167,34 +171,29 @@ def test_generate_part_from_path_with_local_file() -> None:
     mock_bucket.name = "test-bucket"
 
     probe_result = {"format": {"duration": "120", "size": "1024"}}
+    mock_probe.return_value = probe_result
 
-    with (
-        patch(
-            "proteomics_lab_agent.sub_agents.utils.ffmpeg.probe",
-            return_value=probe_result,
-        ),
-        patch("proteomics_lab_agent.sub_agents.utils.types.Part.from_uri") as mock_part,
-    ):
-        mock_part_obj = Mock()
-        mock_part.return_value = mock_part_obj
+    mock_part_obj = Mock()
+    mock_part.return_value = mock_part_obj
 
-        # when
-        result = generate_part_from_path("/path/to/video.mp4", mock_bucket)
+    # when
+    result = generate_part_from_path("/path/to/video.mp4", mock_bucket)
 
-        # then
-        assert result["local_path"] == Path("/path/to/video.mp4")
-        assert result["gcs_uri"] == "gs://test-bucket/video.mp4"
-        assert result["filename"] == "video.mp4"
-        assert result["mime_type"] == "video/mp4"
-        assert result["part"] == mock_part_obj
-        assert result["metadata"] == {
-            "duration": "120.0",
-            "file_size": "1024",
-            "input_type": "video",
-        }
+    # then
+    assert result["local_path"] == Path("/path/to/video.mp4")
+    assert result["gcs_uri"] == "gs://test-bucket/video.mp4"
+    assert result["filename"] == "video.mp4"
+    assert result["mime_type"] == "video/mp4"
+    assert result["part"] == mock_part_obj
+    assert result["metadata"] == {
+        "duration": "120.0",
+        "file_size": "1024",
+        "input_type": "video",
+    }
 
 
-def test_generate_part_from_path_with_gcs_uri() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.types.Part.from_uri")
+def test_generate_part_from_path_with_gcs_uri(mock_part: MagicMock) -> None:
     """Test generating Part from existing GCS URI."""
     # given
     mock_bucket = Mock()
@@ -202,22 +201,17 @@ def test_generate_part_from_path_with_gcs_uri() -> None:
     mock_blob.metadata = {}
     mock_bucket.blob.return_value = mock_blob
 
-    with patch(
-        "proteomics_lab_agent.sub_agents.utils.types.Part.from_uri"
-    ) as mock_part:
-        mock_part_obj = Mock()
-        mock_part.return_value = mock_part_obj
+    mock_part_obj = Mock()
+    mock_part.return_value = mock_part_obj
 
-        # when
-        result = generate_part_from_path(
-            "gs://test-bucket/folder/video.mp4", mock_bucket
-        )
+    # when
+    result = generate_part_from_path("gs://test-bucket/folder/video.mp4", mock_bucket)
 
-        # then
-        assert result["gcs_uri"] == "gs://test-bucket/folder/video.mp4"
-        assert result["filename"] == "video.mp4"
-        assert result["mime_type"] == "video/mp4"
-        assert mock_bucket.blob.return_value.reload.called
+    # then
+    assert result["gcs_uri"] == "gs://test-bucket/folder/video.mp4"
+    assert result["filename"] == "video.mp4"
+    assert result["mime_type"] == "video/mp4"
+    assert mock_bucket.blob.return_value.reload.called
 
 
 # ============================================================================
@@ -278,114 +272,113 @@ def test_get_blob_name_from_gcs_path_with_no_path() -> None:
     assert blob_name == ""
 
 
-def test_upload_file_from_path_to_gcs_with_custom_blob_name() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe")
+def test_upload_file_from_path_to_gcs_with_custom_blob_name(
+    mock_probe: MagicMock,
+) -> None:
     """Test file upload with custom blob name."""
     # given
     mock_bucket = Mock()
     mock_blob = Mock()
     mock_bucket.blob.return_value = mock_blob
     mock_bucket.name = "test-bucket"
+    mock_probe.side_effect = OSError()
 
-    with patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe") as mock_probe:
-        mock_probe.side_effect = OSError()
+    # when
+    _, gcs_uri, filename, _ = upload_file_from_path_to_gcs(
+        "/path/to/video.mp4", mock_bucket, custom_blob_name="custom_name.mp4"
+    )
 
-        # when
-        _, gcs_uri, filename, _ = upload_file_from_path_to_gcs(
-            "/path/to/video.mp4", mock_bucket, custom_blob_name="custom_name.mp4"
-        )
-
-        # then
-        assert filename == "custom_name.mp4"
-        assert gcs_uri == "gs://test-bucket/custom_name.mp4"
-        mock_bucket.blob.assert_called_once_with("custom_name.mp4")
+    # then
+    assert filename == "custom_name.mp4"
+    assert gcs_uri == "gs://test-bucket/custom_name.mp4"
+    mock_bucket.blob.assert_called_once_with("custom_name.mp4")
 
 
-def test_upload_file_from_path_to_gcs_without_metadata() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe")
+def test_upload_file_from_path_to_gcs_without_metadata(mock_probe: MagicMock) -> None:
     """Test file upload when ffmpeg metadata extraction fails."""
     # given
     mock_bucket = Mock()
     mock_blob = Mock()
     mock_bucket.blob.return_value = mock_blob
     mock_bucket.name = "test-bucket"
+    mock_probe.side_effect = OSError("ffmpeg error")
 
-    with patch("proteomics_lab_agent.sub_agents.utils.ffmpeg.probe") as mock_probe:
-        mock_probe.side_effect = OSError("ffmpeg error")
+    # when
+    path_obj, gcs_uri, filename, blob = upload_file_from_path_to_gcs(
+        "/path/to/document.pdf", mock_bucket
+    )
 
-        # when
-        path_obj, gcs_uri, filename, blob = upload_file_from_path_to_gcs(
-            "/path/to/document.pdf", mock_bucket
-        )
-
-        # then
-        assert gcs_uri == "gs://test-bucket/document.pdf"
-        mock_blob.upload_from_filename.assert_called_once_with("/path/to/document.pdf")
+    # then
+    assert gcs_uri == "gs://test-bucket/document.pdf"
+    mock_blob.upload_from_filename.assert_called_once_with("/path/to/document.pdf")
 
 
-def test_get_local_file_paths_with_extension_filter() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.Path")
+@patch("proteomics_lab_agent.sub_agents.utils.os.walk")
+def test_get_local_file_paths_with_extension_filter(
+    mock_walk: MagicMock, mock_path_class: MagicMock
+) -> None:
     """Test getting local file paths with extension filter."""
     # given
-    with (
-        patch("proteomics_lab_agent.sub_agents.utils.os.walk") as mock_walk,
-        patch("proteomics_lab_agent.sub_agents.utils.Path") as mock_path_class,
-    ):
-        call_count = [0]
+    call_count = [0]
 
-        def path_side_effect(p):  # noqa: ANN001, ANN202
-            call_count[0] += 1
-            # First two calls are for existence and directory checks
-            if call_count[0] <= 2 and p == "/test":
-                mock = Mock()
-                mock.exists.return_value = True
-                mock.is_dir.return_value = True
-                return mock
-            # All other calls use real Path
-            return Path(p)
+    def path_side_effect(p):  # noqa: ANN001, ANN202
+        call_count[0] += 1
+        # First two calls are for existence and directory checks
+        if call_count[0] <= 2 and p == "/test":
+            mock = Mock()
+            mock.exists.return_value = True
+            mock.is_dir.return_value = True
+            return mock
+        # All other calls use real Path
+        return Path(p)
 
-        mock_path_class.side_effect = path_side_effect
+    mock_path_class.side_effect = path_side_effect
+    mock_walk.return_value = [("/test", [], ["video.mp4", "doc.pdf", "image.jpg"])]
 
-        mock_walk.return_value = [("/test", [], ["video.mp4", "doc.pdf", "image.jpg"])]
+    # when
+    result = _get_local_file_paths("/test", [".mp4", ".jpg"])
 
-        # when
-        result = _get_local_file_paths("/test", [".mp4", ".jpg"])
-
-        # then
-        assert len(result) == 2
-        assert "/test/video.mp4" in result
-        assert "/test/image.jpg" in result
+    # then
+    assert len(result) == 2
+    assert "/test/video.mp4" in result
+    assert "/test/image.jpg" in result
 
 
-def test_get_local_file_paths_without_filter() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.Path")
+@patch("proteomics_lab_agent.sub_agents.utils.os.walk")
+def test_get_local_file_paths_without_filter(
+    mock_walk: MagicMock, mock_path_class: MagicMock
+) -> None:
     """Test getting all local file paths without filter."""
     # given
-    with (
-        patch("proteomics_lab_agent.sub_agents.utils.os.walk") as mock_walk,
-        patch("proteomics_lab_agent.sub_agents.utils.Path") as mock_path_class,
-    ):
-        call_count = [0]
+    call_count = [0]
 
-        def path_side_effect(p):  # noqa: ANN001, ANN202
-            call_count[0] += 1
-            if call_count[0] <= 2 and p == "/test":
-                mock = Mock()
-                mock.exists.return_value = True
-                mock.is_dir.return_value = True
-                return mock
-            return Path(p)
+    def path_side_effect(p):  # noqa: ANN001, ANN202
+        call_count[0] += 1
+        if call_count[0] <= 2 and p == "/test":
+            mock = Mock()
+            mock.exists.return_value = True
+            mock.is_dir.return_value = True
+            return mock
+        return Path(p)
 
-        mock_path_class.side_effect = path_side_effect
+    mock_path_class.side_effect = path_side_effect
+    mock_walk.return_value = [("/test", [], ["video.mp4", "doc.pdf"])]
 
-        mock_walk.return_value = [("/test", [], ["video.mp4", "doc.pdf"])]
+    # when
+    result = _get_local_file_paths("/test", None)
 
-        # when
-        result = _get_local_file_paths("/test", None)
-
-        # then
-        assert len(result) == 2
-        assert "/test/video.mp4" in result
-        assert "/test/doc.pdf" in result
+    # then
+    assert len(result) == 2
+    assert "/test/video.mp4" in result
+    assert "/test/doc.pdf" in result
 
 
-def test_get_gcs_file_paths_with_extension_filter() -> None:
+@patch("google.cloud.storage.Client")
+def test_get_gcs_file_paths_with_extension_filter(mock_client: MagicMock) -> None:
     """Test getting GCS file paths with extension filter."""
     # given
     mock_blob1 = Mock()
@@ -395,21 +388,21 @@ def test_get_gcs_file_paths_with_extension_filter() -> None:
     mock_blob3 = Mock()
     mock_blob3.name = "folder/image.jpg"
 
-    with patch("google.cloud.storage.Client") as mock_client:
-        mock_bucket = Mock()
-        mock_bucket.list_blobs.return_value = [mock_blob1, mock_blob2, mock_blob3]
-        mock_client.return_value.bucket.return_value = mock_bucket
+    mock_bucket = Mock()
+    mock_bucket.list_blobs.return_value = [mock_blob1, mock_blob2, mock_blob3]
+    mock_client.return_value.bucket.return_value = mock_bucket
 
-        # when
-        result = _get_gcs_file_paths("gs://test-bucket/folder", [".mp4", ".jpg"])
+    # when
+    result = _get_gcs_file_paths("gs://test-bucket/folder", [".mp4", ".jpg"])
 
-        # then
-        assert len(result) == 2
-        assert "gs://test-bucket/folder/video.mp4" in result
-        assert "gs://test-bucket/folder/image.jpg" in result
+    # then
+    assert len(result) == 2
+    assert "gs://test-bucket/folder/video.mp4" in result
+    assert "gs://test-bucket/folder/image.jpg" in result
 
 
-def test_get_gcs_file_paths_skips_folders() -> None:
+@patch("google.cloud.storage.Client")
+def test_get_gcs_file_paths_skips_folders(mock_client: MagicMock) -> None:
     """Test that GCS file path extraction skips folder blobs."""
     # given
     mock_blob1 = Mock()
@@ -417,58 +410,52 @@ def test_get_gcs_file_paths_skips_folders() -> None:
     mock_blob2 = Mock()
     mock_blob2.name = "folder/video.mp4"
 
-    with patch("google.cloud.storage.Client") as mock_client:
-        mock_bucket = Mock()
-        mock_bucket.list_blobs.return_value = [mock_blob1, mock_blob2]
-        mock_client.return_value.bucket.return_value = mock_bucket
+    mock_bucket = Mock()
+    mock_bucket.list_blobs.return_value = [mock_blob1, mock_blob2]
+    mock_client.return_value.bucket.return_value = mock_bucket
 
-        # when
-        result = _get_gcs_file_paths("gs://test-bucket/folder", None)
+    # when
+    result = _get_gcs_file_paths("gs://test-bucket/folder", None)
 
-        # then
-        assert len(result) == 1
-        assert "gs://test-bucket/folder/video.mp4" in result
+    # then
+    assert len(result) == 1
+    assert "gs://test-bucket/folder/video.mp4" in result
 
 
-def test_process_single_file_returns_result_on_success() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.generate_part_from_path")
+def test_process_single_file_returns_result_on_success(
+    mock_generate: MagicMock,
+) -> None:
     """Test that _process_single_file returns result for valid file."""
     # given
     mock_bucket = Mock()
+    expected_result = {"part": "mock_part", "filename": "test.mp4"}
+    mock_generate.return_value = expected_result
 
-    with patch(
-        "proteomics_lab_agent.sub_agents.utils.generate_part_from_path"
-    ) as mock_generate:
-        expected_result = {"part": "mock_part", "filename": "test.mp4"}
-        mock_generate.return_value = expected_result
+    # when
+    result = _process_single_file("/path/to/test.mp4", mock_bucket, "subfolder")
 
-        # when
-        result = _process_single_file("/path/to/test.mp4", mock_bucket, "subfolder")
-
-        # then
-        assert result == expected_result
-        mock_generate.assert_called_once_with(
-            "/path/to/test.mp4", mock_bucket, "subfolder"
-        )
+    # then
+    assert result == expected_result
+    mock_generate.assert_called_once_with("/path/to/test.mp4", mock_bucket, "subfolder")
 
 
-def test_process_single_file_returns_none_on_error() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.generate_part_from_path")
+def test_process_single_file_returns_none_on_error(mock_generate: MagicMock) -> None:
     """Test that _process_single_file returns None when processing fails."""
     # given
     mock_bucket = Mock()
+    mock_generate.side_effect = OSError("File not found")
 
-    with patch(
-        "proteomics_lab_agent.sub_agents.utils.generate_part_from_path"
-    ) as mock_generate:
-        mock_generate.side_effect = OSError("File not found")
+    # when
+    result = _process_single_file("/path/to/nonexistent.mp4", mock_bucket, None)
 
-        # when
-        result = _process_single_file("/path/to/nonexistent.mp4", mock_bucket, None)
-
-        # then
-        assert result is None
+    # then
+    assert result is None
 
 
-def test_process_file_paths_returns_parts_and_summary() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.generate_part_from_path")
+def test_process_file_paths_returns_parts_and_summary(mock_generate: MagicMock) -> None:
     """Test that _process_file_paths processes multiple files and returns summary."""
     # given
     mock_bucket = Mock()
@@ -477,93 +464,80 @@ def test_process_file_paths_returns_parts_and_summary() -> None:
     mock_part1 = Mock()
     mock_part2 = Mock()
 
-    with patch(
-        "proteomics_lab_agent.sub_agents.utils.generate_part_from_path"
-    ) as mock_generate:
-        mock_generate.side_effect = [
-            {"part": mock_part1, "filename": "file1.mp4", "mime_type": "video/mp4"},
-            {"part": mock_part2, "filename": "file2.mp4", "mime_type": "video/mp4"},
-        ]
+    mock_generate.side_effect = [
+        {"part": mock_part1, "filename": "file1.mp4", "mime_type": "video/mp4"},
+        {"part": mock_part2, "filename": "file2.mp4", "mime_type": "video/mp4"},
+    ]
 
-        # when
-        result = _process_file_paths(file_paths, "/path", mock_bucket, None)
+    # when
+    result = _process_file_paths(file_paths, "/path", mock_bucket, None)
 
-        # then
-        assert len(result["parts"]) == 2
-        assert result["parts"][0] == mock_part1
-        assert result["parts"][1] == mock_part2
-        assert len(result["files_info"]) == 2
-        assert result["summary"]["total_files"] == 2
-        assert result["summary"]["successful_uploads"] == 2
-        assert result["summary"]["folder_path"] == "/path"
+    # then
+    assert len(result["parts"]) == 2
+    assert result["parts"][0] == mock_part1
+    assert result["parts"][1] == mock_part2
+    assert len(result["files_info"]) == 2
+    assert result["summary"]["total_files"] == 2
+    assert result["summary"]["successful_uploads"] == 2
+    assert result["summary"]["folder_path"] == "/path"
 
 
-def test_generate_parts_from_folder_with_local_folder() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils._process_file_paths")
+@patch("proteomics_lab_agent.sub_agents.utils._get_local_file_paths")
+def test_generate_parts_from_folder_with_local_folder(
+    mock_get_paths: MagicMock, mock_process: MagicMock
+) -> None:
     """Test processing local folder with multiple files."""
     # given
     mock_bucket = Mock()
 
-    with (
-        patch(
-            "proteomics_lab_agent.sub_agents.utils._get_local_file_paths"
-        ) as mock_get_paths,
-        patch(
-            "proteomics_lab_agent.sub_agents.utils._process_file_paths"
-        ) as mock_process,
-    ):
-        mock_get_paths.return_value = ["/folder/file1.mp4", "/folder/file2.mp4"]
-        expected_result = {
-            "parts": ["part1", "part2"],
-            "files_info": [{"filename": "file1.mp4"}, {"filename": "file2.mp4"}],
-            "summary": {"total_files": 2},
-        }
-        mock_process.return_value = expected_result
+    mock_get_paths.return_value = ["/folder/file1.mp4", "/folder/file2.mp4"]
+    expected_result = {
+        "parts": ["part1", "part2"],
+        "files_info": [{"filename": "file1.mp4"}, {"filename": "file2.mp4"}],
+        "summary": {"total_files": 2},
+    }
+    mock_process.return_value = expected_result
 
-        # when
-        result = generate_parts_from_folder(
-            "/folder", mock_bucket, "subfolder", [".mp4"]
-        )
+    # when
+    result = generate_parts_from_folder("/folder", mock_bucket, "subfolder", [".mp4"])
 
-        # then
-        assert result == expected_result
-        mock_get_paths.assert_called_once_with("/folder", [".mp4"])
-        mock_process.assert_called_once_with(
-            ["/folder/file1.mp4", "/folder/file2.mp4"],
-            "/folder",
-            mock_bucket,
-            "subfolder",
-        )
+    # then
+    assert result == expected_result
+    mock_get_paths.assert_called_once_with("/folder", [".mp4"])
+    mock_process.assert_called_once_with(
+        ["/folder/file1.mp4", "/folder/file2.mp4"],
+        "/folder",
+        mock_bucket,
+        "subfolder",
+    )
 
 
-def test_generate_parts_from_folder_with_gcs_folder() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils._process_file_paths")
+@patch("proteomics_lab_agent.sub_agents.utils._get_gcs_file_paths")
+def test_generate_parts_from_folder_with_gcs_folder(
+    mock_get_paths: MagicMock, mock_process: MagicMock
+) -> None:
     """Test processing GCS folder with multiple files."""
     # given
     mock_bucket = Mock()
 
-    with (
-        patch(
-            "proteomics_lab_agent.sub_agents.utils._get_gcs_file_paths"
-        ) as mock_get_paths,
-        patch(
-            "proteomics_lab_agent.sub_agents.utils._process_file_paths"
-        ) as mock_process,
-    ):
-        mock_get_paths.return_value = ["gs://bucket/file1.mp4", "gs://bucket/file2.mp4"]
-        expected_result = {
-            "parts": ["part1", "part2"],
-            "files_info": [{"filename": "file1.mp4"}, {"filename": "file2.mp4"}],
-            "summary": {"total_files": 2},
-        }
-        mock_process.return_value = expected_result
+    mock_get_paths.return_value = ["gs://bucket/file1.mp4", "gs://bucket/file2.mp4"]
+    expected_result = {
+        "parts": ["part1", "part2"],
+        "files_info": [{"filename": "file1.mp4"}, {"filename": "file2.mp4"}],
+        "summary": {"total_files": 2},
+    }
+    mock_process.return_value = expected_result
 
-        # when
-        result = generate_parts_from_folder(
-            "gs://bucket/folder", mock_bucket, None, [".mp4"]
-        )
+    # when
+    result = generate_parts_from_folder(
+        "gs://bucket/folder", mock_bucket, None, [".mp4"]
+    )
 
-        # then
-        assert result == expected_result
-        mock_get_paths.assert_called_once_with("gs://bucket/folder", [".mp4"])
+    # then
+    assert result == expected_result
+    mock_get_paths.assert_called_once_with("gs://bucket/folder", [".mp4"])
 
 
 # ============================================================================
@@ -591,18 +565,20 @@ def test_get_local_file_paths_raises_error_for_nonexistent_folder() -> None:
         _get_local_file_paths(nonexistent_path, None)
 
 
-def test_get_local_file_paths_raises_error_for_non_directory() -> None:
+@patch("proteomics_lab_agent.sub_agents.utils.Path")
+def test_get_local_file_paths_raises_error_for_non_directory(
+    mock_path: MagicMock,
+) -> None:
     """Test that file path instead of directory raises ValueError."""
     # given
-    with patch("proteomics_lab_agent.sub_agents.utils.Path") as mock_path:
-        mock_path_instance = Mock()
-        mock_path_instance.exists.return_value = True
-        mock_path_instance.is_dir.return_value = False
-        mock_path.return_value = mock_path_instance
+    mock_path_instance = Mock()
+    mock_path_instance.exists.return_value = True
+    mock_path_instance.is_dir.return_value = False
+    mock_path.return_value = mock_path_instance
 
-        # when/then
-        with pytest.raises(ValueError, match="Path is not a directory"):
-            _get_local_file_paths("/path/to/file.txt", None)
+    # when/then
+    with pytest.raises(ValueError, match="Path is not a directory"):
+        _get_local_file_paths("/path/to/file.txt", None)
 
 
 # ============================================================================
