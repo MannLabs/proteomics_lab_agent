@@ -4,31 +4,9 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
 from google.genai import types
 
 from proteomics_lab_agent.sub_agents.protocol_generator_agent import agent
-
-# ============================================================================
-# Fixtures
-# ============================================================================
-
-
-@pytest.fixture
-def mock_env_vars() -> dict[str, str]:
-    """Provide mock environment variables for tests."""
-    return {
-        "model": "gemini-2.5-flash",
-        "temperature": 0.9,
-        "bucket_name": "test-bucket",
-        "project_id": "test-project",
-        "knowledge_base_path": "gs://test-bucket/knowledge",
-        "example_protocol1_path": "gs://test-bucket/protocol1.pdf",
-        "example_video1_path": "gs://test-bucket/video1.mp4",
-        "example_protocol2_path": "gs://test-bucket/protocol2.pdf",
-        "example_video2_path": "gs://test-bucket/video2.mp4",
-    }
-
 
 # ============================================================================
 # Tests for generate_protocols - Happy Path

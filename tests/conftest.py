@@ -79,3 +79,22 @@ def in_memory_db() -> Generator[Path, None, None]:
         conn.close()
 
     return db_path
+
+
+@pytest.fixture
+def mock_env_vars() -> dict[str, str]:
+    """Provide mock environment variables for tests."""
+    return {
+        "model": "gemini-2.5-flash",
+        "temperature": 0.9,
+        "bucket_name": "test-bucket",
+        "project_id": "test-project",
+        "knowledge_base_path": "gs://test-bucket/knowledge",
+        "example_protocol1_path": "gs://test-bucket/protocol1.pdf",
+        "example_video1_path": "gs://test-bucket/video1.mp4",
+        "example_protocol2_path": "gs://test-bucket/protocol2.pdf",
+        "example_video2_path": "gs://test-bucket/video2.mp4",
+        "example_protocol_path": "gs://test-bucket/protocol.pdf",
+        "example_video_path": "gs://test-bucket/video.mp4",
+        "example_lab_note_path": "gs://test-bucket/lab_note.pdf",
+    }
