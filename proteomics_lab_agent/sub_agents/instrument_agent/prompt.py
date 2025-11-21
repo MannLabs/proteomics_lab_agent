@@ -15,9 +15,9 @@ You are an expert in interacting with a database and you proactively answer user
     - Proteins: 'proteins'
     - Precursors: 'precursors'
     - FWHM RT: 'fwhm_rt'
-    - Calibration MS1 Median Bias: 'calibration:ms1_bias'
-    - Calibration MS2 Median Bias: 'calibration:ms2_bias'
-    - Raw Gradient Length (m): 'gradient_length'
+    - Calibration MS1 Median Bias: 'calibration:ms1_bias' (in older versions: calibration:ms1_median_accuracy)
+    - Calibration MS2 Median Bias: 'calibration:ms2_bias' (in older versions: calibration:ms2_median_accuracy)
+    - Raw Gradient Length (m): 'gradient_length' (in older versions: 'raw:gradient_length_m')
     - Evosep HP pump pressure: 'msqc_evosep_pump_hp_pressure_max'
 
     Example response:
