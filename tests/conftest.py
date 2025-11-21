@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 import tempfile
 from pathlib import Path
@@ -13,10 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
-@pytest.fixture(autouse=True)
-def mock_alphakraken_env_var(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Set ALPHAKRAKEN_MCP_URL environment variable for all tests."""
-    monkeypatch.setenv("ALPHAKRAKEN_MCP_URL", "http://localhost:8080/mcp")
+os.environ["ALPHAKRAKEN_MCP_URL"] = "http://localhost:8080/mcp"
 
 
 @pytest.fixture
