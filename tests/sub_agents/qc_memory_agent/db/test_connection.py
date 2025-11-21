@@ -57,7 +57,7 @@ def test_get_db_connection_raises_error_when_schema_table_missing() -> None:
     # given
     import tempfile
 
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=True) as tmp_file:
         db_path = Path(tmp_file.name)
 
     # Create database without schema table
@@ -74,16 +74,13 @@ def test_get_db_connection_raises_error_when_schema_table_missing() -> None:
     ):
         connection.get_db_connection()
 
-    # Cleanup
-    db_path.unlink(missing_ok=True)
-
 
 def test_get_db_connection_raises_error_when_schema_version_incompatible() -> None:
     """Test that get_db_connection raises DatabaseError when schema version doesn't match."""
     # given
     import tempfile
 
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=True) as tmp_file:
         db_path = Path(tmp_file.name)
 
     # Create database with incompatible schema version
@@ -105,6 +102,3 @@ def test_get_db_connection_raises_error_when_schema_version_incompatible() -> No
         ),
     ):
         connection.get_db_connection()
-
-    # Cleanup
-    db_path.unlink(missing_ok=True)

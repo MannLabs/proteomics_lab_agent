@@ -24,7 +24,7 @@ def in_memory_db() -> Generator[Path, None, None]:
 
     """
     # Create a temporary database file
-    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=True) as tmp_file:
         db_path = Path(tmp_file.name)
 
     # Initialize the schema
@@ -78,9 +78,4 @@ def in_memory_db() -> Generator[Path, None, None]:
     finally:
         conn.close()
 
-    yield db_path
-
-    # Cleanup
-    db_path.unlink(missing_ok=True)
-
-
+    return db_path
