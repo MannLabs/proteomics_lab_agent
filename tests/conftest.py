@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 
 os.environ["ALPHAKRAKEN_MCP_URL"] = "http://localhost:8080/mcp"
+os.environ["CONFLUENCE_MCP_URL"] = "http://localhost:8080/confluence"
 
 
 @pytest.fixture
