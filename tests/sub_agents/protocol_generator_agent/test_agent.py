@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 from google.genai import types
 
@@ -84,9 +84,11 @@ def test_generate_protocols_returns_success_with_video_input(  # noqa: PLR0913
         "remaining_message": "Video path: /path/to/video.mp4. Analyze this video.",
         "protocol": "# Protocol Title\n\n## Abstract\n\nTest protocol content.",
         "usage_metadata": {"input_tokens": 100, "output_tokens": 50},
-        "protocol_generation_time": result["protocol_generation_time"],
+        "protocol_generation_time": ANY,
         "metadata": {"duration": "10.5", "file_size": "1024", "input_type": "video"},
     }
+
+    assert result["protocol_generation_time"] > 0
 
 
 @patch(
@@ -150,9 +152,11 @@ def test_generate_protocols_returns_success_with_text_input(  # noqa: PLR0913
         "remaining_message": query,
         "protocol": "# PCR Protocol\n\n## Abstract\n\nPCR amplification protocol.",
         "usage_metadata": {"input_tokens": 50, "output_tokens": 30},
-        "protocol_generation_time": result["protocol_generation_time"],
+        "protocol_generation_time": ANY,
         "metadata": {"word_count": "9", "input_type": "text"},
     }
+
+    assert result["protocol_generation_time"] > 0
 
 
 # ============================================================================
@@ -475,9 +479,11 @@ def test_generate_protocols_handles_video_with_gcs_path(
         "remaining_message": query,
         "protocol": "# Protocol from GCS Video\n\n## Abstract\n\nGCS video protocol.",
         "usage_metadata": {"input_tokens": 120, "output_tokens": 60},
-        "protocol_generation_time": result["protocol_generation_time"],
+        "protocol_generation_time": ANY,
         "metadata": {"duration": "15.2", "file_size": "2048", "input_type": "video"},
     }
+
+    assert result["protocol_generation_time"] > 0
 
 
 def test_generate_protocols_handles_empty_metadata_from_video(
@@ -549,9 +555,10 @@ def test_generate_protocols_handles_empty_metadata_from_video(
         "remaining_message": query,
         "protocol": "# Protocol Title\n\n## Abstract\n\nProtocol despite missing metadata.",
         "usage_metadata": {"input_tokens": 90, "output_tokens": 45},
-        "protocol_generation_time": result["protocol_generation_time"],
+        "protocol_generation_time": ANY,
         "metadata": {},
     }
+    assert result["protocol_generation_time"] > 0
 
 
 # ============================================================================
