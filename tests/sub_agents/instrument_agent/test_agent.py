@@ -2,14 +2,11 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
-
 # ============================================================================
 # HAPPY PATH TESTS
 # ============================================================================
 
 
-@patch.dict("os.environ", {"ALPHAKRAKEN_MCP_URL": "http://localhost:8080/mcp"})
 def test_instrument_agent_instantiation() -> None:
     """Test that instrument_agent is instantiated correctly with all expected attributes."""
     # given/when

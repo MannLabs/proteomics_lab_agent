@@ -13,6 +13,12 @@ if TYPE_CHECKING:
     from collections.abc import Generator
 
 
+@pytest.fixture(autouse=True)
+def mock_alphakraken_env_var(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Set ALPHAKRAKEN_MCP_URL environment variable for all tests."""
+    monkeypatch.setenv("ALPHAKRAKEN_MCP_URL", "http://localhost:8080/mcp")
+
+
 @pytest.fixture
 def in_memory_db() -> Generator[Path, None, None]:
     """Create an in-memory database with schema initialized.
