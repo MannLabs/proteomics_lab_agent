@@ -330,7 +330,7 @@ pip install detect-secrets
 3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
 4. Commit the latest version of `.secrets.baseline`
 
-### Run tests locally
+#### Run tests locally
 From root folder of package
 ```bash
 python -m pytest tests
@@ -344,7 +344,7 @@ pip install coverage-badge
 coverage-badge > misc/coverage.svg
 ```
 
-### Update documentation
+#### Update documentation
 ```bash
 cd docu
 make clean
