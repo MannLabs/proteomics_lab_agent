@@ -78,7 +78,7 @@ logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 DATABASE_PATH = Path(__file__).parent / "database.db"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = "1.0.0"
 
 
 def create_database() -> None:
@@ -139,7 +139,7 @@ def create_database() -> None:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS _schema_version (
-                version INTEGER PRIMARY KEY,
+                version TEXT PRIMARY KEY,
                 applied_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)

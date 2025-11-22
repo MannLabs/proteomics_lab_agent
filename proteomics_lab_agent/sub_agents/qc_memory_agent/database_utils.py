@@ -15,8 +15,8 @@ GRADIENT_TOLERANCE = (
     0.001  # Tolerance for retrieving raw files based on gradient length
 )
 MAX_PERFORMANCE_RATING = 5
-COMPATIBLE_SCHEMA_VERSION = 1
-AGENT_NAME = "qc_memory_agent_v1.0"
+COMPATIBLE_SCHEMA_VERSION = "1.0.0"
+AGENT_NAME = "qc_memory_agent_v1.0.0"
 
 
 class DatabaseError(Exception):
