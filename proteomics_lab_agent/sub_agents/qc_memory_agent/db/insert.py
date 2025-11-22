@@ -1,297 +1,29 @@
-"""qc_memory agent can store and retrieve past evaluations of proteomics analysis results into a database."""
+"""Database insertion functions for performance sessions and raw file info."""
 
 from __future__ import annotations
 
 import logging
 import sqlite3
 import uuid
-from pathlib import Path
 from typing import NoReturn
 
-logger = logging.getLogger(__name__)
-
-DATABASE_PATH = Path(__file__).parent / "database.db"
-GRADIENT_TOLERANCE = (
-    0.001  # Tolerance for retrieving raw files based on gradient length
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db.connection import (
+    get_db_connection,
 )
-MAX_PERFORMANCE_RATING = 5
-COMPATIBLE_SCHEMA_VERSION = "1.0.0"
-AGENT_NAME = "qc_memory_agent_v1.0.0"
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import (
+    AGENT_NAME,
+    GRADIENT_TOLERANCE,
+    MAX_PERFORMANCE_RATING,
+    DatabaseError,
+    ValidationError,
+)
 
-
-class DatabaseError(Exception):
-    """Custom exception for database operations."""
-
-
-class ValidationError(DatabaseError):
-    """Exception for data validation errors."""
-
-
-class SessionError(DatabaseError):
-    """Exception for session processing errors."""
+logger = logging.getLogger(__name__)
 
 
 def _raise_file_id_error() -> NoReturn:
     """Helper function to raise file ID error."""
     raise DatabaseError("Failed to get file_id after insert")
-
-
-def _raise_schema_not_found_error() -> NoReturn:
-    """Helper function to raise schema version not found error."""
-    raise DatabaseError("Schema version table '_schema_version' not found or is empty.")
-
-
-def _raise_schema_mismatch_error(db_version: int) -> NoReturn:
-    """Helper function to raise schema mismatch error."""
-    raise DatabaseError(
-        f"Database schema version mismatch. Agent requires "
-        f"version {COMPATIBLE_SCHEMA_VERSION}, but database is "
-        f"version {db_version}."
-    )
-
-
-def get_db_connection() -> sqlite3.Connection:
-    """Get a database connection, validate schema version, and set row factory.
-
-    Raises
-    ------
-    DatabaseError
-        If connection fails or if schema version is incompatible.
-
-    Returns
-    -------
-    sqlite3.Connection
-        An active database connection.
-
-    """
-    try:
-        conn = sqlite3.connect(DATABASE_PATH)
-        conn.row_factory = sqlite3.Row
-    except sqlite3.Error as e:
-        logger.exception("Failed to connect to database.")
-        raise DatabaseError(f"Database connection error: {e!s}") from e
-
-    try:
-        cursor = conn.cursor()
-        # Fetch the highest (latest) schema version
-        cursor.execute(
-            "SELECT version FROM _schema_version ORDER BY version DESC LIMIT 1"
-        )
-        db_version_row = cursor.fetchone()
-
-        if db_version_row is None:
-            _raise_schema_not_found_error()
-
-        db_version = db_version_row["version"]
-        if db_version != COMPATIBLE_SCHEMA_VERSION:
-            _raise_schema_mismatch_error(db_version)
-
-    except sqlite3.Error as e:
-        conn.close()
-        logger.exception("Failed to validate database schema version.")
-        if "no such table" in str(e):
-            raise DatabaseError(
-                "Schema version table '_schema_version' not found. "
-                "Is this an old or uninitialized database?"
-            ) from e
-        raise DatabaseError(f"Schema check failed: {e!s}") from e
-    except DatabaseError:
-        conn.close()
-        raise
-    else:
-        logger.debug(f"DB schema version {db_version} validated successfully.")
-        return conn
-
-
-def _validate_query_filters(filters: dict) -> dict | None:
-    """Validate query filters and return error dict if invalid, None if valid."""
-    filter_mappings = {
-        "performance_status": "pd.performance_status",
-        "performance_rating": "pd.performance_rating",
-        "performance_comment": "pd.performance_comment",
-        "instrument_id": "rf.instrument_id",
-        "gradient": "rf.gradient",
-        "file_name": "rf.file_name",
-        "created_by_agent_version": "pd.created_by_agent_version",
-    }
-
-    if not filters:
-        return {
-            "success": False,
-            "message": "No filter provided",
-            "error_code": "VALIDATION_ERROR",
-        }
-    if not isinstance(filters, dict):
-        return {
-            "success": False,
-            "message": "Filters must be a dictionary",
-            "error_code": "VALIDATION_ERROR",
-        }
-    invalid_filters = [key for key in filters if key not in filter_mappings]
-    if invalid_filters:
-        return {
-            "success": False,
-            "message": f"Invalid filter field(s): {invalid_filters}. Valid fields: {list(filter_mappings.keys())}",
-            "error_code": "VALIDATION_ERROR",
-        }
-    return None
-
-
-def _build_gradient_condition(value: dict | float) -> tuple[str, list]:
-    """Build gradient filter condition and parameters."""
-    if isinstance(value, dict):
-        # Handle gradient range queries
-        if "min" in value and "max" in value:
-            return "rf.gradient BETWEEN ? AND ?", [value["min"], value["max"]]
-        if "min" in value:
-            return "rf.gradient >= ?", [value["min"]]
-        if "max" in value:
-            return "rf.gradient <= ?", [value["max"]]
-        if "tolerance" in value and "value" in value:
-            target = value["value"]
-            tolerance = value["tolerance"]
-            return "rf.gradient BETWEEN ? AND ?", [
-                target - tolerance,
-                target + tolerance,
-            ]
-        raise ValidationError(
-            "Invalid gradient filter format. Use 'min'/'max', 'tolerance'/'value', or numeric value."
-        )
-    # Exact match (backward compatible)
-    return "rf.gradient = ?", [value]
-
-
-def _build_filter_conditions(filters: dict) -> tuple[list, list]:
-    """Build filter conditions and parameters for query."""
-    filter_mappings = {
-        "performance_status": "pd.performance_status",
-        "performance_rating": "pd.performance_rating",
-        "performance_comment": "pd.performance_comment",
-        "instrument_id": "rf.instrument_id",
-        "gradient": "rf.gradient",
-        "file_name": "rf.file_name",
-        "created_by_agent_version": "pd.created_by_agent_version",
-    }
-
-    conditions = []
-    params = []
-
-    for field, value in filters.items():
-        db_column = filter_mappings[field]
-
-        if field == "performance_comment" and isinstance(value, str):
-            condition = f"{db_column} LIKE ?"
-            condition_params = [f"%{value}%"]
-        elif field == "gradient":
-            condition, condition_params = _build_gradient_condition(value)
-        else:
-            # Exact match for other fields
-            condition = f"{db_column} = ?"
-            condition_params = [value]
-
-        conditions.append(condition)
-        params.extend(condition_params)
-
-    return conditions, params
-
-
-def query_performance_data(filters: dict) -> dict:
-    """Queries the performance data with optional filters.
-
-    Performs an inner join between performance_data and raw_files tables
-    to retrieve both performance information and file details.
-
-    Parameters
-    ----------
-    filters : dict
-        A dictionary where keys are filter field names and values are the corresponding filter values. Valid keys are:
-        - 'performance_status': Boolean (0,1)
-        - 'performance_rating': Integer (0-5)
-        - 'performance_comment': String (partial match)
-        - 'instrument_id': String (exact match)
-        - 'gradient': Float (exact match) OR dict with range options
-        - 'file_name': String (exact match)
-        - 'created_by_agent_version': String (exact match)
-
-        For gradient range queries, use:
-        - 'gradient': {'min': 40.0, 'max': 45.0} # Range query
-        - 'gradient': {'min': 40.0} # Greater than or equal
-        - 'gradient': {'max': 45.0} # Less than or equal
-        - 'gradient': {'value': 44.0, 'tolerance': 0.1} # Within 10% tolerance
-        - 'gradient': 44.0 # Exact match (backward compatible)
-
-    Returns
-    -------
-    dict
-        A dictionary with keys 'success' (bool), 'message' (str), and 'data' (list). If successful, 'data' contains a list of dictionaries with performance info.
-
-    """
-    validation_error = _validate_query_filters(filters)
-    if validation_error:
-        return validation_error
-
-    conn = None
-    try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        base_query = """
-            SELECT
-                rf.id,
-                rf.file_name,
-                rf.instrument_id,
-                rf.gradient,
-                pd.performance_status,
-                pd.performance_rating,
-                pd.performance_comment,
-                pd.created_by_agent_version
-            FROM raw_files rf
-            JOIN raw_files_to_performance_data rfts ON rf.id = rfts.raw_files_id
-            JOIN performance_data pd ON rfts.performance_data_id = pd.id
-            """
-
-        conditions, params = _build_filter_conditions(filters)
-
-        query = base_query
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
-        query += " ORDER BY pd.id, rf.id"
-
-        cursor.execute(query, params)
-        results = [dict(row) for row in cursor.fetchall()]
-
-        logger.info(f"Query returned {len(results)} records with filters: {filters}")
-
-    except ValidationError as e:
-        logger.exception("Validation error in query_performance_data.")
-        return {
-            "success": False,
-            "message": f"Validation error: {e!s}",
-            "error_code": "VALIDATION_ERROR",
-        }
-    except (sqlite3.Error, DatabaseError) as e:
-        logger.exception("Database error in query_performance_data.")
-        return {
-            "success": False,
-            "message": f"Database error: {e!s}",
-            "error_code": "DATABASE_ERROR",
-        }
-    except Exception as e:
-        logger.exception("Unexpected error in query_performance_data.")
-        return {
-            "success": False,
-            "message": f"Unexpected error: {e!s}",
-            "error_code": "UNEXPECTED_ERROR",
-        }
-    else:
-        return {
-            "success": True,
-            "message": f"Query executed successfully. Found {len(results)} record(s).",
-            "data": {"results": results, "count": len(results)},
-        }
-    finally:
-        if conn:
-            conn.close()
 
 
 def _validate_session_structure(session_data: dict) -> dict | None:
@@ -401,14 +133,8 @@ def _validate_raw_files(raw_files: list) -> dict | None:
                 "message": f"Raw file at index {i} must be a dictionary",
                 "error_code": "VALIDATION_ERROR",
             }
-        if isinstance(file_data["gradient"], str):
-            try:
-                file_data["gradient"] = float(file_data["gradient"])
-            except ValueError as e:
-                raise ValidationError(
-                    f"Invalid gradient value: {file_data['gradient']}"
-                ) from e
 
+        # Check for required fields first
         required_file_fields = ["file_name", "instrument_id", "gradient"]
         missing_file_fields = [
             field for field in required_file_fields if field not in file_data
@@ -419,6 +145,17 @@ def _validate_raw_files(raw_files: list) -> dict | None:
                 "message": f"Raw file at index {i} missing required fields: {', '.join(missing_file_fields)}",
                 "error_code": "VALIDATION_ERROR",
             }
+
+        # Attempt to convert string gradient to float
+        if isinstance(file_data["gradient"], str):
+            try:
+                file_data["gradient"] = float(file_data["gradient"])
+            except ValueError:
+                return {
+                    "success": False,
+                    "message": f"Raw file at index {i}: gradient value '{file_data['gradient']}' cannot be converted to float",
+                    "error_code": "VALIDATION_ERROR",
+                }
 
         field_error = _validate_file_fields(file_data, i)
         if field_error:

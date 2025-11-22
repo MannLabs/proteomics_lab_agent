@@ -4,3 +4,7 @@ bump-my-version
 ipykernel
 
 pre-commit==4.1.0
+
+# Testing dependencies
+pytest>=8.0.0
+pytest-cov>=4.1.0
