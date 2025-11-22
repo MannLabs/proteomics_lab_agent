@@ -453,11 +453,6 @@
 # value: 9/10 (tolerance logic)
 # approach: create new test with gradient difference < GRADIENT_TOLERANCE
 #
-# test_process_raw_file_raises_error_when_lastrowid_is_none
-# """Test that _process_raw_file raises DatabaseError when cursor.lastrowid is None after insert."""
-# value: 7/10 (error handling)
-# approach: create new test with mock cursor that returns None for lastrowid
-#
 # === _validate_session_data ===
 # test_validate_session_data_returns_none_for_valid_complete_session
 # """Test that _validate_session_data returns None for fully valid session data."""
