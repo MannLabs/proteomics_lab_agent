@@ -51,7 +51,7 @@ def in_memory_db() -> Generator[Path, None, None]:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 file_name TEXT UNIQUE NOT NULL,
                 instrument_id TEXT NOT NULL,
                 gradient REAL NOT NULL
@@ -60,9 +60,9 @@ def in_memory_db() -> Generator[Path, None, None]:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files_to_performance_data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 performance_data_id TEXT NOT NULL,
-                raw_files_id INTEGER NOT NULL,
+                raw_files_id TEXT NOT NULL,
                 FOREIGN KEY (performance_data_id) REFERENCES performance_data (id) ON DELETE CASCADE,
                 FOREIGN KEY (raw_files_id) REFERENCES raw_files (id) ON DELETE CASCADE,
                 UNIQUE(performance_data_id, raw_files_id)
@@ -71,35 +71,19 @@ def in_memory_db() -> Generator[Path, None, None]:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS _schema_version (
-                version INTEGER PRIMARY KEY,
+                version TEXT PRIMARY KEY,
                 applied_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
         # Insert schema version
-        cursor.execute("INSERT INTO _schema_version (version) VALUES (?)", (1,))
+        cursor.execute("INSERT INTO _schema_version (version) VALUES (?)", ("1.0.0",))
 
         conn.commit()
     finally:
         conn.close()
 
-    return db_path
+    yield db_path
 
-
-@pytest.fixture
-def mock_env_vars() -> dict[str, str]:
-    """Provide mock environment variables for tests."""
-    return {
-        "model": "gemini-2.5-flash",
-        "temperature": 0.9,
-        "bucket_name": "test-bucket",
-        "project_id": "test-project",
-        "knowledge_base_path": "gs://test-bucket/knowledge",
-        "example_protocol1_path": "gs://test-bucket/protocol1.pdf",
-        "example_video1_path": "gs://test-bucket/video1.mp4",
-        "example_protocol2_path": "gs://test-bucket/protocol2.pdf",
-        "example_video2_path": "gs://test-bucket/video2.mp4",
-        "example_protocol_path": "gs://test-bucket/protocol.pdf",
-        "example_video_path": "gs://test-bucket/video.mp4",
-        "example_lab_note_path": "gs://test-bucket/lab_note.pdf",
-    }
+    # Cleanup
+    db_path.unlink(missing_ok=True)
