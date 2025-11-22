@@ -349,6 +349,14 @@ coverage-badge > misc/coverage.svg
 cd docu
 make clean
 make html
+```
+
+Check the documentation page manually:
+```bash
 open _build/html/index.html
+```
+
+Make the new documentation live and accessible.
+```bash
 ghp-import -n -p -f _build/html
 ```
