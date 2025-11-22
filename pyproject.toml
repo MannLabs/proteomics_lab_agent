@@ -7,7 +7,7 @@ name = "proteomics_lab_agent"
 description = "Multimodal AI agent to capture and share proteomics lab practice."
 readme = "README.md"
 maintainers = [
-  { name = "MannLabs", email = "skowronek@biochem.mpg.de"},
+  { name = "MannLabs", email = "opensource@alphapept.com"},
 ]
 authors = [
   { name = "MannLabs" },

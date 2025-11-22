@@ -14,6 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path("..").resolve()))
 
+# Set dummy environment variable to allow import of modules that require this variable
 os.environ["ALPHAKRAKEN_MCP_URL"] = "http://dummy-url-for-sphinx.com"
 
 
@@ -56,7 +57,6 @@ extensions = [
     "myst_nb",
     "sphinx_copybutton",
     "sphinx.ext.intersphinx",
-    # "sphinxcontrib.bibtex",
     "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
     "sphinx.ext.mathjax",
