@@ -51,7 +51,7 @@ def in_memory_db() -> Generator[Path, None, None]:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 file_name TEXT UNIQUE NOT NULL,
                 instrument_id TEXT NOT NULL,
                 gradient REAL NOT NULL
@@ -60,9 +60,9 @@ def in_memory_db() -> Generator[Path, None, None]:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files_to_performance_data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 performance_data_id TEXT NOT NULL,
-                raw_files_id INTEGER NOT NULL,
+                raw_files_id TEXT NOT NULL,
                 FOREIGN KEY (performance_data_id) REFERENCES performance_data (id) ON DELETE CASCADE,
                 FOREIGN KEY (raw_files_id) REFERENCES raw_files (id) ON DELETE CASCADE,
                 UNIQUE(performance_data_id, raw_files_id)
@@ -71,13 +71,13 @@ def in_memory_db() -> Generator[Path, None, None]:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS _schema_version (
-                version INTEGER PRIMARY KEY,
+                version TEXT PRIMARY KEY,
                 applied_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
         # Insert schema version
-        cursor.execute("INSERT INTO _schema_version (version) VALUES (?)", (1,))
+        cursor.execute("INSERT INTO _schema_version (version) VALUES (?)", ("1.0.0",))
 
         conn.commit()
     finally:

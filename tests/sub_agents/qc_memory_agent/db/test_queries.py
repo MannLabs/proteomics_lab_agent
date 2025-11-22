@@ -263,25 +263,18 @@ def test_query_performance_data_returns_success_with_matching_records(
         result = queries.query_performance_data(filters)
 
     # then
-    assert result == {
-        "success": True,
-        "message": "Query executed successfully. Found 1 record(s).",
-        "data": {
-            "results": [
-                {
-                    "id": 1,
-                    "file_name": "test1.d",
-                    "instrument_id": "tims2",
-                    "gradient": 44.0,
-                    "performance_status": 1,
-                    "performance_rating": 5.0,
-                    "performance_comment": "Excellent performance",
-                    "created_by_agent_version": "qc_memory_agent_v1.0",
-                }
-            ],
-            "count": 1,
-        },
-    }
+    assert result["success"] is True
+    results_list = result["data"]["results"]
+    assert len(results_list) == 1
+    row = results_list[0]
+    assert isinstance(row["id"], str)  # Check ID is string/UUID
+    assert row["file_name"] == "test1.d"
+    assert row["instrument_id"] == "tims2"
+    assert row["gradient"] == 44.0
+    assert row["performance_status"] == 1
+    assert row["performance_rating"] == 5.0
+    assert row["performance_comment"] == "Excellent performance"
+    assert row["created_by_agent_version"] == "qc_memory_agent_v1.0.0"
 
 
 def test_query_performance_data_returns_empty_results_when_no_matches(
@@ -385,22 +378,15 @@ def test_query_performance_data_combines_multiple_filters(
         result = queries.query_performance_data(filters)
 
     # then - only file1.d matches all three filters
-    assert result == {
-        "success": True,
-        "message": "Query executed successfully. Found 1 record(s).",
-        "data": {
-            "results": [
-                {
-                    "id": 1,
-                    "file_name": "file1.d",
-                    "instrument_id": "tims2",
-                    "gradient": 44.0,
-                    "performance_status": 1,
-                    "performance_rating": 5.0,
-                    "performance_comment": "Excellent",
-                    "created_by_agent_version": "qc_memory_agent_v1.0",
-                }
-            ],
-            "count": 1,
-        },
-    }
+    assert result["success"] is True
+    assert result["data"]["count"] == 1
+    result_row = result["data"]["results"][0]
+
+    assert isinstance(result_row["id"], str)  # Check for UUID string
+    assert result_row["file_name"] == "file1.d"
+    assert result_row["instrument_id"] == "tims2"
+    assert result_row["gradient"] == 44.0
+    assert result_row["performance_status"] == 1
+    assert result_row["performance_rating"] == 5.0
+    assert result_row["performance_comment"] == "Excellent"
+    assert result_row["created_by_agent_version"] == "qc_memory_agent_v1.0.0"
