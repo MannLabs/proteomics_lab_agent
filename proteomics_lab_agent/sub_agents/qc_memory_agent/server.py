@@ -9,7 +9,7 @@ import sqlite3
 import traceback
 from pathlib import Path
 
-import database_utils
+import db_interface
 import mcp.server.stdio
 from dotenv import load_dotenv
 from google.adk.tools.function_tool import FunctionTool
@@ -48,9 +48,9 @@ except sqlite3.Error as e:
 
 # Wrap database utility functions as ADK FunctionTools
 ADK_DB_TOOLS = {
-    "query_performance_data": FunctionTool(func=database_utils.query_performance_data),
+    "query_performance_data": FunctionTool(func=db_interface.query_performance_data),
     "insert_performance_and_raw_file_info": FunctionTool(
-        func=database_utils.insert_performance_and_raw_file_info
+        func=db_interface.insert_performance_and_raw_file_info
     ),
 }
 
