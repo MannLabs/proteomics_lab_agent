@@ -15,8 +15,8 @@ GRADIENT_TOLERANCE = (
     0.001  # Tolerance for retrieving raw files based on gradient length
 )
 MAX_PERFORMANCE_RATING = 5
-COMPATIBLE_SCHEMA_VERSION = 1
-AGENT_NAME = "qc_memory_agent_v1.0"
+COMPATIBLE_SCHEMA_VERSION = "1.0.0"
+AGENT_NAME = "qc_memory_agent_v1.0.0"
 
 
 class DatabaseError(Exception):
@@ -484,20 +484,17 @@ def _process_raw_file(cursor: sqlite3.Cursor, file_data: dict) -> tuple[int, str
         )
         return existing_id, "updated"
 
+    raw_files_id = str(uuid.uuid4())
     cursor.execute(
-        "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
+        "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
         (
+            raw_files_id,
             file_data["file_name"],
             file_data["instrument_id"],
             file_data["gradient"],
         ),
     )
-    new_id = cursor.lastrowid
-
-    if not new_id:
-        _raise_file_id_error()
-
-    return new_id, "created"
+    return raw_files_id, "created"
 
 
 def insert_performance_and_raw_file_info(session_data: dict) -> dict:
@@ -583,11 +580,13 @@ def insert_performance_and_raw_file_info(session_data: dict) -> dict:
 
         # Insert links between session data and raw file info
         link_query = """
-            INSERT OR IGNORE INTO raw_files_to_performance_data (performance_data_id, raw_files_id)
-            VALUES (?, ?)
+            INSERT OR IGNORE INTO raw_files_to_performance_data (id, performance_data_id, raw_files_id)
+            VALUES (?, ?, ?)
         """
+        link_data = [
+            (str(uuid.uuid4()), performance_data_id, file_id) for file_id in file_ids
+        ]
 
-        link_data = [(performance_data_id, file_id) for file_id in file_ids]
         cursor.executemany(link_query, link_data)
         links_created = cursor.rowcount
 
