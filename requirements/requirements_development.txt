@@ -12,3 +12,12 @@ sphinx-tabs
 sphinxext-opengraph
 
 pre-commit==4.1.0
+
+# Testing dependencies
+pytest>=8.0.0
+pytest-cov>=4.1.0
+
+# seems to be needed by google adk ? (otherwise, tests fail)
+rouge_score
+tabulate
+seaborn

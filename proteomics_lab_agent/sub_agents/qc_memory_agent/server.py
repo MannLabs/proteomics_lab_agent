@@ -9,7 +9,6 @@ import sqlite3
 import traceback
 from pathlib import Path
 
-import database_utils
 import mcp.server.stdio
 from dotenv import load_dotenv
 from google.adk.tools.function_tool import FunctionTool
@@ -17,6 +16,13 @@ from google.adk.tools.mcp_tool.conversion_utils import adk_to_mcp_tool_type
 from mcp import types as mcp_types
 from mcp.server.lowlevel import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
+
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db.insert import (
+    insert_performance_and_raw_file_info,
+)
+from proteomics_lab_agent.sub_agents.qc_memory_agent.db.queries import (
+    query_performance_data,
+)
 
 load_dotenv()
 
@@ -48,11 +54,9 @@ except sqlite3.Error as e:
 
 # Wrap database utility functions as ADK FunctionTools
 ADK_DB_TOOLS = {
-    "list_db_tables": FunctionTool(func=database_utils.list_db_tables),
-    "get_table_schema": FunctionTool(func=database_utils.get_table_schema),
-    "query_performance_data": FunctionTool(func=database_utils.query_performance_data),
+    "query_performance_data": FunctionTool(func=query_performance_data),
     "insert_performance_and_raw_file_info": FunctionTool(
-        func=database_utils.insert_performance_and_raw_file_info
+        func=insert_performance_and_raw_file_info
     ),
 }
 
