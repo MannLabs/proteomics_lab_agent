@@ -6,9 +6,19 @@ sphinx
 sphinx-book-theme
 myst-nb
 sphinx-copybutton
-sphinxcontrib-bibtex
 sphinx-autodoc-typehints
 sphinx-tabs
 sphinxext-opengraph
+nbsphinx
+myst-parser
 
 pre-commit==4.1.0
+
+# Testing dependencies
+pytest>=8.0.0
+pytest-cov>=4.1.0
+
+# seems to be needed by google adk ? (otherwise, tests fail)
+rouge_score
+tabulate
+seaborn

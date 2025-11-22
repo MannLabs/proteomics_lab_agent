@@ -10,11 +10,11 @@ import os
 import sys
 from datetime import datetime
 from importlib.metadata import metadata
+from pathlib import Path
 
-import Path
+sys.path.insert(0, str(Path("..").resolve()))
 
-sys.path.insert(0, Path.resolve(".."))
-
+# Set dummy environment variable to allow import of modules that require this variable
 os.environ["ALPHAKRAKEN_MCP_URL"] = "http://dummy-url-for-sphinx.com"
 
 
@@ -52,13 +52,11 @@ html_context = {
 # They can be extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "myst_nb",
-    "sphinx_copybutton",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
-    # "sphinxcontrib.bibtex",
+    "myst_nb",
+    "sphinx_copybutton",
+    "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
     "sphinx.ext.mathjax",
@@ -67,6 +65,7 @@ extensions = [
 ]
 
 autosummary_generate = True
+autosummary_imported_members = True
 autodoc_member_order = "groupwise"
 default_role = "literal"
 napoleon_google_docstring = False

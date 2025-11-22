@@ -1,3 +1,7 @@
+![License](https://img.shields.io/badge/License-Apache-brightgreen)
+[![unit tests](https://github.com/MannLabs/proteomics_lab_agent/actions/workflows/tests.yaml/badge.svg)](https://github.com/MannLabs/proteomics_lab_agent/actions/workflows/tests.yaml)
+![Coverage](https://github.com/MannLabs/proteomics_lab_agent/blob/main/misc/coverage.svg)
+
 # proteomics_lab_agent
 
 The [Mann Labs at the Max Planck Institute of Biochemistry](https://www.biochem.mpg.de/mann) developed proteomics_lab_agent, a multimodal, agentic AI framework that captures and shares practical expertise by linking written instructions to real-world laboratory work. It uses video analysis to automate documentation and provide personalized guidance. We applied this agent to our field of mass spectrometry (MS)-based proteomics. To access all the hyperlinks in this document, please view it on [GitHub](https://github.com/MannLabs/proteomics_lab_agent).
@@ -325,3 +329,34 @@ pip install detect-secrets
 (check `.pre-commit-config.yaml` for the exact parameters)
 3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
 4. Commit the latest version of `.secrets.baseline`
+
+#### Run tests locally
+From root folder of package
+```bash
+python -m pytest tests
+```
+
+#### Update coverage badge
+```bash
+pip install pytest-cov
+pytest --cov .
+pip install coverage-badge
+coverage-badge > misc/coverage.svg
+```
+
+#### Update documentation
+```bash
+cd docu
+make clean
+make html
+```
+
+Check the documentation page manually:
+```bash
+open _build/html/index.html
+```
+
+Make the new documentation live and accessible.
+```bash
+ghp-import -n -p -f _build/html
+```
