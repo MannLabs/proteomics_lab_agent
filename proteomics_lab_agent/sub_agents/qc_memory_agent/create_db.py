@@ -22,7 +22,7 @@ Database Structure:
    - Stores information about raw data files
    - Each file is unique by filename
    - Fields:
-     * id: Unique identifier (PRIMARY KEY)
+     * id: Unique UUID identifier (PRIMARY KEY)
      * file_name: Unique filename (UNIQUE constraint)
      * instrument_id: Instrument used (e.g., 'tims2')
      * gradient: Gradient time in minutes
@@ -30,7 +30,7 @@ Database Structure:
 3. raw_files_to_performance_data (Junction Table)
    - Links performance sessions to raw files (many-to-many relationship)
    - Fields:
-     * id: Unique identifier (PRIMARY KEY)
+     * id: Unique UUID identifier (PRIMARY KEY)
      * performance_data_id: Foreign key to performance_data.id
      * raw_files_id: Foreign key to raw_files.id
      * UNIQUE constraint on (performance_data_id, raw_files_id) prevents duplicates
@@ -117,7 +117,7 @@ def create_database() -> None:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 file_name TEXT UNIQUE NOT NULL,
                 instrument_id TEXT NOT NULL,
                 gradient REAL NOT NULL
@@ -127,9 +127,9 @@ def create_database() -> None:
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS raw_files_to_performance_data (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id TEXT PRIMARY KEY,
                 performance_data_id TEXT NOT NULL,
-                raw_files_id INTEGER NOT NULL,
+                raw_files_id TEXT NOT NULL,
                 FOREIGN KEY (performance_data_id) REFERENCES performance_data (id) ON DELETE CASCADE,
                 FOREIGN KEY (raw_files_id) REFERENCES raw_files (id) ON DELETE CASCADE,
                 UNIQUE(performance_data_id, raw_files_id)
@@ -171,13 +171,17 @@ def create_database() -> None:
         )
         logging.info(f"Inserted {len(sessions)} performance sessions.")
 
+        rf_uuid_1 = str(uuid.uuid4())
+        rf_uuid_2 = str(uuid.uuid4())
         raw_files_data = [
             (
+                rf_uuid_1,
                 "20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d",
                 "tims2",
                 43.998,
             ),
             (
+                rf_uuid_2,
                 "20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d",
                 "tims2",
                 43.998,
@@ -185,8 +189,8 @@ def create_database() -> None:
         ]
         cursor.executemany(
             """
-            INSERT OR IGNORE INTO raw_files (file_name, instrument_id, gradient)
-            VALUES (?, ?, ?)
+            INSERT OR IGNORE INTO raw_files (id, file_name, instrument_id, gradient)
+            VALUES (?, ?, ?, ?)
             """,
             raw_files_data,
         )
@@ -194,13 +198,13 @@ def create_database() -> None:
 
         # Link sessions to files (many-to-many relationships)
         raw_files_to_session_data = [
-            (session_uuid_1, 1),
-            (session_uuid_2, 2),
+            (str(uuid.uuid4()), session_uuid_1, rf_uuid_1),
+            (str(uuid.uuid4()), session_uuid_2, rf_uuid_2),
         ]
         cursor.executemany(
             """
-            INSERT OR IGNORE INTO raw_files_to_performance_data (performance_data_id, raw_files_id)
-            VALUES (?, ?)
+            INSERT OR IGNORE INTO raw_files_to_performance_data (id, performance_data_id, raw_files_id)
+            VALUES (?, ?, ?)
             """,
             raw_files_to_session_data,
         )
