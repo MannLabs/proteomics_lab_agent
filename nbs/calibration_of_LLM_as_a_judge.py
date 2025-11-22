@@ -58,7 +58,6 @@ def create_markdown_table_from_df(df: pd.DataFrame) -> dict:
     """
     table_lines = []
 
-    # Define headers
     headers = [
         "Section",
         "Completeness",
@@ -69,10 +68,8 @@ def create_markdown_table_from_df(df: pd.DataFrame) -> dict:
         "Notes",
     ]
 
-    # Add Header row
     table_lines.append(f"| {' | '.join(headers)} |")
 
-    # Add Separator row
     separators = ["---" for _ in headers]
     table_lines.append(f"| {' | '.join(separators)} |")
 
@@ -209,6 +206,8 @@ def visualize_calibration(df_corr_results: pd.DataFrame, output_dir: Path) -> di
             data=df_corr_results,
             x="Rubric",
             y="Spearman_Correlation",
+            hue="Rubric",
+            legend=False,
             palette="viridis",
         )
         ax.set_title(
@@ -219,7 +218,7 @@ def visualize_calibration(df_corr_results: pd.DataFrame, output_dir: Path) -> di
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
 
-        plt.savefig(output_dir / "correlation_barchart.pdf")
+        plt.savefig(output_dir + "correlation_barchart.pdf")
         logging.info("Generated 'correlation_barchart.pdf'")
         plt.close()
 
@@ -255,6 +254,7 @@ def plot_overall_comparison_mean_scores(
         Dictionary with success status and paths to the saved files.
 
     """
+    output_dir = Path(output_dir)
     score_columns = [
         "Completeness",
         "Technical Accuracy",
