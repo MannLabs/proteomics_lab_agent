@@ -48,6 +48,25 @@ performance_data (1) ←→ (M) raw_files_to_performance_data (M) ←→ (1) raw
 - One performance session can be linked to multiple raw files
 - One raw file can be associated with multiple performance sessions
 
+Rationale for Data Strategy
+---------------------------
+1. Minimal Redundancy & Schema Decoupling:
+   We intentionally store only the minimal subset of metadata (file_name, instrument_id,
+   and gradient) required to uniquely identify a QC analysis. We strictly avoid
+   duplicating computed metrics; this maintains the AlphaKraken database as the
+   "Single Source of Truth" for quantitative data and ensures that future updates to
+   AlphaKraken's schema do not break the integrity of our expert rating history.
+
+2. Agent-Driven Consistency:
+   The QC Memory Agent acts as the exclusive write-gateway to this database. By
+   programmatically retrieving identifiers from the active AlphaKraken instance when
+   recording a rating, the agent guarantees that shared metadata remains identical
+   across both systems, preventing data drift.
+
+3. Usage:
+   To reconstruct the full analytical context, the "Expert Decisions" stored here
+   (subjective ratings) must be joined with the "Performance Metrics" stored in
+   AlphaKraken (objective data) using the unique `file_name`.
 """
 
 import logging
