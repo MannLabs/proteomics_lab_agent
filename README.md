@@ -330,9 +330,24 @@ pip install detect-secrets
 3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
 4. Commit the latest version of `.secrets.baseline`
 
+### Run tests locally
+From root folder of package
+```bash
+python -m pytest tests
+```
+
 #### Update coverage badge
 ```bash
 pytest --cov .
 pip install coverage-badge
 coverage-badge > misc/coverage.svg
+```
+
+### Update documentation
+```bash
+cd docu
+sphinx-apidoc -f -o . ../proteomics_lab_agent --separate
+make clean
+make html
+open _build/html/index.html
 ```

@@ -5,8 +5,7 @@ This is the main documentation for the `proteomics_lab_agent` project. You can f
 ***
 
 ```{toctree}
-:hidden: true
-:maxdepth: 1
+:maxdepth: 2
 :caption: Contents:
 
-api.md
+modules

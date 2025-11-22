@@ -10,6 +10,8 @@ sphinxcontrib-bibtex
 sphinx-autodoc-typehints
 sphinx-tabs
 sphinxext-opengraph
+nbsphinx
+myst-parser
 
 pre-commit==4.1.0
 

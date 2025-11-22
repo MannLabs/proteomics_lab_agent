@@ -10,10 +10,9 @@ import os
 import sys
 from datetime import datetime
 from importlib.metadata import metadata
+from pathlib import Path
 
-import Path
-
-sys.path.insert(0, Path.resolve(".."))
+sys.path.insert(0, str(Path("..").resolve()))
 
 os.environ["ALPHAKRAKEN_MCP_URL"] = "http://dummy-url-for-sphinx.com"
 
