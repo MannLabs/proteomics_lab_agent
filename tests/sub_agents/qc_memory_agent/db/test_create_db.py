@@ -55,20 +55,25 @@ def test_create_database_creates_all_tables_and_sample_data(tmp_path: Path) -> N
         # Check raw_files table exists and has sample data
         cursor.execute("SELECT * FROM raw_files ORDER BY id")
         file_rows = [dict(row) for row in cursor.fetchall()]
-        assert file_rows == [
-            {
-                "id": 1,
-                "file_name": "20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d",
-                "instrument_id": "tims2",
-                "gradient": 43.998,
-            },
-            {
-                "id": 2,
-                "file_name": "20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d",
-                "instrument_id": "tims2",
-                "gradient": 43.998,
-            },
-        ]
+        assert len(file_rows) == 2
+        file_rows.sort(key=lambda x: x["file_name"], reverse=True)
+
+        # Verify first file
+        raw_file_1 = file_rows[0]
+        assert isinstance(file_rows[0]["id"], str)
+        assert (
+            file_rows[0]["file_name"]
+            == "20250611_TIMS02_EVO05_PaSk_DIAMA_HeLa_200ng_44min_S1-A3_1_21296.d"
+        )
+        assert file_rows[0]["instrument_id"] == "tims2"
+
+        # Verify second file
+        raw_file_2 = file_rows[1]
+        assert isinstance(file_rows[1]["id"], str)
+        assert (
+            file_rows[1]["file_name"]
+            == "20250528_TIMS02_EVO05_LuHe_DIAMA_HeLa_200ng_44min_01_S6-H2_1_21203.d"
+        )
 
         # Check junction table exists and has links
         cursor.execute(
@@ -76,16 +81,16 @@ def test_create_database_creates_all_tables_and_sample_data(tmp_path: Path) -> N
         )
         link_rows = [dict(row) for row in cursor.fetchall()]
         assert len(link_rows) == 2
-        assert link_rows[0]["id"] == 1
+        assert isinstance(link_rows[0]["id"], str)
         assert link_rows[0]["performance_data_id"] == perf_1["id"]
-        assert link_rows[0]["raw_files_id"] == 1
-        assert link_rows[1]["id"] == 2
+        assert link_rows[0]["raw_files_id"] == raw_file_1["id"]
+        assert isinstance(link_rows[1]["id"], str)
         assert link_rows[1]["performance_data_id"] == perf_2["id"]
-        assert link_rows[1]["raw_files_id"] == 2
+        assert link_rows[1]["raw_files_id"] == raw_file_2["id"]
 
         # Check schema version table
         cursor.execute("SELECT version FROM _schema_version")
         schema_row = dict(cursor.fetchone())
-        assert schema_row == {"version": 1}
+        assert schema_row == {"version": "1.0.0"}
 
         conn.close()

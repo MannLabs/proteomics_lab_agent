@@ -101,7 +101,7 @@ def test_get_db_connection_raises_error_when_schema_version_incompatible() -> No
         patch.object(connection, "DATABASE_PATH", db_path),
         pytest.raises(
             connection.DatabaseError,
-            match=r"Database schema version mismatch.*requires version 1.0.0*database is version 999",
+            match=r"Database schema version mismatch.*requires version 1.0.0.*database is version 999",
         ),
     ):
         connection.get_db_connection()
