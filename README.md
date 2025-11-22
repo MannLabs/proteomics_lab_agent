@@ -347,8 +347,8 @@ coverage-badge > misc/coverage.svg
 ### Update documentation
 ```bash
 cd docu
-sphinx-apidoc -f -o . ../proteomics_lab_agent --separate
 make clean
 make html
 open _build/html/index.html
+ghp-import -n -p -f _build/html
 ```
