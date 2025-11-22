@@ -426,3 +426,26 @@ def test_analyze_proteomics_video_handles_video_with_gcs_path(
         "video_analysis": "The video demonstrates a mass spectrometry sample preparation workflow.",
         "usage_metadata": {"input_tokens": 120, "output_tokens": 60},
     }
+
+
+# ============================================================================
+# AGENT INSTANTIATION TESTS
+# ============================================================================
+
+
+def test_video_analyzer_agent_instantiation() -> None:
+    """Test that video_analyzer_agent is instantiated correctly with all expected attributes."""
+    # given/when
+    from proteomics_lab_agent.config import config
+
+    # then
+    assert agent.video_analyzer_agent.name == "video_analyzer_agent"
+    assert agent.video_analyzer_agent.description == "Agent analyzes video files."
+    assert agent.video_analyzer_agent.model == config.model
+    assert (
+        "Always analyse the user query by invoking the tool"
+        in agent.video_analyzer_agent.instruction
+    )
+    assert "analyze_proteomics_video" in agent.video_analyzer_agent.instruction
+    assert len(agent.video_analyzer_agent.tools) == 1
+    assert agent.video_analyzer_agent.tools[0] == agent.analyze_proteomics_video

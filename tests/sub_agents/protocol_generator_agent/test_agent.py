@@ -574,3 +574,28 @@ def test_generate_protocols_handles_empty_metadata_from_video(
         "protocol_generation_time": result["protocol_generation_time"],
         "metadata": {},
     }
+
+
+# ============================================================================
+# AGENT INSTANTIATION TESTS
+# ============================================================================
+
+
+def test_protocol_generator_agent_instantiation() -> None:
+    """Test that protocol_generator_agent is instantiated correctly with all expected attributes."""
+    # given/when
+    from proteomics_lab_agent.config import config
+
+    # then
+    assert agent.protocol_generator_agent.name == "protocol_generator_agent"
+    assert (
+        agent.protocol_generator_agent.description
+        == "Agent converts text input or video files into protocols."
+    )
+    assert agent.protocol_generator_agent.model == config.model
+    assert "Path A" in agent.protocol_generator_agent.instruction
+    assert "Path B" in agent.protocol_generator_agent.instruction
+    assert "generate_protocols" in agent.protocol_generator_agent.instruction
+    assert len(agent.protocol_generator_agent.tools) == 1
+    assert agent.protocol_generator_agent.tools[0] == agent.generate_protocols
+    assert agent.protocol_generator_agent.output_key == "protocol_result"
