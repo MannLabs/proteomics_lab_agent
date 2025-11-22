@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import uuid
 from pathlib import Path
 from unittest.mock import patch
 
@@ -376,7 +377,8 @@ def test_process_raw_file_creates_new_file_when_not_exists(in_memory_db: Path) -
 
         # then
         assert action == "created"
-        assert file_id == 1
+        assert isinstance(file_id, str)
+        assert len(file_id) == 36  # V erify it looks like a UUID
 
         # Verify file was actually created
         cursor.execute("SELECT * FROM raw_files WHERE id = ?", (file_id,))
@@ -400,9 +402,10 @@ def test_process_raw_file_returns_existing_id_when_exact_match(
         cursor = conn.cursor()
 
         # Pre-insert the file
+        existing_id = str(uuid.uuid4())
         cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
-            ("test.d", "tims2", 44.0),
+            "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
+            (existing_id, "test.d", "tims2", 44.0),
         )
         conn.commit()
 
@@ -411,7 +414,7 @@ def test_process_raw_file_returns_existing_id_when_exact_match(
 
         # then
         assert action == "found_exact_match"
-        assert file_id == 1
+        assert file_id == existing_id
 
         conn.close()
 
@@ -426,9 +429,10 @@ def test_process_raw_file_updates_when_instrument_differs(in_memory_db: Path) ->
         cursor = conn.cursor()
 
         # Pre-insert file with different instrument
+        existing_id = str(uuid.uuid4())
         cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
-            ("test.d", "tims1", 44.0),
+            "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
+            (existing_id, "test.d", "tims1", 44.0),
         )
         conn.commit()
 
@@ -437,7 +441,7 @@ def test_process_raw_file_updates_when_instrument_differs(in_memory_db: Path) ->
 
         # then
         assert action == "updated"
-        assert file_id == 1
+        assert file_id == existing_id
 
         # Verify update occurred
         cursor.execute("SELECT instrument_id FROM raw_files WHERE id = ?", (file_id,))
@@ -458,9 +462,10 @@ def test_process_raw_file_updates_when_gradient_differs_beyond_tolerance(
         cursor = conn.cursor()
 
         # Pre-insert file with gradient that differs by > 0.001
+        existing_id = str(uuid.uuid4())
         cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
-            ("test.d", "tims2", 44.01),
+            "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
+            (existing_id, "test.d", "tims2", 44.01),
         )
         conn.commit()
 
@@ -469,7 +474,7 @@ def test_process_raw_file_updates_when_gradient_differs_beyond_tolerance(
 
         # then
         assert action == "updated"
-        assert file_id == 1
+        assert file_id == existing_id
 
         # Verify gradient was updated
         cursor.execute("SELECT gradient FROM raw_files WHERE id = ?", (file_id,))
@@ -490,9 +495,10 @@ def test_process_raw_file_reuses_when_gradient_within_tolerance(
         cursor = conn.cursor()
 
         # Pre-insert file with gradient that differs by < 0.001
+        existing_id = str(uuid.uuid4())
         cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
-            ("test.d", "tims2", 44.0005),
+            "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
+            (existing_id, "test.d", "tims2", 44.0005),
         )
         conn.commit()
 
@@ -501,7 +507,7 @@ def test_process_raw_file_reuses_when_gradient_within_tolerance(
 
         # then
         assert action == "found_exact_match"
-        assert file_id == 1
+        assert file_id == existing_id
 
         # Verify gradient was NOT updated (still has old value)
         cursor.execute("SELECT gradient FROM raw_files WHERE id = ?", (file_id,))
@@ -659,7 +665,7 @@ def test_insert_performance_and_raw_file_info_creates_session_with_single_new_fi
         assert perf["performance_status"] == 1
         assert perf["performance_rating"] == 5.0
         assert perf["performance_comment"] == "Excellent"
-        assert perf["created_by_agent_version"] == "qc_memory_agent_v1.0"
+        assert perf["created_by_agent_version"] == "qc_memory_agent_v1.0.0"
 
         # Check raw_files table
         cursor.execute("SELECT * FROM raw_files WHERE file_name = ?", ("test1.d",))
@@ -734,9 +740,10 @@ def test_insert_performance_and_raw_file_info_reuses_existing_matching_files(
         # Pre-insert matching file
         conn = connection.get_db_connection()
         cursor = conn.cursor()
+        existing_id = str(uuid.uuid4())
         cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
-            ("test1.d", "tims2", 44.0),
+            "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
+            (existing_id, "test1.d", "tims2", 44.0),
         )
         conn.commit()
         conn.close()
@@ -769,9 +776,10 @@ def test_insert_performance_and_raw_file_info_updates_existing_non_matching_file
         # Pre-insert file with different instrument
         conn = connection.get_db_connection()
         cursor = conn.cursor()
+        existing_id = str(uuid.uuid4())
         cursor.execute(
-            "INSERT INTO raw_files (file_name, instrument_id, gradient) VALUES (?, ?, ?)",
-            ("test1.d", "tims1", 44.0),
+            "INSERT INTO raw_files (id, file_name, instrument_id, gradient) VALUES (?, ?, ?, ?)",
+            (existing_id, "test1.d", "tims1", 44.0),
         )
         conn.commit()
         conn.close()

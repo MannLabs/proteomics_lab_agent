@@ -30,7 +30,7 @@ def test_get_db_connection_returns_valid_connection(in_memory_db: Path) -> None:
         cursor = conn.cursor()
         cursor.execute("SELECT version FROM _schema_version")
         version = cursor.fetchone()["version"]
-        assert version == 1
+        assert version == "1.0.0"
 
         conn.close()
 
@@ -90,7 +90,7 @@ def test_get_db_connection_raises_error_when_schema_version_incompatible() -> No
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(
-        "CREATE TABLE _schema_version (version INTEGER PRIMARY KEY, applied_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+        "CREATE TABLE _schema_version (version TEXT PRIMARY KEY, applied_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
     )
     cursor.execute("INSERT INTO _schema_version (version) VALUES (?)", (999,))
     conn.commit()
@@ -101,7 +101,7 @@ def test_get_db_connection_raises_error_when_schema_version_incompatible() -> No
         patch.object(connection, "DATABASE_PATH", db_path),
         pytest.raises(
             connection.DatabaseError,
-            match=r"Database schema version mismatch.*requires version 1.*database is version 999",
+            match=r"Database schema version mismatch.*requires version 1.0.0.*database is version 999",
         ),
     ):
         connection.get_db_connection()
