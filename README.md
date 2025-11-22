@@ -338,6 +338,7 @@ python -m pytest tests
 
 #### Update coverage badge
 ```bash
+pip install pytest-cov
 pytest --cov .
 pip install coverage-badge
 coverage-badge > misc/coverage.svg
