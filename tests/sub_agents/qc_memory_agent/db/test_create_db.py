@@ -81,12 +81,20 @@ def test_create_database_creates_all_tables_and_sample_data(tmp_path: Path) -> N
         )
         link_rows = [dict(row) for row in cursor.fetchall()]
         assert len(link_rows) == 2
-        assert isinstance(link_rows[0]["id"], str)
-        assert link_rows[0]["performance_data_id"] == perf_1["id"]
-        assert link_rows[0]["raw_files_id"] == raw_file_1["id"]
-        assert isinstance(link_rows[1]["id"], str)
-        assert link_rows[1]["performance_data_id"] == perf_2["id"]
-        assert link_rows[1]["raw_files_id"] == raw_file_2["id"]
+        link_1 = next(
+            row for row in link_rows if row["performance_data_id"] == perf_1["id"]
+        )
+        assert isinstance(link_1["id"], str)
+        assert link_1["raw_files_id"] == raw_file_1["id"]
+        assert link_1["performance_data_id"] == perf_1["id"]
+        assert link_1["raw_files_id"] == raw_file_1["id"]
+
+        link_2 = next(
+            row for row in link_rows if row["performance_data_id"] == perf_2["id"]
+        )
+        assert isinstance(link_2["id"], str)
+        assert link_2["performance_data_id"] == perf_2["id"]
+        assert link_2["raw_files_id"] == raw_file_2["id"]
 
         # Check schema version table
         cursor.execute("SELECT version FROM _schema_version")
