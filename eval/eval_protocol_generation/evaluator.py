@@ -10,7 +10,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import pandas as pd
 from google import genai
 from pandas import Series
@@ -27,12 +26,12 @@ EXTRACTION_MODEL = "gemini-2.5-flash"
 OUTPUT_DIR_DEFAULT = "./protocol_eval_logs"
 PROTOCOL_DISPLAY_MAX_LENGTH = 100
 
-DEFAULT_RATING_COLUMNS = {
-    "completeness": "completeness_rating",
-    "accuracy": "technical_accuracy_rating",
-    "logic": "logical_flow_rating",
-    "safety": "safety_rating",
-    "formatting": "formatting_rating",
+RATING_KEY_MAP = {
+    "Completeness": "completeness_rating",
+    "Technical Accuracy": "technical_accuracy_rating",
+    "Logical Flow": "logical_flow_rating",
+    "Safety": "safety_rating",
+    "Formatting": "formatting_rating",
 }
 
 from eval.eval_lab_note_generation.evaluator import (
@@ -83,6 +82,27 @@ class ProtocolRatingPerSection(BaseModel):
     notes: str = Field(default="", description="Additional observations or comments")
 
 
+class ProtocolRatingOverall(BaseModel):
+    """Represents the overall evaluation summary (Step 5)."""
+
+    completeness_rating: int = Field(
+        ge=1, le=5, description="Overall completeness rating 1-5"
+    )
+    technical_accuracy_rating: int = Field(
+        ge=1, le=5, description="Overall technical accuracy rating 1-5"
+    )
+    logical_flow_rating: int = Field(
+        ge=1, le=5, description="Overall logical flow rating 1-5"
+    )
+    safety_rating: int = Field(ge=1, le=5, description="Overall safety rating 1-5")
+    formatting_rating: int = Field(
+        ge=1, le=5, description="Overall formatting rating 1-5"
+    )
+    notes: str = Field(
+        default="", description="Additional overall observations or comments"
+    )
+
+
 class ProtocolRating(BaseModel):
     """Represents the complete rating of all sections."""
 
@@ -91,47 +111,9 @@ class ProtocolRating(BaseModel):
         description="A list of ratings, where each item corresponds to a protocol section.",
     )
 
-
-def calculate_protocol_ratings(
-    df_eval: pd.DataFrame,
-    column_config: dict | None = None,
-) -> dict:
-    """Calculate average ratings across evaluation criteria from a dataframe of protocol evaluations.
-
-    Parameters
-    ----------
-    df_eval : pd.DataFrame
-        DataFrame containing evaluation ratings for protocols
-    column_config : dict, optional
-        Dictionary mapping criterion names to column names. If None, uses DEFAULT_RATING_COLUMNS.
-        Expected keys: 'completeness', 'accuracy', 'logic', 'safety', 'formatting'
-
-    Returns
-    -------
-    dict
-        Dictionary containing average ratings for each criterion and an overall rating
-
-    """
-    config = column_config or DEFAULT_RATING_COLUMNS
-
-    mean_completeness = df_eval[config["completeness"]].mean()
-    mean_accuracy = df_eval[config["accuracy"]].mean()
-    mean_logic = df_eval[config["logic"]].mean()
-    mean_safety = df_eval[config["safety"]].mean()
-    mean_formatting = df_eval[config["formatting"]].mean()
-
-    result_dict = {
-        "Completeness": mean_completeness,
-        "Technical Accuracy": mean_accuracy,
-        "Logical Flow": mean_logic,
-        "Safety": mean_safety,
-        "Formatting": mean_formatting,
-        "Overall": np.mean(
-            [mean_completeness, mean_accuracy, mean_logic, mean_safety, mean_formatting]
-        ),
-    }
-
-    return {k: float(v) for k, v in result_dict.items()}
+    summary_rating: ProtocolRatingOverall = Field(
+        ..., description="The overall summary rating for the entire protocol (Step 5)."
+    )
 
 
 def generate_protocols_evaluation(
@@ -165,6 +147,7 @@ def generate_protocols_evaluation(
             config={
                 "response_mime_type": "application/json",
                 "response_schema": ProtocolRating,
+                "temperature": 0.2,
             },
         )
     except Exception:
@@ -228,7 +211,17 @@ def _run_single_evaluation(
         df_rating = pd.DataFrame(
             [section.model_dump() for section in rating_response.sections]
         )
-        dict_rating = calculate_protocol_ratings(df_rating)
+        # Extract the LLM-generated summary (Step 5 data) and convert to dict
+        llm_summary_dict = rating_response.summary_rating.model_dump()
+
+        dict_rating = {}
+        for target_key, source_key in RATING_KEY_MAP.items():
+            if source_key in llm_summary_dict:
+                dict_rating[target_key] = llm_summary_dict[source_key]
+        numeric_values = [
+            value for value in dict_rating.values() if isinstance(value, int | float)
+        ]
+        dict_rating["Overall"] = sum(numeric_values) / len(numeric_values)
 
         result = {
             "eval_set": eval_set_name,

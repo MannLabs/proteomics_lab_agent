@@ -415,13 +415,13 @@ This protocol explains how to connect an IonOpticks column inserted into a timsT
 ## Procedure
 *Estimated timing: 3 minutes*
 
-1. Verfy that the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standing by mode.
+1. Verify that the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standing by mode.
 
 ### Connect column and sample line
 2. Verify that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
 3. Attach a black NanoViper adapter to the LC sample line.
 4. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
-5. Hold the column fititng of the IonOpticks column with a pliers.
+5. Hold the column fitting of the IonOpticks column with a pliers.
 6. Hand-tighten the NanoViper of the LC sample line with the column fitting (Figure 1).
    CRITICAL STEP: Be careful not to overtighten the connection between the IonOpticks column and the timsTOF Ultra. Otherwise you can damage the column and the LC sample line.
 7. Remove the NanoViper adapter so that the oven can be tightly closed.
@@ -518,7 +518,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 *Estimated timing: less than 10 minute*
 
 ### Switch timsTOF to standby
-1. In timsControl, verfy if the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standy by mode  (Figure 1).
+1. In timsControl, Verify if the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standy by mode  (Figure 1).
 2. Verify that the syringe is inactive in the tab 'Source' under 'Syringe Pump'. If not click on 'Stop'.
 3. In the 'source' and 'source type' sections of timsControl, choose 'CaptiveSpray' but do not activate it yet.
 
@@ -542,7 +542,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 14. Verify that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
 15. Verify if the LC sample line has a black NanoViper adapter attached. If not, locate an adapter and securely attach it to the sample line.
 16. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
-17. Hold the column fititng of the IonOpticks column with a pliers.
+17. Hold the column fitting of the IonOpticks column with a pliers.
 18. Hand-tighten the NanoViper of the LC sample line with the column fitting (Figure 3).
    CRITICAL STEP: Be careful not to overtighten the connection between the IonOpticks column and the timsTOF Ultra. Otherwise you can damage the column and the LC sample line.
 19. Draw the oven closer to the UltraSource, secure it with the screw on the bottom of the oven (Figure 2).
@@ -558,7 +558,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 26. Transition the instrument to the operation mode by using the on/off button.
 27. Navigate to Hystar and ensure that the idle flow is active. If not right-click on the Evosep logo, choosing 'preparation', and then selecting 'idle flow' and 'Run'.
 28. Return to timsControl and check the MS signal. It should be around 2.5x10^7.
-29. Monitor the internal pressures in the timsTOF device. The funnel pressur is acceptable within a 9-11 mbar range. Aim for a 10 mbar funnel pressure. Adjust the 'funnel pressure' wheel if necessary by turning counter clock-wise to reduce the pressure.
+29. Monitor the internal pressures in the timsTOF device. The funnel pressure is acceptable within a 9-11 mbar range. Aim for a 10 mbar funnel pressure. Adjust the 'funnel pressure' wheel if necessary by turning counter clock-wise to reduce the pressure.
 
 
 ## Expected Results
@@ -696,7 +696,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 *Estimated timing: less than 10 minute*
 
 ### Switch timsTOF to standby
-1. In timsControl, verfy if the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standy by mode  (Figure 1).
+1. In timsControl, Verify if the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standy by mode  (Figure 1).
 2. Verify that the syringe is inactive in the tab 'Source' under 'Syringe Pump'. If not click on 'Stop'.
 3. In the 'source' and 'source type' sections of timsControl, choose 'CaptiveSpray' but do not activate it yet.
 
@@ -720,7 +720,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 14. Verify that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
 15. Verify if the LC sample line has a black NanoViper adapter attached. If not, locate an adapter and securely attach it to the sample line.
 16. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
-17. Hold the column fititng of the IonOpticks column with a pliers.
+17. Hold the column fitting of the IonOpticks column with a pliers.
 18. Hand-tighten the NanoViper of the LC sample line with the column fitting (Figure 3).
    CRITICAL STEP: Be careful not to overtighten the connection between the IonOpticks column and the timsTOF Ultra. Otherwise you can damage the column and the LC sample line.
 19. Draw the oven closer to the UltraSource, secure it with the screw on the bottom of the oven (Figure 2).
@@ -736,7 +736,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 26. Transition the instrument to the operation mode by using the on/off button.
 27. Navigate to Hystar and ensure that the idle flow is active. If not right-click on the Evosep logo, choosing 'preparation', and then selecting 'idle flow' and 'Run'.
 28. Return to timsControl and check the MS signal. It should be around 2.5x10^7.
-29. Monitor the internal pressures in the timsTOF device. The funnel pressur is acceptable within a 9-11 mbar range. Aim for a 10 mbar funnel pressure. Adjust the 'funnel pressure' wheel if necessary by turning counter clock-wise to reduce the pressure.
+29. Monitor the internal pressures in the timsTOF device. The funnel pressure is acceptable within a 9-11 mbar range. Aim for a 10 mbar funnel pressure. Adjust the 'funnel pressure' wheel if necessary by turning counter clock-wise to reduce the pressure.
 
 
 ## Expected Results
@@ -874,7 +874,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 ### Switch TimsControl to 'Standby' mode
 1. Verify that the IonOpticks column from an Evosep System is disconnected. If not disconnect them.
    Critical step: This could be an opportune moment to perform the weekly LC system maintenance.
-2. In timsControl, verfy that the software is in standby mode
+2. In timsControl, Verify that the software is in standby mode
 3. Navigate to the 'Source', then proceed to 'SourceType' and select 'ESI'. However, do not activate the source at this moment (Figure 1).
 
 ### Remove UltraSource
@@ -1028,7 +1028,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 ### Switch TimsControl to 'Standby' mode
 1. Verify that the IonOpticks column from an Evosep System is disconnected. If not disconnect them.
    Critical step: This could be an opportune moment to perform the weekly LC system maintenance.
-2. In timsControl, verfy that the software is in standby mode
+2. In timsControl, Verify that the software is in standby mode
 3. Navigate to the 'Source', then proceed to 'SourceType' and select 'ESI'. However, do not activate the source at this moment (Figure 1).
 
 ### Remove UltraSource
@@ -1181,7 +1181,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 ### Switch TimsControl to 'Standby' mode
 1. Verify that the IonOpticks column from an Evosep System is disconnected. If not disconnect them.
    Critical step: This could be an opportune moment to perform the weekly LC system maintenance.
-2. In timsControl, verfy that the software is in standby mode
+2. In timsControl, Verify that the software is in standby mode
 3. Navigate to the 'Source', then proceed to 'SourceType' and select 'ESI'. However, do not activate the source at this moment (Figure 1).
 
 ### Remove UltraSource
@@ -1336,7 +1336,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 ### Switch TimsControl to 'Standby' mode
 1. Verify that the IonOpticks column from an Evosep System is disconnected. If not disconnect them.
    Critical step: This could be an opportune moment to perform the weekly LC system maintenance.
-2. In timsControl, verfy that the software is in standby mode
+2. In timsControl, Verify that the software is in standby mode
 3. Navigate to the 'Source', then proceed to 'SourceType' and select 'ESI'. However, do not activate the source at this moment (Figure 1).
 
 ### Remove UltraSource
@@ -2217,7 +2217,7 @@ This protocol explains how to queue sample in HyStar for LC-MS measurement.
 *Estimated timing: 6 minutes*
 
 1. Verify the Evotips were placed on top of the Evosep LC system. In this example, 5 ng HeLa Evotips were placed at S1 from A1 to A6 and blanks at S3 from A1 to A6.
-    Note: Blank Evotis can be unused and dry Evotips.
+    Note: Blank Evotips can be unused and dry Evotips.
 2. Verify that the TIMS device in TimsControl is calibrated. The TIMS device should be calibrated each time before you start a sample queue.
 3. In Hystar, navigate to the 'Acquisition' tab.
 4. Either select 'New', and subsequently choose 'LC-MS sample table' (Figure 1) to generate a new sample table or choose an already existing sample table by pressing the arrow down button when hovering over the sample table name in the left sample table column.
@@ -2325,7 +2325,7 @@ This protocol explains how to queue sample in HyStar for LC-MS measurement.
 *Estimated timing: 6 minutes*
 
 1. Verify the Evotips were placed on top of the Evosep LC system. In this example, 5 ng HeLa Evotips were placed at S1 from A1 to A6 and blanks at S3 from A1 to A6.
-    Note: Blank Evotis can be unused and dry Evotips.
+    Note: Blank Evotips can be unused and dry Evotips.
 2. Verify that the TIMS device in TimsControl is calibrated. The TIMS device should be calibrated each time before you start a sample queue.
 3. In Hystar, navigate to the 'Acquisition' tab.
 4. Either select 'New', and subsequently choose 'LC-MS sample table' (Figure 1) to generate a new sample table or choose an already existing sample table by pressing the arrow down button when hovering over the sample table name in the left sample table column.
@@ -2433,7 +2433,7 @@ This protocol explains how to queue sample in HyStar for LC-MS measurement.
 *Estimated timing: 6 minutes*
 
 1. Verify the Evotips were placed on top of the Evosep LC system. In this example, 5 ng HeLa Evotips were placed at S1 from A1 to A6 and blanks at S3 from A1 to A6.
-    Note: Blank Evotis can be unused and dry Evotips.
+    Note: Blank Evotips can be unused and dry Evotips.
 2. Verify that the TIMS device in TimsControl is calibrated. The TIMS device should be calibrated each time before you start a sample queue.
 3. In Hystar, navigate to the 'Acquisition' tab.
 4. Either select 'New', and subsequently choose 'LC-MS sample table' (Figure 1) to generate a new sample table or choose an already existing sample table by pressing the arrow down button when hovering over the sample table name in the left sample table column.
@@ -2541,7 +2541,7 @@ This protocol explains how to queue sample in HyStar for LC-MS measurement.
 *Estimated timing: 6 minutes*
 
 1. Verify the Evotips were placed on top of the Evosep LC system. In this example, 5 ng HeLa Evotips were placed at S1 from A1 to A6 and blanks at S3 from A1 to A6.
-    Note: Blank Evotis can be unused and dry Evotips.
+    Note: Blank Evotips can be unused and dry Evotips.
 2. Verify that the TIMS device in TimsControl is calibrated. The TIMS device should be calibrated each time before you start a sample queue.
 3. In Hystar, navigate to the 'Acquisition' tab.
 4. Either select 'New', and subsequently choose 'LC-MS sample table' (Figure 1) to generate a new sample table or choose an already existing sample table by pressing the arrow down button when hovering over the sample table name in the left sample table column.
@@ -2649,7 +2649,7 @@ This protocol explains how to queue sample in HyStar for LC-MS measurement.
 *Estimated timing: 6 minutes*
 
 1. Verify the Evotips were placed on top of the Evosep LC system. In this example, 5 ng HeLa Evotips were placed at S1 from A1 to A6 and blanks at S3 from A1 to A6.
-    Note: Blank Evotis can be unused and dry Evotips.
+    Note: Blank Evotips can be unused and dry Evotips.
 2. Verify that the TIMS device in TimsControl is calibrated. The TIMS device should be calibrated each time before you start a sample queue.
 3. In Hystar, navigate to the 'Acquisition' tab.
 4. Either select 'New', and subsequently choose 'LC-MS sample table' (Figure 1) to generate a new sample table or choose an already existing sample table by pressing the arrow down button when hovering over the sample table name in the left sample table column.
@@ -2742,7 +2742,7 @@ Pipette_docu_WrongRowB_B10Twice_B11LeftOut,"# Dispensing Protocol
 
 
 ## Abstract
-This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to A12.
+This protocol describes how to pipette 20 µL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Materials
@@ -2771,12 +2771,12 @@ This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to 
 
 
 ## Expected Results
-Approximatly 20 uL liquid in A1 to A12 in a PCR Plate.
+Approximatly 20 µL liquid in A1 to A12 in a PCR Plate.
 ",gs://ai-proteomics-advisor/input_for_lab_note/Pipette_docu_WrongRowB_B10Twice_B11LeftOut.MP4,camera,"# Dispensing Protocol
 
 
 ## Aim
-Pipette 20 uL buffer A in a PCR Plate from A1 to A12.
+Pipette 20 µL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Materials
@@ -2801,7 +2801,7 @@ Pipette 20 uL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Result
-Approximatly 20 uL liquid in B1 to B9, 40 uL in B10, 20 uL in B12.
+Approximatly 20 µL liquid in B1 to B9, 40 µL in B10, 20 µL in B12.
 ","[
   {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A"", ""Skill"": ""N/A""},
   {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Deviation"", ""Skill"": ""ProteomicsKnowledge""},
@@ -2814,7 +2814,7 @@ Pipette_docuFirstTwoWrongVolumneANDA2Twice,"# Dispensing Protocol
 
 
 ## Abstract
-This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to A12.
+This protocol describes how to pipette 20 µL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Materials
@@ -2843,12 +2843,12 @@ This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to 
 
 
 ## Expected Results
-Approximatly 20 uL liquid in A1 to A12 in a PCR Plate.
+Approximatly 20 µL liquid in A1 to A12 in a PCR Plate.
 ",gs://ai-proteomics-advisor/input_for_lab_note/Pipette_docuFirstTwoWrongVolumneANDA2Twice.MP4,camera,"# Dispensing Protocol
 
 
 ## Aim
-Pipette 20 uL buffer A in a PCR Plate from A1 to A12.
+Pipette 20 µL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Materials
@@ -2875,7 +2875,7 @@ Pipette 20 uL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Result
-- Approximatly 20 uL liquid in A1, 40 uL in A2 and 20 uL from A3 to A12.
+- Approximatly 20 µL liquid in A1, 40 µL in A2 and 20 µL from A3 to A12.
 ","[
   {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A"", ""Skill"": ""N/A""},
   {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Omitted"", ""Skill"": ""ProteomicsKnowledge""},
@@ -2890,7 +2890,7 @@ Pipette_ducoBufferBInsteadBufferA,"# Dispensing Protocol
 
 
 ## Abstract
-This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to A12.
+This protocol describes how to pipette 20 µL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Materials
@@ -2919,12 +2919,12 @@ This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to 
 
 
 ## Expected Results
-Approximatly 20 uL liquid in A1 to A12 in a PCR Plate.
+Approximatly 20 µL liquid in A1 to A12 in a PCR Plate.
 ",gs://ai-proteomics-advisor/input_for_lab_note/Pipette_ducoBufferBInsteadBufferA.MP4,camera,"# Dispensing Protocol
 
 
 ## Aim
-Pipette 20 uL buffer A in a PCR Plate from A1 to A2.
+Pipette 20 µL buffer A in a PCR Plate from A1 to A2.
 
 
 ## Materials
@@ -2950,7 +2950,7 @@ Pipette 20 uL buffer A in a PCR Plate from A1 to A2.
 
 
 ## Result
-Approximatly 20 uL liquid in A1 to A12 in a PCR Plate.
+Approximatly 20 µL liquid in A1 to A12 in a PCR Plate.
 ","[
   {""Step"": 1, ""Benchmark"": ""Error"", ""Class"": ""Error"", ""Skill"": ""SpatialResolution""},
   {""Step"": 2, ""Benchmark"": ""Error"", ""Class"": ""Deviation"", ""Skill"": ""ProteomicsKnowledge""},
@@ -2963,7 +2963,7 @@ Approximatly 20 uL liquid in A1 to A12 in a PCR Plate.
 Dilute_docuWrongSolvent,"# Dispensing Protocol
 
 ## Abstract
-This protocol describes how to pipette first 400 uL buffer A and then 100 uL buffer B in a Eppendorf tube.
+This protocol describes how to pipette first 400 µL buffer A and then 100 µL buffer B in a Eppendorf tube.
 
 
 ## Materials
@@ -2996,15 +2996,15 @@ This protocol describes how to pipette first 400 uL buffer A and then 100 uL buf
 8. Pipette 100 μL of Buffer B from the bottle into the Eppendorf tube.
 9. Discard the used pipette tip in the appropriate waste container.
 10. Mix the solution with a vortexer.
-11. Lable the Eppendorf tube.
+11. Label the Eppendorf tube.
 
 
 ## Expected Results
-Approximatly 500 uL liquid in the tube
+Approximatly 500 µL liquid in the tube
 ",gs://ai-proteomics-advisor/input_for_lab_note/Dilute_docuWrongSolvent.MP4,camera,"# Dispensing Protocol
 
 ## Aim
-Pipetting first 400 uL buffer A and then 100 uL buffer B in a Eppendorf tube.
+Pipetting first 400 µL buffer A and then 100 µL buffer B in a Eppendorf tube.
 
 
 ## Materials
@@ -3041,7 +3041,7 @@ Pipetting first 400 uL buffer A and then 100 uL buffer B in a Eppendorf tube.
 
 
 ## Results
-500 uL liquid in the tube but with reversed solvent composition than intented
+500 µL liquid in the tube but with reversed solvent composition than intented
 ","[
 {""Step"": 1, ""Benchmark"": ""No Error"", ""Class"": ""N/A"", ""Skill"": ""N/A""},
 {""Step"": 2, ""Benchmark"": ""No Error"", ""Class"": ""N/A"", ""Skill"": ""N/A""},
