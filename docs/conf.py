@@ -51,12 +51,11 @@ html_context = {
 # They can be extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "myst_nb",
-    "sphinx_copybutton",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.intersphinx",
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
+    "myst_nb",
+    "sphinx_copybutton",
+    "sphinx.ext.intersphinx",
     # "sphinxcontrib.bibtex",
     "sphinx_autodoc_typehints",
     "sphinx_tabs.tabs",
@@ -66,6 +65,7 @@ extensions = [
 ]
 
 autosummary_generate = True
+autosummary_imported_members = True
 autodoc_member_order = "groupwise"
 default_role = "literal"
 napoleon_google_docstring = False
