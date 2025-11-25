@@ -6,7 +6,7 @@ import logging
 import sqlite3
 from typing import NoReturn
 
-from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import (
+from .utils import (
     COMPATIBLE_SCHEMA_VERSION,
     DATABASE_PATH,
     DatabaseError,

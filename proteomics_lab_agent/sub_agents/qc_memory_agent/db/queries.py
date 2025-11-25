@@ -3,10 +3,10 @@
 import logging
 import sqlite3
 
-from proteomics_lab_agent.sub_agents.qc_memory_agent.db.connection import (
+from .connection import (
     get_db_connection,
 )
-from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import (
+from .utils import (
     DatabaseError,
     ValidationError,
 )
