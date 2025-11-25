@@ -7,10 +7,8 @@ import sqlite3
 import uuid
 from typing import NoReturn
 
-from proteomics_lab_agent.sub_agents.qc_memory_agent.db.connection import (
-    get_db_connection,
-)
-from proteomics_lab_agent.sub_agents.qc_memory_agent.db.utils import (
+from .connection import get_db_connection
+from .utils import (
     AGENT_NAME,
     GRADIENT_TOLERANCE,
     MAX_PERFORMANCE_RATING,
