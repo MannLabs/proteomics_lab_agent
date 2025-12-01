@@ -37,6 +37,8 @@ deployment_data/database.db
 # docu files
 docs/generated
 docs/api
+docs/_build
+docs/_autosummary
 
 # Github defaults are below
 # TODO: sort through them
