@@ -2,15 +2,6 @@
 jupyter
 bump-my-version
 ipykernel
-sphinx
-sphinx-book-theme
-myst-nb
-sphinx-copybutton
-sphinx-autodoc-typehints
-sphinx-tabs
-sphinxext-opengraph
-nbsphinx
-myst-parser
 
 pre-commit==4.1.0
 

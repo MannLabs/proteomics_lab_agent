@@ -1,0 +1,10 @@
+# Dependencies helping for documentation
+sphinx
+sphinx-book-theme
+myst-nb
+sphinx-copybutton
+sphinx-autodoc-typehints
+sphinx-tabs
+sphinxext-opengraph
+nbsphinx
+myst-parser
