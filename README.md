@@ -297,7 +297,7 @@ In case of issues, check out the following links:
 ---
 ## Citations
 
-We are currently writting the manuscript.
+[bioRxiv preprint](https://doi.org/10.1101/2025.10.05.680425)
 
 ---
 ## How to contribute
@@ -330,8 +330,15 @@ pip install detect-secrets
 3. Run `detect-secrets audit .secrets.baseline` and check if the detected 'secret' is actually a secret
 4. Commit the latest version of `.secrets.baseline`
 
+#### Run tests locally
+From root folder of package
+```bash
+python -m pytest tests
+```
+
 #### Update coverage badge
 ```bash
+pip install pytest-cov
 pytest --cov .
 pip install coverage-badge
 coverage-badge > misc/coverage.svg
