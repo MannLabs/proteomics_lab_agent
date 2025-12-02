@@ -37,7 +37,7 @@ jobs:
 
       - name: Build documentation
         run: |
-          cd docu
+          cd docs
           make clean
           make html
 
@@ -47,7 +47,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "docu/_build/html"
+          path: "docs/_build/html"
 
       - name: Deploy to GitHub Pages
         id: deployment
