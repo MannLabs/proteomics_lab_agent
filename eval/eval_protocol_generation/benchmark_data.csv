@@ -21,13 +21,13 @@ This protocol explains how to connect an IonOpticks column inserted into a timsT
 ## Procedure
 *Estimated timing: 3 minutes*
 
-1. Verfy that the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standing by mode.
+1. Verify that the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standing by mode.
 
 ### Connect column and sample line
 2. Verify that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
 3. Attach a black NanoViper adapter to the LC sample line.
 4. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
-5. Hold the column fititng of the IonOpticks column with a pliers.
+5. Hold the column fitting of the IonOpticks column with a pliers.
 6. Hand-tighten the NanoViper of the LC sample line with the column fitting (Figure 1).
    CRITICAL STEP: Be careful not to overtighten the connection between the IonOpticks column and the timsTOF Ultra. Otherwise you can damage the column and the LC sample line.
 7. Remove the NanoViper adapter so that the oven can be tightly closed.
@@ -128,7 +128,7 @@ This protocol provides a step-by-step guide for the correct physical and electri
 Diluting,regular_wetlab,liquid_handling,"Generate a protocol based on this video ""gs://ai-proteomics-advisor/input_for_protocol/Diluting_protocolCorrect.MP4"".",video,"# Dispensing Protocol
 
 ## Abstract
-This protocol describes how to pipette first 400 uL buffer A and then 100 uL buffer B in a Eppendorf tube.
+This protocol describes how to pipette first 400 µL buffer A and then 100 µL buffer B in a Eppendorf tube.
 
 
 ## Materials
@@ -165,7 +165,7 @@ This protocol describes how to pipette first 400 uL buffer A and then 100 uL buf
 
 
 ## Expected Results
-Approximatly 500 uL liquid in the tube
+Approximatly 500 µL liquid in the tube
 ",,{},
 DisconnectColumn,specialized_equipment,column_handling,"Generate a protocol based on this video ""gs://ai-proteomics-advisor/input_for_protocol/DisconnectColumn_protocolCorrect.MP4"".",video,"# Disconnecting a IonOpticks column from an Evosep System
 
@@ -238,7 +238,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 *Estimated timing: less than 10 minute*
 
 ### Switch timsTOF to standby
-1. In timsControl, verfy if the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standy by mode  (Figure 1).
+1. In timsControl, Verify if the instrument is in standing by mode. If not press the on/off button to switch from operate mode to standy by mode  (Figure 1).
 2. Verify that the syringe is inactive in the tab 'Source' under 'Syringe Pump'. If not click on 'Stop'.
 3. In the 'source' and 'source type' sections of timsControl, choose 'CaptiveSpray' but do not activate it yet.
 
@@ -262,7 +262,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 14. Verify that an IonOpticks column is already inserted into the UltraSource of the timsTOF Ultra.
 15. Verify if the LC sample line has a black NanoViper adapter attached. If not, locate an adapter and securely attach it to the sample line.
 16. Remove any access liquid at the top of the nanoViper of the sample line for instance by snipping it off.
-17. Hold the column fititng of the IonOpticks column with a pliers.
+17. Hold the column fitting of the IonOpticks column with a pliers.
 18. Hand-tighten the NanoViper of the LC sample line with the column fitting (Figure 3).
    CRITICAL STEP: Be careful not to overtighten the connection between the IonOpticks column and the timsTOF Ultra. Otherwise you can damage the column and the LC sample line.
 19. Draw the oven closer to the UltraSource, secure it with the screw on the bottom of the oven (Figure 2).
@@ -278,7 +278,7 @@ This protocol describes the procedure for switching from the ESI source to Ultra
 26. Transition the instrument to the operation mode by using the on/off button.
 27. Navigate to Hystar and ensure that the idle flow is active. If not right-click on the Evosep logo, choosing 'preparation', and then selecting 'idle flow' and 'Run'.
 28. Return to timsControl and check the MS signal. It should be around 2.5x10^7.
-29. Monitor the internal pressures in the timsTOF device. The funnel pressur is acceptable within a 9-11 mbar range. Aim for a 10 mbar funnel pressure. Adjust the 'funnel pressure' wheel if necessary by turning counter clock-wise to reduce the pressure.
+29. Monitor the internal pressures in the timsTOF device. The funnel pressure is acceptable within a 9-11 mbar range. Aim for a 10 mbar funnel pressure. Adjust the 'funnel pressure' wheel if necessary by turning counter clock-wise to reduce the pressure.
 
 
 ## Expected Results
@@ -329,7 +329,7 @@ Pipette,regular_wetlab,liquid_handling,"Generate a protocol based on this video 
 
 
 ## Abstract
-This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to A12.
+This protocol describes how to pipette 20 µL buffer A in a PCR Plate from A1 to A12.
 
 
 ## Materials
@@ -358,7 +358,7 @@ This protocol describes how to pipette 20 uL buffer A in a PCR Plate from A1 to 
 
 
 ## Expected Results
-Approximatly 20 uL liquid in A1 to A12 in a PCR Plate.
+Approximatly 20 µL liquid in A1 to A12 in a PCR Plate.
 ",,{},
 PlaceEvotips,specialized_equipment,sample_preparation,"Generate a protocol based on this video ""gs://ai-proteomics-advisor/input_for_protocol/PlaceEvotips_protocolCorrect.MP4"".",video,"# Placing Evotips in Evotip Boxes on the Evosep One System
 
@@ -443,7 +443,7 @@ This protocol explains how to queue sample in HyStar for LC-MS measurement.
 *Estimated timing: 6 minutes*
 
 1. Verify the Evotips were placed on top of the Evosep LC system. In this example, 5 ng HeLa Evotips were placed at S1 from A1 to A6 and blanks at S3 from A1 to A6.
-    Note: Blank Evotis can be unused and dry Evotips.
+    Note: Blank Evotips can be unused and dry Evotips.
 2. Verify that the TIMS device in TimsControl is calibrated. The TIMS device should be calibrated each time before you start a sample queue.
 3. In Hystar, navigate to the 'Acquisition' tab.
 4. Either select 'New', and subsequently choose 'LC-MS sample table' (Figure 1) to generate a new sample table or choose an already existing sample table by pressing the arrow down button when hovering over the sample table name in the left sample table column.
@@ -556,7 +556,7 @@ This protocol describes the procedure for switching from the UltraSource to the 
 ### Switch TimsControl to 'Standby' mode
 1. Verify that the IonOpticks column from an Evosep System is disconnected. If not disconnect them.
    Critical step: This could be an opportune moment to perform the weekly LC system maintenance.
-2. In timsControl, verfy that the software is in standby mode
+2. In timsControl, Verify that the software is in standby mode
 3. Navigate to the 'Source', then proceed to 'SourceType' and select 'ESI'. However, do not activate the source at this moment (Figure 1).
 
 ### Remove UltraSource
@@ -606,180 +606,3 @@ This protocol describes the procedure for switching from the UltraSource to the 
 1. Skowronek, P., Wallmann, G., Wahle, M. et al. An accessible workflow for high-sensitivity proteomics using parallel accumulation–serial fragmentation (PASEF). Nat Protoc (2025). https://doi.org/10.1038/s41596-024-01104-w
 2. TODO: timsTOF user manual
 ",,{},
-MagneticBeadBasedEnrichmentPlasma,regular_wetlab,plasma_enrichment,"Generate a protocol based on these notes: #Magnetic beads - Sample preparation
-
- Aliquot 10 µl bead slurry
-Wash 2x with ddH2O
-Remove supernatant
-Add 100 µl buffer as defined in table
-Dependent on what buffer you want to use for the beads → either specified by the bead protocol itself or Philipps buffer screen
-Add 10 µl plasma
-or platelet contaminated plasma if needed
-Incubate 30 min at 37°C
-Centrifuge at 2000 g, discard supernatant
-Wash with 100 µl buffer
-Discard supernatant
-Wash with 100 µl buffer
-Discard supernatant
-50 µl lysis buffer
-100 mM Tris, 40 mM CAA, 10 mM TCEP
-for 40 ml buffer: 149.6 mg CAA, 526.6 mg Tris and 0.8 mL 0.5M TCEP
-or
-for 40 ml buffer: 149.6 mg CAA, 526.6 mg Tris and 100.1 mg TCEP → check pH !!!!!
-10 min 90°C
-Spin down
-Add 10 µl of trypsin/lysC stock: per sample: 8 µl lysis buffer, 1 µl trypsin, 1 µl lysC per sample
-1200 µl lysis buffer, 150 µl trypsin, 150 µl lysC
-Digest for XX h
-Add 50 µl 0.2% TFA
-Mix
-Transfer 100 µl on a fresh plate, discard bead plate
-Approximation: 10 µl of plasma using the enrichment should results in 800 ng peptides; Load 20 µl of the transferred 100 µl digest (is approx. 160 ng)",text,"Protocol: Magnetic Bead-Based Protein Enrichment and On-Bead Digestion from Plasma
-
-## Abstract
-This protocol details a method for the enrichment of proteins from low-volume plasma samples using magnetic beads. The procedure involves protein binding, washing, on-bead lysis with simultaneous reduction and alkylation, followed by enzymatic digestion. The resulting peptide mixture is suitable for subsequent analysis by liquid chromatography-mass spectrometry (LC-MS).
-
-## Materials
-
-### Equipment
--   Pipettes (P10, P200, P1000) and corresponding pipette tips
--   Microcentrifuge tubes (1.5 mL) or a 96-well plate
--   Magnetic rack compatible with tubes or plates
--   Thermomixer or heat block capable of reaching 90°C with shaking
--   Centrifuge (for plates or tubes)
-
-### Reagents
--   Magnetic beads (e.g., MagResyn HILIC, ReSyn Biosciences)
--   Human plasma
--   **Binding/Wash Buffer:** The composition is dependent on the specific application or bead manufacturer's instructions.
--   **Lysis Buffer (100 mM Tris, 40 mM CAA, 10 mM TCEP):** To prepare 40 mL, combine:
-    -   526.6 mg Tris base
-    -   149.6 mg 2-chloroacetamide (CAA)
-    -   0.8 mL of 0.5 M TCEP solution, or 100.1 mg of solid TCEP
-    -   Adjust to a final volume of 40 mL with ddH₂O.
-    ! **CRITICAL STEP:** If using solid TCEP, verify and adjust the pH of the final buffer to ~8.0.
--   **Enzymes:** Sequencing-grade Trypsin and Lys-C protease stocks (e.g., 0.5 µg/µL).
--   **Digestion Mix:** Prepare fresh before use. For each sample, mix:
-    -   8 µL Lysis Buffer
-    -   1 µL Trypsin stock
-    -   1 µL Lys-C stock
--   **Acidification Solution:** 0.2% (v/v) Trifluoroacetic acid (TFA) in ddH₂O.
--   Double-distilled water (ddH₂O)
-
-## Procedure
-*Estimated timing: 1.5 hours + overnight digestion*
-
-### Bead Preparation and Protein Binding
-1.  Aliquot 10 µL of the magnetic bead slurry into a microcentrifuge tube or well of a 96-well plate.
-2.  Place the tube/plate on a magnetic rack to capture the beads. Once the supernatant is clear, carefully remove and discard it.
-3.  Wash the beads by adding 100 µL of ddH₂O, resuspending, capturing the beads on the magnetic rack, and discarding the supernatant. Repeat this step once for a total of two washes.
-4.  Resuspend the washed beads in 100 µL of the selected Binding/Wash Buffer.
-5.  Add 10 µL of plasma to the bead suspension.
-6.  Incubate the mixture for 30 minutes at 37°C with gentle shaking to facilitate protein binding.
-
-### Washing and On-Bead Digestion
-7.  Following incubation, capture the beads on the magnetic rack and discard the supernatant.
-8.  Wash the beads twice with 100 µL of Binding/Wash Buffer per wash. For each wash, resuspend the beads completely before capturing them on the magnet and discarding the supernatant.
-9.  Add 50 µL of Lysis Buffer to the washed beads.
-10. Incubate for 10 minutes at 90°C with shaking. This step lyses the bound proteins and simultaneously performs reduction and alkylation.
-11. Briefly centrifuge the tube/plate to collect condensation, then allow it to cool to room temperature.
-12. Add 10 µL of the freshly prepared Digestion Mix to each sample.
-13. Incubate overnight (e.g., 12-16 hours) at 37°C with gentle shaking to digest the proteins.
-
-### Peptide Recovery
-14. To stop the digestion, add 50 µL of 0.2% TFA solution to each sample and mix well by pipetting. The final volume is approximately 110 µL.
-15. Place the tube/plate on the magnetic rack to capture the beads.
-16. Carefully transfer 100 µL of the supernatant, which contains the final peptide solution, to a fresh tube or plate for LC-MS analysis. Discard the plate containing the residual beads.
-
-## Expected Results
--   Processing 10 µL of plasma with this method should yield approximately 800 ng of total peptides.
--   For a standard LC-MS analysis, loading 20 µL of the final 100 µL peptide solution corresponds to an injection of approximately 160 ng of peptide material.
-
-## Figures
-### Figure 1: Workflow for Magnetic Bead-Based Proteomic Sample Preparation
-[Placeholder for a diagram illustrating the key steps: (A) Bead washing and protein binding from plasma. (B) On-bead lysis, reduction, and alkylation. (C) Enzymatic digestion. (D) Peptide elution and separation from beads.]","# Protocol: On-Bead Protein Digestion of Plasma Samples for Proteomic Analysis
-
-## Abstract
-This protocol details a robust method for the enrichment and subsequent proteolytic digestion of proteins directly on magnetic beads. The procedure is optimized for plasma samples and involves protein binding to functionally-specific magnetic beads, stringent washing steps to remove non-specific binders, and an efficient on-bead digestion using a Trypsin/Lys-C mixture. The resulting peptide mixture is suitable for direct analysis by liquid chromatography-mass spectrometry (LC-MS/MS). This approach minimizes sample handling losses and is readily adaptable for various affinity-based proteomics workflows, such as targeted protein pulldowns or analysis of post-translationally modified sub-proteomes.
-
-## Materials
-
-### Equipment
-- **Magnetic separator:** A magnetic rack or device compatible with 1.5 mL microcentrifuge tubes or 96-well plates.
-- **Centrifuge:** A microcentrifuge capable of reaching at least 2,000 x g, preferably refrigerated.
-- **Thermomixer or Heat Block:** Capable of incubation at 37°C and 90°C with shaking.
-- **Pipettes:** A set of calibrated single-channel pipettes (e.g., P20, P200, P1000) and corresponding tips.
-- **Microcentrifuge tubes or 96-well plates:** Low-protein-binding 1.5 mL tubes or 96-well PCR/storage plates (e.g., Eppendorf, cat. no. 0030124332).
-
-### Reagents
-- **Magnetic Beads:** The choice of magnetic beads is dependent on the experimental goal (e.g., streptavidin-coated for biotinylated targets, antibody-conjugated for immunoprecipitation). The protocol assumes a slurry format.
-- **Human Plasma:** Collected in EDTA or citrate tubes. Can be used fresh or previously frozen at -80°C.
-    * **Optional:** Platelet-contaminated plasma can be used if relevant to the experimental question.
-- **Deionized, distilled water (ddH₂O):** Ultrapure, MS-grade.
-- **Binding/Wash Buffer:** This buffer is user-defined and dependent on the chemistry of the magnetic beads and the protein interaction being studied. Refer to the manufacturer's instructions for the beads or a validated buffer screen (e.g., ""Philipp's buffer screen"").
-- **Lysis and Digestion Buffer (LDB):** 100 mM Tris, 10 mM TCEP, 40 mM Chloroacetamide (CAA).
-    * To prepare 40 mL:
-        * Tris base: 526.6 mg
-        * Chloroacetamide (CAA): 149.6 mg ! **CAUTION:** CAA is toxic and a carcinogen. Handle with appropriate personal protective equipment (PPE).
-        * 0.5 M TCEP solution: 0.8 mL
-        * Add ddH₂O to a final volume of 40 mL.
-    * **Alternative preparation from solids:** Combine Tris and CAA as above, then add 114.7 mg of TCEP-HCl. Adjust pH to ~8.0-8.5 before adding water to the final volume. **CRITICAL** Always verify the pH after preparation.
-- **Trypsin, MS-grade:** (e.g., Promega, cat. no. V5111). Resuspend to a stock concentration of 0.5 µg/µL in a suitable buffer (e.g., 50 mM acetic acid).
-- **Lys-C, MS-grade:** (e.g., Promega, cat. no. V1671). Resuspend to a stock concentration of 0.5 µg/µL in a suitable buffer (e.g., ddH₂O).
-- **Trifluoroacetic acid (TFA):** (e.g., Thermo Fisher Scientific, cat. no. 28904). Prepare a 0.2% (v/v) solution in ddH₂O. ! **CAUTION:** TFA is corrosive. Handle in a fume hood with appropriate PPE.
-
-## Procedure
-*Estimated timing: ~1.5 hours hands-on time, ~12-18 hours for overnight digestion.*
-
-### Bead Preparation and Protein Binding
-*Timing: ~45 minutes*
-
-1.  In a microcentrifuge tube, aliquot 10 µL of the magnetic bead slurry.
-2.  Place the tube on a magnetic separator. Once the beads are captured and the supernatant is clear, carefully aspirate and discard the supernatant.
-3.  Wash the beads by removing the tube from the magnet, adding 200 µL of ddH₂O, and gently resuspending the beads.
-4.  Recapture the beads on the magnetic separator and discard the supernatant. Repeat this wash step once for a total of two washes.
-5.  Resuspend the washed beads in 100 µL of the user-defined Binding/Wash Buffer.
-6.  Add 10 µL of plasma to the bead suspension.
-    * **CRITICAL STEP:** Ensure plasma is fully thawed and vortexed before addition. If starting with frozen plasma, centrifuge at high speed (e.g., 14,000 x g, 10 min, 4°C) to pellet any cryoprecipitates and use the clear supernatant.
-7.  Incubate the mixture for 30 minutes at 37°C with gentle shaking in a thermomixer to facilitate protein binding.
-
-### Washing
-*Timing: ~15 minutes*
-
-8.  Following incubation, briefly centrifuge the tube at 2,000 x g for 1 minute to pellet the beads.
-    * **Alternative:** Use a magnetic separator to capture the beads. Centrifugation is recommended to ensure collection of all beads.
-9.  Place the tube on the magnetic separator, allow the beads to be captured, and carefully discard the supernatant.
-10. Wash the beads by adding 100 µL of Binding/Wash Buffer and gently resuspending.
-11. Capture the beads on the magnetic separator and discard the supernatant.
-12. Repeat steps 10-11 once for a total of two washes. After the final wash, remove the supernatant as completely as possible.
-    * **CRITICAL STEP:** Complete removal of the wash buffer is essential to avoid interfering with the subsequent digestion step. Use a small-volume pipette tip to remove any residual liquid after the main aspiration.
-
-### On-Bead Digestion
-*Timing: ~25 minutes hands-on, 4 hours to overnight for digestion*
-
-13. Resuspend the washed beads in 50 µL of Lysis and Digestion Buffer (LDB).
-14. Incubate the sample for 10 minutes at 90°C with shaking in a thermomixer to denature, reduce, and alkylate the bound proteins.
-15. After incubation, briefly centrifuge the tube to collect any condensate from the lid and walls. Let the sample cool to room temperature (~5-10 minutes).
-16. Prepare a fresh Trypsin/Lys-C enzyme master mix. For each sample, combine:
-    * Lysis and Digestion Buffer (LDB): 8 µL
-    * Trypsin stock (0.5 µg/µL): 1 µL
-    * Lys-C stock (0.5 µg/µL): 1 µL
-    * *Note: Prepare a master mix for all samples, including a 10% excess to account for pipetting inaccuracies. For example, for 10 samples, mix 88 µL LDB, 11 µL Trypsin, and 11 µL Lys-C.*
-17. Add 10 µL of the enzyme master mix to each sample. The total volume is now ~60 µL.
-18. Digest the proteins by incubating the samples overnight (12-16 hours) at 37°C with gentle shaking.
-    * **PAUSE POINT:** The digestion time can be optimized. A shorter digestion of 4 hours may be sufficient for some applications.
-
-### Sample Acidification and Peptide Collection
-*Timing: ~10 minutes*
-
-19. To stop the digestion, add 50 µL of 0.2% TFA solution to each sample. Mix well by pipetting up and down. The final volume will be approximately 110 µL.
-20. Place the tubes on the magnetic separator to capture the beads.
-21. Carefully transfer 100 µL of the supernatant, which now contains the digested peptides, to a fresh, clean 96-well plate or microcentrifuge tube. Discard the plate/tubes containing the beads. The sample is now ready for LC-MS/MS analysis or further fractionation.
-
-## Expected Results
--   Starting with 10 µL of human plasma, this enrichment and digestion procedure is expected to yield approximately 800 ng of total peptides in the final 110 µL volume.
--   A standard injection volume for LC-MS/MS analysis would be 20 µL of the final peptide solution, corresponding to a load of approximately 150-160 ng of peptides on the column.
-
-## Figures
-### Figure 1: Workflow for On-Bead Digestion of Plasma Proteins
-[Placeholder for a flowchart diagram illustrating the main steps: (A) Bead Washing, (B) Protein Binding from Plasma, (C) Post-binding Washes, (D) On-bead Lysis and Digestion, and (E) Peptide Elution and Collection.]","{'Completeness': 5, 'Technical Accuracy': 3, 'Logical Flow': 5, 'Safety': 4, 'Formatting': 5}",

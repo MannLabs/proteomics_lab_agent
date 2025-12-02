@@ -62,7 +62,12 @@ def create_protocol_evaluation_prompt(gt_protocol: str, generated_protocol: str)
     | References | [Text from ground truth] | [Text from AI protocol] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [1-5] | [Explanation] | [Additional observations or comments] |
 
     * Step 5: Overall Summary:
-    Overall compare all sections in total and individually for Completeness, Technical Accuracy, Logical Flow, Safety, Formatting
+    Overall compare all sections in total and individually for Completeness, Technical Accuracy, Logical Flow, Safety, Formatting. If Figures and References are missing from the Ground Truth, do not penalize the AI-protocol for including them.
+
+    Create a table summarizing your findings:
+    | Completeness| Technical Accuracy | Logical Flow| Safety | Formatting | Notes |
+    |-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+    | [1-5] | [1-5] | [1-5] | [1-5] | [1-5] | [Additional observations or comments] |
 
     * Step 6: Overall Rating
     Provide an overall rating (1-5) based on step 5 and the Rating Rubric.
