@@ -2,9 +2,7 @@ name: Build and Deploy Documentation
 
 on:
   push:
-    # branches: [main]
-    branches:
-      - '**'
+    branches: [main]
   workflow_dispatch:
 
 permissions:
